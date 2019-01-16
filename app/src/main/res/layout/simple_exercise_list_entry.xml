@@ -24,6 +24,15 @@
         android:layout_marginEnd="8dp"
         android:text="TextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/sele_btn_delete"
-        app:layout_constraintEnd_toStartOf="@+id/sele_btn_delete"
+        app:layout_constraintEnd_toStartOf="@+id/sele_cb_isdailyreminder"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/sele_cb_isdailyreminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Is Reminder"
+        app:layout_constraintBaseline_toBaselineOf="@+id/sele_textview_exercise_name"
+        app:layout_constraintEnd_toStartOf="@+id/sele_btn_delete" />
 </android.support.constraint.ConstraintLayout>

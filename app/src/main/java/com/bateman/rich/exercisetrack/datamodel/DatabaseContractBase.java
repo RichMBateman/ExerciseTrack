@@ -8,10 +8,10 @@ import android.net.Uri;
  * used with a content provider.
  */
 public class DatabaseContractBase {
-    protected final String TABLE_NAME;
-    protected final Uri CONTENT_URI;
-    protected final String CONTENT_TYPE;
-    protected final String CONTENT_ITEM_TYPE;
+    public final String TABLE_NAME;
+    public final Uri CONTENT_URI;
+    public final String CONTENT_TYPE;
+    public final String CONTENT_ITEM_TYPE;
 
     protected DatabaseContractBase(Uri contentAuthorityUri, String contentAuthority, String tableName) {
         TABLE_NAME = tableName;

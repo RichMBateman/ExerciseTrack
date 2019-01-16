@@ -18,15 +18,13 @@
 
     <EditText
         android:id="@+id/el_edittext_entry"
-        android:layout_width="wrap_content"
+        android:layout_width="176dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
         app:layout_constraintBaseline_toBaselineOf="@+id/el_btn_add_exercise"
-        app:layout_constraintEnd_toStartOf="@+id/el_btn_add_exercise"
         app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.v7.widget.RecyclerView
@@ -39,4 +37,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/el_edittext_entry" />
+
+    <CheckBox
+        android:id="@+id/el_cb_isdailyreminder"
+        android:layout_width="87dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:maxLines="2"
+        android:minLines="2"
+        android:text="Is Daily Reminder?"
+        app:layout_constraintBaseline_toBaselineOf="@+id/el_edittext_entry"
+        app:layout_constraintEnd_toStartOf="@+id/el_btn_add_exercise"
+        app:layout_constraintStart_toEndOf="@+id/el_edittext_entry" />
 </android.support.constraint.ConstraintLayout>
