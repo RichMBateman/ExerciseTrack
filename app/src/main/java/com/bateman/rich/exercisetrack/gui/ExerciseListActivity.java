@@ -1,5 +1,6 @@
 package com.bateman.rich.exercisetrack.gui;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -54,6 +55,16 @@ public class ExerciseListActivity extends AppCompatActivity
 
     private void setupUI() {
         m_btnAddExercise = findViewById(R.id.el_btn_add_exercise);
+        m_btnAddExercise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues values = new ContentValues();
+                values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, m_editTextExercise.getText().toString());
+                values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, m_checkBoxIsReminder.isChecked());
+                getContentResolver().insert(ExerciseEntry.Contract.CONTENT_URI, values);
+            }
+        });
+
         m_editTextExercise = findViewById(R.id.el_edittext_entry);
         m_recyclerViewExercises = findViewById(R.id.el_recyclerview_exercise_entries);
         m_checkBoxIsReminder = findViewById(R.id.el_cb_isdailyreminder);

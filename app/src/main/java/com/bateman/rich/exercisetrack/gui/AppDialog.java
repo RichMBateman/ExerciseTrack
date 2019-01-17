@@ -29,7 +29,7 @@ public class AppDialog extends AppCompatDialogFragment {
     /**
      * The dialogue's callback interface to notify of user selected results (deletion confirmed, etc.).
      */
-    interface DialogEvents {
+    public interface DialogEvents {
         void onPositiveDialogResult(int dialogId, Bundle args);
         void onNegativeDialogResult(int dialogId, Bundle args);
         void onDialogCancelled(int dialogId);

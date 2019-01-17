@@ -13,6 +13,7 @@
     <item
         android:id="@+id/menu_generate_test_data"
         android:orderInCategory="102"
+        android:visible="false"
         android:title="Generate Test Data"
         app:showAsAction="never" />
     <item

@@ -38,7 +38,7 @@ public class ExerciseEntry {
             return sortOrder;
         }
 
-        static class Columns {
+        public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
             public static final String COL_NAME_NAME = "Name";
             public static final String COL_NAME_IS_DAILY_REMINDER = "IsDailyReminder";
@@ -80,5 +80,10 @@ public class ExerciseEntry {
 
     public void setDailyReminder(boolean dailyReminder) {
         m_isDailyReminder = dailyReminder;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + m_id + ", Name: " + m_name + ", Is Daily Reminder?: " + m_isDailyReminder + "\r\n";
     }
 }

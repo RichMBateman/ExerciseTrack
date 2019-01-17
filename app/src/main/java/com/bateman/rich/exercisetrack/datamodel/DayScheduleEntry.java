@@ -1,12 +1,13 @@
 package com.bateman.rich.exercisetrack.datamodel;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class DayScheduleEntry {
-    private int m_id;
+    private long m_id;
     private int m_position;
-    private int m_exerciseEntryId;
+    private long m_exerciseEntryId;
 
     public static class Contract {
         public static final String TABLE_NAME = "DaySchedules";
@@ -30,7 +31,13 @@ public class DayScheduleEntry {
         m_exerciseEntryId = exerciseEntryId;
     }
 
-    public int getId() {
+    public DayScheduleEntry(Cursor cursor) {
+        m_id = cursor.getLong(cursor.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+        m_position = cursor.getInt(cursor.getColumnIndex(Contract.Columns.COL_NAME_POSITION));
+        m_exerciseEntryId = cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID));
+    }
+
+    public long getId() {
         return m_id;
     }
 
@@ -46,11 +53,16 @@ public class DayScheduleEntry {
         m_position = position;
     }
 
-    public int getExerciseEntryId() {
+    public long getExerciseEntryId() {
         return m_exerciseEntryId;
     }
 
-    public void setExerciseEntryId(int exerciseEntryId) {
+    public void setExerciseEntryId(long exerciseEntryId) {
         m_exerciseEntryId = exerciseEntryId;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + m_id + ", Position: " + m_position + ", exercise entry id: " + m_exerciseEntryId + "\r\n";
     }
 }

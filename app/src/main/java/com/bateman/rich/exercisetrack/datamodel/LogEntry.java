@@ -1,13 +1,14 @@
 package com.bateman.rich.exercisetrack.datamodel;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 import java.util.Date;
 
 public class LogEntry {
-    private int m_id;
-    private int m_dayScheduleId;
+    private long m_id;
+    private long m_dayScheduleId;
     private Date m_startDateTime;
     private Date m_endDateTime;
 
@@ -35,7 +36,14 @@ public class LogEntry {
         m_endDateTime = endDateTime;
     }
 
-    public int getId() {
+    public LogEntry(Cursor cursor) {
+        m_id = cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_ID));
+        m_dayScheduleId = cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_DAY_SCHEDULE_ID));
+        m_startDateTime = new Date(cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_START_DATETIME)));
+        m_endDateTime = new Date(cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_START_DATETIME)));
+    }
+
+    public long getId() {
         return m_id;
     }
 
@@ -43,7 +51,7 @@ public class LogEntry {
         m_id = id;
     }
 
-    public int getDayScheduleId() {
+    public long getDayScheduleId() {
         return m_dayScheduleId;
     }
 
@@ -65,5 +73,11 @@ public class LogEntry {
 
     public void setEndDateTime(Date endDateTime) {
         m_endDateTime = endDateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + m_id + ", day schedule id: " + m_dayScheduleId + ", Start Date: " + m_startDateTime.toString() +
+                ", End Date: " + m_endDateTime.toString() + "\r\n";
     }
 }
