@@ -19,6 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".gui.ExerciseListActivity"/>
+        <provider
+            android:authorities="com.bateman.rich.exercisetrack.datamodel.provider"
+            android:name="com.bateman.rich.exercisetrack.datamodel.ExerciseAppProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

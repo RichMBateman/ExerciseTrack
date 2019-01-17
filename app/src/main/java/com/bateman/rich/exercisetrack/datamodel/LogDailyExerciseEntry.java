@@ -1,5 +1,6 @@
 package com.bateman.rich.exercisetrack.datamodel;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 import java.util.Date;
@@ -12,14 +13,13 @@ public class LogDailyExerciseEntry {
     private int m_weight;
     private int m_difficulty;
 
-    private static final LogDailyExerciseEntry.Contract s_contract = new LogDailyExerciseEntry.Contract();
+    public static class Contract {
+        public static final String TABLE_NAME = "LogDailyExercises";
+        public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
+        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
-    public static LogDailyExerciseEntry.Contract getContract() {return s_contract;}
-
-    static class Contract extends DatabaseContractBase {
-        private Contract() {
-            super(ExerciseAppProvider.CONTENT_AUTHORITY_URI, ExerciseAppProvider.CONTENT_AUTHORITY, "Log");
-        }
+        private Contract() { } // prevent instantiation
 
         static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;

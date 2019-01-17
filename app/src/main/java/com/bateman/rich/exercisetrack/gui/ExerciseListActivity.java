@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.bateman.rich.exercisetrack.R;
+import com.bateman.rich.exercisetrack.datamodel.ContentProviderHelper;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 
 import java.security.InvalidParameterException;
@@ -95,13 +96,13 @@ public class ExerciseListActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle bundle) {
         Log.d(TAG, "onCreateLoader: start with id: " + id);
 
-        String[] projection = ExerciseEntry.getContract().getProjectionFull();
-        String sortOrder = ExerciseEntry.getContract().getSortOrderStandard();
+        String[] projection = ExerciseEntry.Contract.getProjectionFull();
+        String sortOrder = ExerciseEntry.Contract.getSortOrderStandard();
 
         switch (id) {
             case LOADER_ID:
                 return new CursorLoader(this,
-                        ExerciseEntry.getContract().CONTENT_URI,
+                        ExerciseEntry.Contract.CONTENT_URI,
                         projection,
                         null,
                         null,
@@ -128,6 +129,6 @@ public class ExerciseListActivity extends AppCompatActivity
     @Override
     public void onDeleteClick(@NonNull ExerciseEntry entry) {
         long exerciseId = entry.getId();
-        getContentResolver().delete(ExerciseEntry.getContract().buildUriFromId(exerciseId), null, null);
+        getContentResolver().delete(ContentProviderHelper.buildUriFromId(ExerciseEntry.Contract.CONTENT_URI, exerciseId), null, null);
     }
 }

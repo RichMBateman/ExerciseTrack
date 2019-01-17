@@ -6,36 +6,36 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * A database class for exercise tracking.  Based off the AppDatabase class
+ * A database class for exercise tracking.  Based off the ExerciseAppDatabase class
  * created by Tim Buchalka in the udemy course Android Java Masterclass - Become an App Developer.
  * I don't think this is a good class to move into a class library as a reusable class, because
- * the database name and version must be supplied to the super consttructor, so you can't just create methods
+ * the database name and version must be supplied to the super constructor, so you can't just create methods
  * that a subclass will override (you're not allowed to call them before the super constructor has finished).
  * Besides, this class is fairly small, and the reusable elements are minor.  Everything else is specific to your database.
  *
  * Should only be visible to this package (visibility is package private).  Callers should use the AppProvider to work with the database.
  */
-class AppDatabase extends SQLiteOpenHelper {
-    private static final String TAG = "AppDatabase";
+class ExerciseAppDatabase extends SQLiteOpenHelper {
+    private static final String TAG = "ExerciseAppDatabase";
     private static final String DATABASE_NAME = "ExerciseTrack.db";
     private static final int DATABASE_VERSION = 1;
 
     // Singleton
-    private static AppDatabase m_instance = null;
-    private AppDatabase(Context context) {
+    private static ExerciseAppDatabase m_instance = null;
+    private ExerciseAppDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.d(TAG, "AppDatabase: constructor");
+        Log.d(TAG, "ExerciseAppDatabase: constructor");
     }
 
     /**
-     * Get the singleton instance of the AppDatabase class.
+     * Get the singleton instance of the ExerciseAppDatabase class.
      * @param context The content's providers context
      * @return A SQLite helper database object.
      */
-    static AppDatabase getInstance(Context context) {
+    static ExerciseAppDatabase getInstance(Context context) {
         if(m_instance == null) {
             Log.d(TAG, "getInstance: creating new instance.");
-            m_instance = new AppDatabase(context);
+            m_instance = new ExerciseAppDatabase(context);
         }
         return m_instance;
     }
@@ -82,10 +82,10 @@ class AppDatabase extends SQLiteOpenHelper {
         String sSqlStatement;
         // One way of producing the create table statement.  Heavy reliance on hard-coded strings, which is bad..
         // sSQL = "CREATE TABLE Tasks (_id INTEGER PRIMARY KEY NOT NULL, Name TEXT NOT NULL, Description TEXT, SortOrder INTEGER, CategoryID INTEGER);";
-        sSqlStatement = "CREATE TABLE " + ExerciseEntry.getContract().TABLE_NAME + " ("
+        sSqlStatement = "CREATE TABLE " + ExerciseEntry.Contract.TABLE_NAME + " ("
                 + ExerciseEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + ExerciseEntry.Contract.Columns.COL_NAME_NAME + " TEXT NOT NULL, "
-                + ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER + "BOOLEAN NOT NULL);";
+                + ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER + " BOOLEAN NOT NULL);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
@@ -97,17 +97,19 @@ class AppDatabase extends SQLiteOpenHelper {
      * @param db The SQLite database
      */
     private void createDayScheduleTable(SQLiteDatabase db) {
-        String sSqlStatement = "CREATE TABLE " + DayScheduleEntry.getContract().TABLE_NAME + " ("
+        String sSqlStatement = "CREATE TABLE " + DayScheduleEntry.Contract.TABLE_NAME + " ("
                 + DayScheduleEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " INTEGER NOT NULL, "
-                + DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID + "INTEGER NOT NULL);";
+                + DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID + " INTEGER NOT NULL);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
 
     private void createDayScheduleTriggerOnDeleteExercise(SQLiteDatabase db) {
-        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,ExerciseEntry.getContract().TABLE_NAME,
-                DayScheduleEntry.getContract().TABLE_NAME, ExerciseEntry.Contract.Columns.COL_NAME_ID,
+        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
+                "RemoveOnDeleteExercise",
+                ExerciseEntry.Contract.TABLE_NAME,
+                DayScheduleEntry.Contract.TABLE_NAME, ExerciseEntry.Contract.Columns.COL_NAME_ID,
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID);
     }
 
@@ -118,18 +120,20 @@ class AppDatabase extends SQLiteOpenHelper {
      * @param db The SQLite database
      */
     private void createLogTable(SQLiteDatabase db) {
-        String sSqlStatement = "CREATE TABLE " + LogEntry.getContract().TABLE_NAME + " ("
+        String sSqlStatement = "CREATE TABLE " + LogEntry.Contract.TABLE_NAME + " ("
                 + LogEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID + " INTEGER NOT NULL, "
-                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + "DATETIME NOT NULL);"
-                + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + "DATETIME);";
+                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL);"
+                + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
 
     private void createLogTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
-        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,DayScheduleEntry.getContract().TABLE_NAME,
-                LogEntry.getContract().TABLE_NAME, DayScheduleEntry.Contract.Columns.COL_NAME_ID,
+        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
+                "RemoveOnDeleteDaySchedule",
+                DayScheduleEntry.Contract.TABLE_NAME,
+                LogEntry.Contract.TABLE_NAME, DayScheduleEntry.Contract.Columns.COL_NAME_ID,
                 LogEntry.Contract.Columns.COL_NAME_ID);
     }
 
@@ -141,29 +145,31 @@ class AppDatabase extends SQLiteOpenHelper {
      * @param db The SQLite database
      */
     private void createLogDailyExerciseTable(SQLiteDatabase db) {
-        String sSqlStatement = "CREATE TABLE " + LogDailyExerciseEntry.getContract().TABLE_NAME + " ("
+        String sSqlStatement = "CREATE TABLE " + LogDailyExerciseEntry.Contract.TABLE_NAME + " ("
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_LOG_ID + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT + " INTEGER NOT NULL, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY + "INTEGER NOT NULL);";
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY + " INTEGER NOT NULL);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
 
     private void createLogDailyExerciseTriggerOnDeleteLog(SQLiteDatabase db) {
         AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-                LogEntry.getContract().TABLE_NAME,
-                LogDailyExerciseEntry.getContract().TABLE_NAME,
+                "RemoveOnDeleteLogEntry",
+                LogEntry.Contract.TABLE_NAME,
+                LogDailyExerciseEntry.Contract.TABLE_NAME,
                 LogEntry.Contract.Columns.COL_NAME_ID,
                 LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
     }
 
     private void createLogDailyExerciseTriggerOnDeleteExercise(SQLiteDatabase db) {
         AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-                ExerciseEntry.getContract().TABLE_NAME,
-                LogDailyExerciseEntry.getContract().TABLE_NAME,
+                "RemoveOnDeleteExerciseEntry",
+                ExerciseEntry.Contract.TABLE_NAME,
+                LogDailyExerciseEntry.Contract.TABLE_NAME,
                 ExerciseEntry.Contract.Columns.COL_NAME_ID,
                 LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
     }

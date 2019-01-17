@@ -13,7 +13,9 @@ import android.util.Log;
 /**
  * Based off the AppProvider class created by Tim Buchalka in the udemy course Android Java Masterclass - Become an App Developer.
  *
- * This is the only class that knows about {@link AppDatabase}
+ * This is the only class that knows about {@link ExerciseAppDatabase}
+ *
+ * In order to use the ContentProvider, you must register it in AndroidManifest.xml
  */
 public class ExerciseAppProvider extends ContentProvider {
     private static final String TAG = "AppProvider";
@@ -26,13 +28,13 @@ public class ExerciseAppProvider extends ContentProvider {
     private static final int EXERCISE_ENTRIES = 100;
     private static final int EXERCISE_ENTRIES_ID = 101;
 
-    private AppDatabase m_appDatabase;
+    private ExerciseAppDatabase m_exerciseAppDatabase;
 
 
     @Override
     public boolean onCreate() {
         Log.d(TAG, "onCreate: start");
-        m_appDatabase = AppDatabase.getInstance(getContext());
+        m_exerciseAppDatabase = ExerciseAppDatabase.getInstance(getContext());
         return true;
     }
 
@@ -47,12 +49,12 @@ public class ExerciseAppProvider extends ContentProvider {
 
         switch(match) {
             case EXERCISE_ENTRIES:
-                queryBuilder.setTables(ExerciseEntry.getContract().TABLE_NAME);
+                queryBuilder.setTables(ExerciseEntry.Contract.TABLE_NAME);
                 break;
 
             case EXERCISE_ENTRIES_ID:
-                queryBuilder.setTables(ExerciseEntry.getContract().TABLE_NAME);
-                long taskId = ExerciseEntry.getContract().getId(uri);
+                queryBuilder.setTables(ExerciseEntry.Contract.TABLE_NAME);
+                long taskId = ContentProviderHelper.getId(uri);
                 queryBuilder.appendWhere(ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + taskId);
                 break;
 
@@ -61,7 +63,7 @@ public class ExerciseAppProvider extends ContentProvider {
 
         }
 
-        SQLiteDatabase db = m_appDatabase.getReadableDatabase();
+        SQLiteDatabase db = m_exerciseAppDatabase.getReadableDatabase();
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         Log.d(TAG, "query: rows in returned cursor = " + cursor.getCount());
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -74,10 +76,10 @@ public class ExerciseAppProvider extends ContentProvider {
         final int match = s_uriMatcher.match(uri);
         switch (match) {
             case EXERCISE_ENTRIES:
-                return ExerciseEntry.getContract().CONTENT_TYPE;
+                return ExerciseEntry.Contract.CONTENT_TYPE;
 
             case EXERCISE_ENTRIES_ID:
-                return ExerciseEntry.getContract().CONTENT_ITEM_TYPE;
+                return ExerciseEntry.Contract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("unknown Uri: " + uri);
@@ -98,10 +100,10 @@ public class ExerciseAppProvider extends ContentProvider {
 
         switch(match) {
             case EXERCISE_ENTRIES:
-                db = m_appDatabase.getWritableDatabase();
-                recordId = db.insert(ExerciseEntry.getContract().TABLE_NAME, null, values);
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                recordId = db.insert(ExerciseEntry.Contract.TABLE_NAME, null, values);
                 if(recordId >=0) {
-                    returnUri = ExerciseEntry.getContract().buildUriFromId(recordId);
+                    returnUri = ContentProviderHelper.buildUriFromId(ExerciseEntry.Contract.CONTENT_URI, recordId);
                 } else {
                     throw new android.database.SQLException("Failed to insert into " + uri.toString());
                 }
@@ -147,19 +149,19 @@ public class ExerciseAppProvider extends ContentProvider {
 
         switch(match) {
             case EXERCISE_ENTRIES:
-                db = m_appDatabase.getWritableDatabase();
-                count = db.delete(ExerciseEntry.getContract().TABLE_NAME, selection, selectionArgs);
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.delete(ExerciseEntry.Contract.TABLE_NAME, selection, selectionArgs);
                 break;
 
             case EXERCISE_ENTRIES_ID:
-                db = m_appDatabase.getWritableDatabase();
-                long exerciseEntryId = ExerciseEntry.getContract().getId(uri);
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long exerciseEntryId = ContentProviderHelper.getId(uri);
                 selectionCriteria = ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + exerciseEntryId;
 
                 if((selection != null) && (selection.length()>0)) {
                     selectionCriteria += " AND (" + selection + ")";
                 }
-                count = db.delete(ExerciseEntry.getContract().TABLE_NAME, selectionCriteria, selectionArgs);
+                count = db.delete(ExerciseEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
@@ -190,19 +192,19 @@ public class ExerciseAppProvider extends ContentProvider {
 
         switch(match) {
             case EXERCISE_ENTRIES:
-                db = m_appDatabase.getWritableDatabase();
-                count = db.update(ExerciseEntry.getContract().TABLE_NAME, values, selection, selectionArgs);
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.update(ExerciseEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             case EXERCISE_ENTRIES_ID:
-                db = m_appDatabase.getWritableDatabase();
-                long taskId = ExerciseEntry.getContract().getId(uri);
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long taskId = ContentProviderHelper.getId(uri);
                 selectionCriteria = ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + taskId;
 
                 if((selection != null) && (selection.length()>0)) {
                     selectionCriteria += " AND (" + selection + ")";
                 }
-                count = db.update(ExerciseEntry.getContract().TABLE_NAME, values, selectionCriteria, selectionArgs);
+                count = db.update(ExerciseEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
                 break;
 
             default:
@@ -221,13 +223,15 @@ public class ExerciseAppProvider extends ContentProvider {
         return count;
     }
     private static UriMatcher buildUriMatcher() {
+        Log.d(TAG, "buildUriMatcher: start");
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/ExerciseEntries
-        matcher.addURI(CONTENT_AUTHORITY, ExerciseEntry.getContract().TABLE_NAME, EXERCISE_ENTRIES);
+        matcher.addURI(CONTENT_AUTHORITY, ExerciseEntry.Contract.TABLE_NAME, EXERCISE_ENTRIES);
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/ExerciseEntries/8 (8 representing an arbitrary ID number)
-        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(ExerciseEntry.getContract().TABLE_NAME), EXERCISE_ENTRIES_ID);
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(ExerciseEntry.Contract.TABLE_NAME), EXERCISE_ENTRIES_ID);
 
+        Log.d(TAG, "buildUriMatcher: end.  returning UriMatcher: " + matcher);
         return matcher;
     }
 

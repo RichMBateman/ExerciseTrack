@@ -37,7 +37,7 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
 
     public ExerciseEntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: new view requested");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.simple_exercise_list_entry, parent, false);
         return new ExerciseEntryViewHolder(view);
     }
 
@@ -131,6 +131,10 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             this.buttonDeleteEntry = itemView.findViewById(R.id.sele_btn_delete);
             this.textViewExerciseName = itemView.findViewById(R.id.sele_textview_exercise_name);
             this.checkBoxIsReminder = itemView.findViewById(R.id.sele_cb_isdailyreminder);
+
+            if(this.buttonDeleteEntry == null) throw new IllegalStateException("Unable to find delete button on exercise entry view holder.");
+            if(this.textViewExerciseName == null) throw new IllegalStateException("Unable to find text view on exercise entry view holder.");
+            if(this.checkBoxIsReminder == null) throw new IllegalStateException("Unable to find checkbox on exercise entry view holder.");
         }
 
     }

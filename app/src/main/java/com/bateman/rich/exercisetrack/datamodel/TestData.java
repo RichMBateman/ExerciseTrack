@@ -56,7 +56,7 @@ public class TestData {
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, entry.getName());
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, entry.isDailyReminder());
 
-        contentResolver.insert(ExerciseEntry.getContract().CONTENT_URI, values);
+        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 
     private static void createDaySchedule(ContentResolver contentResolver) {
@@ -69,7 +69,7 @@ public class TestData {
         values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, entry.getPosition());
         values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, entry.getExerciseEntryId());
 
-        contentResolver.insert(ExerciseEntry.getContract().CONTENT_URI, values);
+        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 
     private static void createLogEntries(ContentResolver contentResolver) {
@@ -99,6 +99,6 @@ public class TestData {
         values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT, entry.getWeight());
         values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY, entry.getDifficulty());
 
-        contentResolver.insert(ExerciseEntry.getContract().CONTENT_URI, values);
+        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 }
