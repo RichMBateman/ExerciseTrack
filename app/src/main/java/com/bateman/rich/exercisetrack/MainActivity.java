@@ -25,6 +25,7 @@ import com.bateman.rich.exercisetrack.datamodel.LogDailyExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogEntry;
 import com.bateman.rich.exercisetrack.datamodel.TestData;
 import com.bateman.rich.exercisetrack.gui.AppDialog;
+import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity
                 handleMenuGenerateTestData();
                 break;
             case R.id.menu_schedule_list:
+                startActivity(new Intent(this, DayScheduleListActivity.class));
                 break;
         }
 

@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,6 +47,12 @@ public class ExerciseListActivity extends AppCompatActivity
         Log.d(TAG, "onCreate: start");
         super.onCreate(savedInstanceData);
         setContentView(R.layout.exercise_list);
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         setupUI();
         setupRecyclerView();
@@ -95,7 +102,7 @@ public class ExerciseListActivity extends AppCompatActivity
          // I have no indentions of swiping or anything like that.
         //m_recyclerViewExercises.addOnItemTouchListener(new RecyclerViewItemClickListener(this, m_recyclerViewExercises, this));
 
-        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(null, this);
+        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(this,null, this, false);
         m_recyclerViewExercises.setAdapter(m_rvAdapterExerciseEntry);
 
         Log.d(TAG, "setupRecyclerView: end");

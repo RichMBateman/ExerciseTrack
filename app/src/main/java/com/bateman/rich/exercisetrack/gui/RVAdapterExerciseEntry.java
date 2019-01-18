@@ -1,14 +1,20 @@
 package com.bateman.rich.exercisetrack.gui;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bateman.rich.exercisetrack.R;
@@ -22,22 +28,113 @@ import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
  */
 public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerciseEntry.ExerciseEntryViewHolder> {
     private static final String TAG = "RVAdapterExerciseEntry";
+    private Context m_context;
     private Cursor m_cursor;
     private OnExerciseButtonClickListener m_buttonClickListener;
+    private boolean m_onlyShowName;
+
+    private android.support.v7.widget.RecyclerView.LayoutParams layoutParams;
 
     interface OnExerciseButtonClickListener {
         void onDeleteClick(@NonNull ExerciseEntry entry);
     }
 
-    public RVAdapterExerciseEntry(Cursor cursor, OnExerciseButtonClickListener listener) {
+    public RVAdapterExerciseEntry(Context context, Cursor cursor, OnExerciseButtonClickListener listener, boolean onlyShowName) {
         Log.d(TAG, "RVAdapterExerciseEntry: start");
+        m_context = context;
         m_cursor = cursor;
         m_buttonClickListener = listener;
+        m_onlyShowName=onlyShowName;
     }
 
     public ExerciseEntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: new view requested");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.simple_exercise_list_entry, parent, false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.simple_exercise_list_entry, parent, false);
+
+        if(m_onlyShowName) {
+            view.setBackground(m_context.getResources().getDrawable(R.drawable.border));
+
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
+                    String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+
+                    ClipData dragData = new ClipData(v.getTag().toString(), mimeTypes, item);
+                    View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
+
+                    v.startDrag(dragData, myShadow, null, 0);
+                    return true;
+                }
+            });
+
+            view.setOnDragListener(new View.OnDragListener() {
+                @Override
+                public boolean onDrag(View v, DragEvent event) {
+                    switch (event.getAction()) {
+                        case DragEvent.ACTION_DRAG_STARTED:
+                            layoutParams = (android.support.v7.widget.RecyclerView.LayoutParams) v.getLayoutParams();
+                            Log.d(TAG, "Action is DragEvent.ACTION_DRAG_STARTED");
+
+                            // Do nothing
+                            break;
+
+                        case DragEvent.ACTION_DRAG_ENTERED:
+                            Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENTERED");
+                            int x_cord = (int) event.getX();
+                            int y_cord = (int) event.getY();
+                            break;
+
+                        case DragEvent.ACTION_DRAG_EXITED:
+                            Log.d(TAG, "Action is DragEvent.ACTION_DRAG_EXITED");
+                            x_cord = (int) event.getX();
+                            y_cord = (int) event.getY();
+                            layoutParams.leftMargin = x_cord;
+                            layoutParams.topMargin = y_cord;
+                            v.setLayoutParams(layoutParams);
+                            break;
+
+                        case DragEvent.ACTION_DRAG_LOCATION:
+                            Log.d(TAG, "Action is DragEvent.ACTION_DRAG_LOCATION");
+                            x_cord = (int) event.getX();
+                            y_cord = (int) event.getY();
+                            break;
+
+                        case DragEvent.ACTION_DRAG_ENDED:
+                            Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENDED");
+
+                            // Do nothing
+                            break;
+
+                        case DragEvent.ACTION_DROP:
+                            Log.d(TAG, "ACTION_DROP event");
+
+                            // Do nothing
+                            break;
+                        default:
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        ClipData data = ClipData.newPlainText("", "");
+                        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+
+                        view.startDrag(data, shadowBuilder, view, 0);
+                        view.setVisibility(View.INVISIBLE);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
+
         return new ExerciseEntryViewHolder(view);
     }
 
@@ -77,27 +174,33 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             final ExerciseEntry exerciseEntry = new ExerciseEntry(m_cursor);
             viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
             viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
-            viewHolder.checkBoxIsReminder.setVisibility(View.VISIBLE);
-            viewHolder.buttonDeleteEntry.setVisibility(View.VISIBLE);
+            if(!m_onlyShowName) {
+                viewHolder.checkBoxIsReminder.setVisibility(View.VISIBLE);
+                viewHolder.buttonDeleteEntry.setVisibility(View.VISIBLE);
 
-            View.OnClickListener buttonListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d(TAG, "onClick: start");
-                    switch(view.getId()) {
 
-                        case R.id.sele_btn_delete:
-                            if(m_buttonClickListener != null) {
-                                m_buttonClickListener.onDeleteClick(exerciseEntry);
-                            }
-                            break;
-                        default:
-                            Log.d(TAG, "onClick: found unexpected button id");
+                View.OnClickListener buttonListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(TAG, "onClick: start");
+                        switch (view.getId()) {
+
+                            case R.id.sele_btn_delete:
+                                if (m_buttonClickListener != null) {
+                                    m_buttonClickListener.onDeleteClick(exerciseEntry);
+                                }
+                                break;
+                            default:
+                                Log.d(TAG, "onClick: found unexpected button id");
+                        }
+
                     }
-
-                }
-            };
-            viewHolder.buttonDeleteEntry.setOnClickListener(buttonListener);
+                };
+                viewHolder.buttonDeleteEntry.setOnClickListener(buttonListener);
+            } else {
+                viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
+                viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -138,7 +241,6 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             notifyItemRangeRemoved(0, numItems);
         }
         return oldCursor;
-
     }
 
     static class ExerciseEntryViewHolder extends RecyclerView.ViewHolder {
@@ -159,6 +261,5 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             if(this.textViewExerciseName == null) throw new IllegalStateException("Unable to find text view on exercise entry view holder.");
             if(this.checkBoxIsReminder == null) throw new IllegalStateException("Unable to find checkbox on exercise entry view holder.");
         }
-
     }
 }
