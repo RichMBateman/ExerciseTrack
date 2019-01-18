@@ -42,7 +42,7 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "onCreate: starts");
+        Log.d(TAG, "onCreate: starts.  Creating sqlIte database.");
         createExerciseEntryTable(db);
 
         createDayScheduleTable(db);

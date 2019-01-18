@@ -41,12 +41,33 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
         return new ExerciseEntryViewHolder(view);
     }
 
+    /**
+     * Checks to see whether there is already an exercise with this name.
+     * @param name The name of the exercise to check.
+     * @return Whether this name already exists.
+     */
+    public boolean checkForRedundantExerciseName(String name) {
+        boolean nameExists = false;
+        if(m_cursor != null && m_cursor.getCount() > 0) {
+            m_cursor.moveToFirst();
+            do {
+                ExerciseEntry entry = new ExerciseEntry(m_cursor);
+                if(entry.getName().equalsIgnoreCase(name)) {
+                    nameExists = true;
+                    break;
+                }
+            } while(m_cursor.moveToNext());
+        }
+        return nameExists;
+    }
+
     public void onBindViewHolder(ExerciseEntryViewHolder viewHolder, int position) {
         Log.d(TAG, "onBindViewHolder: start");
 
         if(m_cursor == null || (m_cursor.getCount() == 0)) {
             Log.d(TAG, "onBindViewHolder: providing instructions.");
-            viewHolder.textViewExerciseName.setText("Enter exercise/reminder.");
+            viewHolder.textViewExerciseName.setText("Enter exercise/reminder to start.");
+            viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
             viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
         } else {
             if(!m_cursor.moveToPosition(position)) {
@@ -56,11 +77,13 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             final ExerciseEntry exerciseEntry = new ExerciseEntry(m_cursor);
             viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
             viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
+            viewHolder.checkBoxIsReminder.setVisibility(View.VISIBLE);
             viewHolder.buttonDeleteEntry.setVisibility(View.VISIBLE);
 
             View.OnClickListener buttonListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.d(TAG, "onClick: start");
                     switch(view.getId()) {
 
                         case R.id.sele_btn_delete:

@@ -27,6 +27,12 @@ public class ExerciseAppProvider extends ContentProvider {
     // It refers to different objects in our database.
     private static final int EXERCISE_ENTRIES = 100;
     private static final int EXERCISE_ENTRIES_ID = 101;
+    private static final int DAY_SCHEDULE_ENTRIES = 200;
+    private static final int DAY_SCHEDULE_ENTRIES_ID = 201;
+    private static final int LOG_ENTRIES = 300;
+    private static final int LOG_ENTRIES_ID = 301;
+    private static final int LOG_DAILY_EXERCISE_ENTRIES = 400;
+    private static final int LOG_DAILY_EXERCISE_ENTRIES_ID = 401;
 
     private ExerciseAppDatabase m_exerciseAppDatabase;
 
@@ -58,6 +64,35 @@ public class ExerciseAppProvider extends ContentProvider {
                 queryBuilder.appendWhere(ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + taskId);
                 break;
 
+            case DAY_SCHEDULE_ENTRIES:
+                queryBuilder.setTables(DayScheduleEntry.Contract.TABLE_NAME);
+                break;
+
+            case DAY_SCHEDULE_ENTRIES_ID:
+                queryBuilder.setTables(DayScheduleEntry.Contract.TABLE_NAME);
+                long dayScheduleId = ContentProviderHelper.getId(uri);
+                queryBuilder.appendWhere(DayScheduleEntry.Contract.Columns.COL_NAME_ID + " = " + dayScheduleId);
+                break;
+
+            case LOG_ENTRIES:
+                queryBuilder.setTables(LogEntry.Contract.TABLE_NAME);
+                break;
+
+            case LOG_ENTRIES_ID:
+                queryBuilder.setTables(LogEntry.Contract.TABLE_NAME);
+                long logEntryId = ContentProviderHelper.getId(uri);
+                queryBuilder.appendWhere(LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId);
+                break;
+
+            case LOG_DAILY_EXERCISE_ENTRIES:
+                queryBuilder.setTables(LogDailyExerciseEntry.Contract.TABLE_NAME);
+                break;
+
+            case LOG_DAILY_EXERCISE_ENTRIES_ID:
+                queryBuilder.setTables(LogDailyExerciseEntry.Contract.TABLE_NAME);
+                long logDailyExerciseEntryid = ContentProviderHelper.getId(uri);
+                queryBuilder.appendWhere(LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + logDailyExerciseEntryid);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
 
@@ -77,9 +112,23 @@ public class ExerciseAppProvider extends ContentProvider {
         switch (match) {
             case EXERCISE_ENTRIES:
                 return ExerciseEntry.Contract.CONTENT_TYPE;
-
             case EXERCISE_ENTRIES_ID:
                 return ExerciseEntry.Contract.CONTENT_ITEM_TYPE;
+
+            case DAY_SCHEDULE_ENTRIES:
+                return DayScheduleEntry.Contract.CONTENT_TYPE;
+            case DAY_SCHEDULE_ENTRIES_ID:
+                return DayScheduleEntry.Contract.CONTENT_ITEM_TYPE;
+
+            case LOG_ENTRIES:
+                return LogEntry.Contract.CONTENT_TYPE;
+            case LOG_ENTRIES_ID:
+                return LogEntry.Contract.CONTENT_ITEM_TYPE;
+
+            case LOG_DAILY_EXERCISE_ENTRIES:
+                return LogDailyExerciseEntry.Contract.CONTENT_TYPE;
+            case LOG_DAILY_EXERCISE_ENTRIES_ID:
+                return LogDailyExerciseEntry.Contract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("unknown Uri: " + uri);
@@ -108,17 +157,33 @@ public class ExerciseAppProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert into " + uri.toString());
                 }
                 break;
-
-            case EXERCISE_ENTRIES_ID:
-//                db = mOpenHelper.getWritableDatabase();
-//                recordId = db.insert(TimingsContract.Timings.buildTimingUri(recordId));
-//                if(recordId >=0) {
-//                    returnUri = TimingsContract.Timings.buildTimingUri(recordId);
-//                } else {
-//                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
-//                }
-//                break;
-
+            case DAY_SCHEDULE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                recordId = db.insert(DayScheduleEntry.Contract.TABLE_NAME, null, values);
+                if(recordId >=0) {
+                    returnUri = ContentProviderHelper.buildUriFromId(DayScheduleEntry.Contract.CONTENT_URI, recordId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+                }
+                break;
+            case LOG_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                recordId = db.insert(LogEntry.Contract.TABLE_NAME, null, values);
+                if(recordId >=0) {
+                    returnUri = ContentProviderHelper.buildUriFromId(LogEntry.Contract.CONTENT_URI, recordId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+                }
+                break;
+            case LOG_DAILY_EXERCISE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                recordId = db.insert(LogDailyExerciseEntry.Contract.TABLE_NAME, null, values);
+                if(recordId >=0) {
+                    returnUri = ContentProviderHelper.buildUriFromId(LogDailyExerciseEntry.Contract.CONTENT_URI, recordId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+                }
+                break;
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
@@ -163,6 +228,51 @@ public class ExerciseAppProvider extends ContentProvider {
                 }
                 count = db.delete(ExerciseEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
                 break;
+            case DAY_SCHEDULE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.delete(DayScheduleEntry.Contract.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case DAY_SCHEDULE_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long dayScheduleEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = DayScheduleEntry.Contract.Columns.COL_NAME_ID + " = " + dayScheduleEntryId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.delete(DayScheduleEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
+                break;
+            case LOG_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.delete(LogEntry.Contract.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case LOG_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long logEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.delete(LogEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
+                break;
+            case LOG_DAILY_EXERCISE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.delete(LogDailyExerciseEntry.Contract.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case LOG_DAILY_EXERCISE_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long logDailyExerciseEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + logDailyExerciseEntryId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.delete(LogDailyExerciseEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
@@ -198,13 +308,58 @@ public class ExerciseAppProvider extends ContentProvider {
 
             case EXERCISE_ENTRIES_ID:
                 db = m_exerciseAppDatabase.getWritableDatabase();
-                long taskId = ContentProviderHelper.getId(uri);
-                selectionCriteria = ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + taskId;
+                long exerciseEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = ExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + exerciseEntryId;
 
                 if((selection != null) && (selection.length()>0)) {
                     selectionCriteria += " AND (" + selection + ")";
                 }
                 count = db.update(ExerciseEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+            case DAY_SCHEDULE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.update(DayScheduleEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case DAY_SCHEDULE_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long dayScheduleId = ContentProviderHelper.getId(uri);
+                selectionCriteria = DayScheduleEntry.Contract.Columns.COL_NAME_ID + " = " + dayScheduleId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.update(DayScheduleEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+            case LOG_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.update(LogEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case LOG_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long logEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.update(LogEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+            case LOG_DAILY_EXERCISE_ENTRIES:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.update(LogDailyExerciseEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case LOG_DAILY_EXERCISE_ENTRIES_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long logDailyExerciseEntryId = ContentProviderHelper.getId(uri);
+                selectionCriteria = LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + logDailyExerciseEntryId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.update(LogDailyExerciseEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
                 break;
 
             default:
@@ -230,6 +385,21 @@ public class ExerciseAppProvider extends ContentProvider {
         matcher.addURI(CONTENT_AUTHORITY, ExerciseEntry.Contract.TABLE_NAME, EXERCISE_ENTRIES);
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/ExerciseEntries/8 (8 representing an arbitrary ID number)
         matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(ExerciseEntry.Contract.TABLE_NAME), EXERCISE_ENTRIES_ID);
+
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/DayScheduleEnrties
+        matcher.addURI(CONTENT_AUTHORITY, DayScheduleEntry.Contract.TABLE_NAME, DAY_SCHEDULE_ENTRIES);
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/ExerciseEntries/8 (8 representing an arbitrary ID number)
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(DayScheduleEntry.Contract.TABLE_NAME), DAY_SCHEDULE_ENTRIES_ID);
+
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogEntry
+        matcher.addURI(CONTENT_AUTHORITY, LogEntry.Contract.TABLE_NAME, LOG_ENTRIES);
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogEntry/8 (8 representing an arbitrary ID number)
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(LogEntry.Contract.TABLE_NAME), LOG_ENTRIES_ID);
+
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogDailyExerciseEntry
+        matcher.addURI(CONTENT_AUTHORITY, LogDailyExerciseEntry.Contract.TABLE_NAME, LOG_DAILY_EXERCISE_ENTRIES);
+        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogDailyExerciseEntry/8 (8 representing an arbitrary ID number)
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(LogDailyExerciseEntry.Contract.TABLE_NAME), LOG_DAILY_EXERCISE_ENTRIES_ID);
 
         Log.d(TAG, "buildUriMatcher: end.  returning UriMatcher: " + matcher);
         return matcher;

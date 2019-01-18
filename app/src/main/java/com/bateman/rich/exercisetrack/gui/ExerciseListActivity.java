@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,11 +29,11 @@ import java.util.ArrayList;
 public class ExerciseListActivity extends AppCompatActivity
                                   implements RecyclerViewItemClickListener.OnRecyclerClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        RVAdapterExerciseEntry.OnExerciseButtonClickListener {
+        RVAdapterExerciseEntry.OnExerciseButtonClickListener
+{
     private static final String TAG = "ExerciseListActivity";
     public static final int LOADER_ID = 0;
 
-    private final ArrayList<ExerciseEntry> m_exerciseEntries = new ArrayList<>();
     private RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
     private Button m_btnAddExercise;
@@ -57,11 +58,27 @@ public class ExerciseListActivity extends AppCompatActivity
         m_btnAddExercise = findViewById(R.id.el_btn_add_exercise);
         m_btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, m_editTextExercise.getText().toString());
-                values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, m_checkBoxIsReminder.isChecked());
-                getContentResolver().insert(ExerciseEntry.Contract.CONTENT_URI, values);
+            public void onClick(View view) {
+                String exerciseText = m_editTextExercise.getText().toString().trim();
+                if(exerciseText.length() > 0) {
+                    boolean alreadyExists = m_rvAdapterExerciseEntry.checkForRedundantExerciseName(exerciseText);
+                    if (!alreadyExists) {
+
+                        ContentValues values = new ContentValues();
+                        values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, exerciseText);
+                        values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, m_checkBoxIsReminder.isChecked());
+                        getContentResolver().insert(ExerciseEntry.Contract.CONTENT_URI, values);
+
+                        // Clear input fields
+                        m_editTextExercise.setText("");
+                        m_checkBoxIsReminder.setChecked(false);
+                    } else {
+                        Snackbar.make(view, exerciseText + " already exists.", Snackbar.LENGTH_LONG).show();
+                    }
+                } else {
+                    Snackbar.make(view, "Please enter an exercise name.", Snackbar.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -70,11 +87,13 @@ public class ExerciseListActivity extends AppCompatActivity
         m_checkBoxIsReminder = findViewById(R.id.el_cb_isdailyreminder);
     }
 
-    private void setupRecyclerView() {
+     private void setupRecyclerView() {
         Log.d(TAG, "setupRecyclerView: start");
 
         m_recyclerViewExercises.setLayoutManager(new LinearLayoutManager(this));
-        m_recyclerViewExercises.addOnItemTouchListener(new RecyclerViewItemClickListener(this, m_recyclerViewExercises, this));
+        // This is a mistake.  The only clicks I care about are on the button in the recycler view ViewHolder... and I can hook that up directly.
+         // I have no indentions of swiping or anything like that.
+        //m_recyclerViewExercises.addOnItemTouchListener(new RecyclerViewItemClickListener(this, m_recyclerViewExercises, this));
 
         m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(null, this);
         m_recyclerViewExercises.setAdapter(m_rvAdapterExerciseEntry);
@@ -84,22 +103,22 @@ public class ExerciseListActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Log.d(TAG, "onItemClick: start");
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
-
+        Log.d(TAG, "onItemLongClick: start");
     }
 
     @Override
     public void onItemSwipeRight(View view) {
-
+        Log.d(TAG, "onItemSwipeRight: start");
     }
 
     @Override
     public void onItemSwipeLeft(View view) {
-
+        Log.d(TAG, "onItemSwipeLeft: start");
     }
 
     @NonNull

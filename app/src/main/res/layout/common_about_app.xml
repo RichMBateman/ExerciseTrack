@@ -37,7 +37,7 @@
         android:textColor="?android:attr/textColorSecondary"/>
 
     <include
-        layout="@layout/about_web_url"
+        layout="@layout/common_about_web_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
