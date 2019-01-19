@@ -102,7 +102,8 @@ public class ExerciseListActivity extends AppCompatActivity
          // I have no indentions of swiping or anything like that.
         //m_recyclerViewExercises.addOnItemTouchListener(new RecyclerViewItemClickListener(this, m_recyclerViewExercises, this));
 
-        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(this,null, this, false);
+        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(RVAdapterExerciseEntry.Mode.EXERCISE_ENTRY, this,null);
+        m_rvAdapterExerciseEntry.setOnExerciseButtonClickListener(this);
         m_recyclerViewExercises.setAdapter(m_rvAdapterExerciseEntry);
 
         Log.d(TAG, "setupRecyclerView: end");

@@ -24,6 +24,8 @@ public class DayScheduleListActivity extends AppCompatActivity
     private static final String TAG = "DayScheduleListActivity";
     public static final int LOADER_ID_AVAILABLE_EXERCISES = 1;
     public static final int LOADER_ID_DAY_SCHEDULES = 2;
+
+    private DayScheduleDragManager m_dayScheduleDragManager;
     
     private RecyclerView m_recyclerViewAvailableExercises;
     private RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
@@ -112,14 +114,18 @@ public class DayScheduleListActivity extends AppCompatActivity
 
 
     private void setupRecyclerViews() {
+        m_dayScheduleDragManager = new DayScheduleDragManager(this);
+
         m_recyclerViewAvailableExercises = findViewById(R.id.sm_recyclerview_exercises);
         m_recyclerViewScheduledDays = findViewById(R.id.sm_recyclerview_scheduleboxes);
 
         m_recyclerViewAvailableExercises.setLayoutManager(new LinearLayoutManager(this));
         m_recyclerViewScheduledDays.setLayoutManager(new LinearLayoutManager(this));
 
-        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(this,null, null, true);
-        m_rvAdapterDaySchedule = new RVAdapterDaySchedule(null);
+        m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(RVAdapterExerciseEntry.Mode.DAY_SCHEDULE, this,null);
+        m_rvAdapterExerciseEntry.setDayScheduleDragManager(m_dayScheduleDragManager);
+
+        m_rvAdapterDaySchedule = new RVAdapterDaySchedule(this,null, m_dayScheduleDragManager, m_recyclerViewScheduledDays);
 
         m_recyclerViewAvailableExercises.setAdapter(m_rvAdapterExerciseEntry);
         m_recyclerViewScheduledDays.setAdapter(m_rvAdapterDaySchedule);

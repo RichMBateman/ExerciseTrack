@@ -4,6 +4,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+/**
+ * Represents a schedule for a day.
+ * Position is 1-based.  So Position of 1 represents the first day in the schedule.
+ */
 public class DayScheduleEntry {
     private long m_id;
     private int m_position;
