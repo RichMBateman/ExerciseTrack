@@ -33,6 +33,8 @@ public class ExerciseAppProvider extends ContentProvider {
     private static final int LOG_ENTRIES_ID = 301;
     private static final int LOG_DAILY_EXERCISE_ENTRIES = 400;
     private static final int LOG_DAILY_EXERCISE_ENTRIES_ID = 401;
+    private static final int VIEW_DAY_SCHEDULE_ENTRIES = 500;
+    private static final int VIEW_DAY_SCHEDULE_ENTRIES_ID = 501;
 
     private ExerciseAppDatabase m_exerciseAppDatabase;
 
@@ -68,11 +70,24 @@ public class ExerciseAppProvider extends ContentProvider {
                 queryBuilder.setTables(DayScheduleEntry.Contract.TABLE_NAME);
                 break;
 
-            case DAY_SCHEDULE_ENTRIES_ID:
+            case DAY_SCHEDULE_ENTRIES_ID: {
                 queryBuilder.setTables(DayScheduleEntry.Contract.TABLE_NAME);
                 long dayScheduleId = ContentProviderHelper.getId(uri);
                 queryBuilder.appendWhere(DayScheduleEntry.Contract.Columns.COL_NAME_ID + " = " + dayScheduleId);
+            }
                 break;
+
+            case VIEW_DAY_SCHEDULE_ENTRIES:
+                queryBuilder.setTables(DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME);
+                break;
+
+            case VIEW_DAY_SCHEDULE_ENTRIES_ID: {
+                queryBuilder.setTables(DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME);
+                long dayScheduleId = ContentProviderHelper.getId(uri);
+                queryBuilder.appendWhere(DayScheduleEntry.ContractViewDaySchedules.Columns.COL_NAME_ID + " = " + dayScheduleId);
+            }
+                break;
+
 
             case LOG_ENTRIES:
                 queryBuilder.setTables(LogEntry.Contract.TABLE_NAME);
@@ -119,6 +134,11 @@ public class ExerciseAppProvider extends ContentProvider {
                 return DayScheduleEntry.Contract.CONTENT_TYPE;
             case DAY_SCHEDULE_ENTRIES_ID:
                 return DayScheduleEntry.Contract.CONTENT_ITEM_TYPE;
+
+            case VIEW_DAY_SCHEDULE_ENTRIES:
+                return DayScheduleEntry.ContractViewDaySchedules.CONTENT_TYPE;
+            case VIEW_DAY_SCHEDULE_ENTRIES_ID:
+                return DayScheduleEntry.ContractViewDaySchedules.CONTENT_ITEM_TYPE;
 
             case LOG_ENTRIES:
                 return LogEntry.Contract.CONTENT_TYPE;
@@ -390,6 +410,9 @@ public class ExerciseAppProvider extends ContentProvider {
         matcher.addURI(CONTENT_AUTHORITY, DayScheduleEntry.Contract.TABLE_NAME, DAY_SCHEDULE_ENTRIES);
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/ExerciseEntries/8 (8 representing an arbitrary ID number)
         matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(DayScheduleEntry.Contract.TABLE_NAME), DAY_SCHEDULE_ENTRIES_ID);
+
+        matcher.addURI(CONTENT_AUTHORITY, DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME, VIEW_DAY_SCHEDULE_ENTRIES);
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME), VIEW_DAY_SCHEDULE_ENTRIES_ID);
 
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogEntry
         matcher.addURI(CONTENT_AUTHORITY, LogEntry.Contract.TABLE_NAME, LOG_ENTRIES);

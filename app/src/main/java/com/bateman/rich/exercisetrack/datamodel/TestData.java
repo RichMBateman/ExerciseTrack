@@ -64,12 +64,12 @@ public class TestData {
     }
 
     private static void saveDaySchedule(ContentResolver contentResolver, DayScheduleEntry entry) {
-        ContentValues values = new ContentValues();
-        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_ID, entry.getId());
-        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, entry.getPosition());
-        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, entry.getExerciseEntryId());
-
-        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
+//        ContentValues values = new ContentValues();
+//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_ID, entry.getId());
+//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, entry.getPosition());
+//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, entry.getExerciseEntryId());
+//
+//        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 
     private static void createLogEntries(ContentResolver contentResolver) {

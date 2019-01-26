@@ -70,7 +70,7 @@ public class DayScheduleListActivity extends AppCompatActivity
                         sortOrder);
             case LOADER_ID_DAY_SCHEDULES:
                 return new CursorLoader(this,
-                        DayScheduleEntry.Contract.CONTENT_URI,
+                        DayScheduleEntry.ContractViewDaySchedules.CONTENT_URI,
                         null,
                         null,
                         null,
@@ -114,8 +114,6 @@ public class DayScheduleListActivity extends AppCompatActivity
 
 
     private void setupRecyclerViews() {
-        m_dayScheduleDragManager = new DayScheduleDragManager(this);
-
         m_recyclerViewAvailableExercises = findViewById(R.id.sm_recyclerview_exercises);
         m_recyclerViewScheduledDays = findViewById(R.id.sm_recyclerview_scheduleboxes);
 
@@ -123,9 +121,12 @@ public class DayScheduleListActivity extends AppCompatActivity
         m_recyclerViewScheduledDays.setLayoutManager(new LinearLayoutManager(this));
 
         m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(RVAdapterExerciseEntry.Mode.DAY_SCHEDULE, this,null);
+        m_rvAdapterDaySchedule = new RVAdapterDaySchedule(this,null);
+
+        m_dayScheduleDragManager = new DayScheduleDragManager(this, m_rvAdapterExerciseEntry, m_rvAdapterDaySchedule, m_recyclerViewAvailableExercises, m_recyclerViewScheduledDays);
         m_rvAdapterExerciseEntry.setDayScheduleDragManager(m_dayScheduleDragManager);
 
-        m_rvAdapterDaySchedule = new RVAdapterDaySchedule(this,null, m_dayScheduleDragManager, m_recyclerViewScheduledDays);
+        m_rvAdapterDaySchedule.setDayScheduleDragManager(m_dayScheduleDragManager, m_recyclerViewScheduledDays);
 
         m_recyclerViewAvailableExercises.setAdapter(m_rvAdapterExerciseEntry);
         m_recyclerViewScheduledDays.setAdapter(m_rvAdapterDaySchedule);

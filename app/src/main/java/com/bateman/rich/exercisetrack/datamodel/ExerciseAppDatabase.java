@@ -47,6 +47,7 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
         createDayScheduleTable(db);
         createDayScheduleTriggerOnDeleteExercise(db);
+        createViewDayScheduleWithExerciseNames(db);
 
         createLogTable(db);
         createLogTriggerOnDeleteDaySchedule(db);
@@ -100,7 +101,8 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         String sSqlStatement = "CREATE TABLE " + DayScheduleEntry.Contract.TABLE_NAME + " ("
                 + DayScheduleEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " INTEGER NOT NULL, "
-                + DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID + " INTEGER NOT NULL);";
+                + DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID + " INTEGER NOT NULL, "
+                + DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR + " BOOLEAN NOT NULL);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
@@ -113,6 +115,23 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID);
     }
 
+    private void createViewDayScheduleWithExerciseNames(SQLiteDatabase db) {
+        String sqlStatement = "CREATE VIEW " + DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME
+                + " AS SELECT " + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.ContractViewDaySchedules.Columns.COL_NAME_ID + ", "
+                + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_NAME + ", "
+                + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + ", "
+                + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR
+                + " FROM " + DayScheduleEntry.Contract.TABLE_NAME + " LEFT OUTER JOIN " + ExerciseEntry.Contract.TABLE_NAME
+                + " ON " + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID + " = "
+                + ExerciseEntry.Contract.TABLE_NAME + "." +  ExerciseEntry.Contract.Columns.COL_NAME_ID
+                // This where is applied after the join completes.
+                + " WHERE IFNULL(" + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER + ", 0) = 0 "
+                + " ORDER BY " + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + ";";
+        db.execSQL(sqlStatement);
+        Log.d(TAG, "createViewDayScheduleWithExerciseNames: sqlStatement: " + sqlStatement);
+    }
+
     /**
      * The log table keeps track of when the user does a block of exercise (from the day schedule table).
      * We keep track of when they started and when they finished.
@@ -123,7 +142,7 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         String sSqlStatement = "CREATE TABLE " + LogEntry.Contract.TABLE_NAME + " ("
                 + LogEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID + " INTEGER NOT NULL, "
-                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL);"
+                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
                 + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);

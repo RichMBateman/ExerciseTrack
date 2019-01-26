@@ -1,9 +1,13 @@
 package com.bateman.rich.exercisetrack.gui;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.LoaderManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.bateman.rich.exercisetrack.R;
+import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
 
 /**
  * Handles the dragging and dropping of objects in the Day Schedule activity.
@@ -23,16 +28,22 @@ public class DayScheduleDragManager {
     private static final String TAG = "DayScheduleDragManager";
 
     private final Context m_context;
-    private RecyclerView m_recyclerViewLeft;
-    private RecyclerView m_recyclerViewRight;
+    private final RecyclerView m_recyclerViewLeft;
+    private final RecyclerView m_recyclerViewRight;
+    private final RVAdapterDaySchedule m_rvAdapterDaySchedule;
+    private final RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
     /**
      * Create a new DayScheduleDragManager, which will handle the dragging and dropping of items between
      * two RecyclerViews.
      * @param c
      */
-    public DayScheduleDragManager(Context c) {
+    public DayScheduleDragManager(Context c, RVAdapterExerciseEntry rvAdapterExerciseEntry, RVAdapterDaySchedule rvAdapterDaySchedule, RecyclerView leftRV, RecyclerView rightRV) {
         m_context = c;
+        m_rvAdapterExerciseEntry = rvAdapterExerciseEntry;
+        m_rvAdapterDaySchedule = rvAdapterDaySchedule;
+        m_recyclerViewLeft = leftRV;
+        m_recyclerViewRight = rightRV;
     }
 
     public void registerRecyclerViewForAcceptingDrags(RecyclerView rv) {
@@ -44,10 +55,11 @@ public class DayScheduleDragManager {
      * Registers a view (probably just textview holding an exercise name or "--day separator--"
      * so that it will have "Left" recycler view behavior.  Meaning you can drag it from the left
      * recycle view anywhere on the right view, and it won't disappear when dragging, or on drop.
+     * Includes the exercise id of this view.
      * @param view
      */
-    public void registerViewForLeftBehavior(View view) {
-        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(false);
+    public void registerViewForLeftBehavior(View view, long exerciseId) {
+        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(false, exerciseId);
         view.setOnLongClickListener(l);
         view.setOnTouchListener(l);
     }
@@ -58,7 +70,7 @@ public class DayScheduleDragManager {
      * @param view
      */
     public void registerViewForRightBehavior(View view) {
-        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(true);
+        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(true, 0);
         view.setOnLongClickListener(l);
         view.setOnTouchListener(l);
     }
@@ -71,10 +83,12 @@ public class DayScheduleDragManager {
     private class DayScheduleStartDragHandler implements View.OnLongClickListener,
             View.OnTouchListener {
 
-        private boolean m_hideOnDrag = false;
+        private boolean m_hideOnDrag;
+        private long m_exerciseId;
 
-        private DayScheduleStartDragHandler(boolean hideOnDrag) {
+        private DayScheduleStartDragHandler(boolean hideOnDrag, long exerciseId) {
             m_hideOnDrag=hideOnDrag;
+            m_exerciseId=exerciseId;
         }
 
         @Override
@@ -100,7 +114,7 @@ public class DayScheduleDragManager {
             // of ClipData.
             // You also pass an instance of DragShadowBuilder.  This objects specifies the picture used for the drag operation.
             // You can also pass the view directly, which will cause an image of the view to be shown during the drag.
-            view.startDrag(dragData, myShadow, view, 0);
+            view.startDrag(dragData, myShadow, m_exerciseId, 0);
             view.setVisibility((m_hideOnDrag ? View.GONE : View.VISIBLE));
         }
     }
@@ -110,11 +124,13 @@ public class DayScheduleDragManager {
      * backs in case of predefined drag and drop related events.  (ACTION_(DRAG_STARTED, DRAG_EXITED, DROP, DRAG_ENDED)
      */
     private class DayScheduleReceiveDragHandler implements View.OnDragListener {
+        private final DayScheduleListActivity m_activity;
         private final Context m_context;
         private final Drawable m_enterShape;
         private final Drawable m_normalShape;
 
         private DayScheduleReceiveDragHandler(Context c) {
+            m_activity = (DayScheduleListActivity) c;
             m_context = c;
             m_enterShape = m_context.getResources().getDrawable(R.drawable.shape_droptarget);
             m_normalShape = m_context.getResources().getDrawable(R.drawable.shape_normal);
@@ -122,7 +138,7 @@ public class DayScheduleDragManager {
         @Override
         public boolean onDrag(View v, DragEvent event) {
             int action = event.getAction();
-            switch (event.getAction()) {
+            switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // do nothing
                     break;
@@ -132,9 +148,27 @@ public class DayScheduleDragManager {
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
                     // The user left the valid space.
-                    v.setBackground(m_normalShape);
+                    //v.setBackground(m_normalShape);
+                    v.setBackground(null); // this will clear the background.
                     break;
                 case DragEvent.ACTION_DROP:
+                    long exerciseId = (long) event.getLocalState();
+                    boolean isDaySeparator = (exerciseId == RVAdapterDaySchedule.DAY_SEPARATOR_ID);
+                    View rightRvElement = m_recyclerViewRight.findChildViewUnder(event.getX(), event.getY());
+                    // For now, if we don't find any right element... just set the position to the max.
+                    int itemPosition = 0;
+                    if(rightRvElement == null) {
+                        // There are no elements in the list, so we can say the position = 1.
+                        itemPosition = 1;
+                        // There are no items
+                    } else {
+                        itemPosition = (int) rightRvElement.getTag();
+                    }
+                    DayScheduleEntry.saveNewDaySchedule(m_context, itemPosition, exerciseId, isDaySeparator);
+                    LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
+//                    m_rvAdapterDaySchedule.notifyDataSetChanged();
+
+                    Log.d(TAG, "onDrag: dropped exercise " + exerciseId + " onto schedule.");
                     // On dropping the exercise or day separator, need to do different things.
                     // Probably need to call an insert, or delete...
                     // Below is just sample code from a previous example that doesn't make sense in my case.

@@ -66,14 +66,8 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
         Log.d(TAG, "onCreateViewHolder: new view requested");
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.simple_exercise_list_entry, parent, false);
 
-        switch(m_mode) {
-            case DAY_SCHEDULE:
-                view.setBackground(m_context.getResources().getDrawable(R.drawable.shape_normal));
-                if(m_dayScheduleDragManager != null) {
-                    m_dayScheduleDragManager.registerViewForLeftBehavior(view);
-                }
-                break;
-        }
+        // initially, i registered for drag and drop behavior, here, but I don't know for which exercise
+        // this view holder is being created.  Furthermore, the exercise entry bound to a view may change.
         return new ExerciseEntryViewHolder(view);
     }
 
@@ -110,19 +104,30 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
                     break;
                 case DAY_SCHEDULE:
                     Log.d(TAG, "creating empty day separator");
-                    viewHolder.textViewExerciseName.setText("--separator--");
+                    viewHolder.textViewExerciseName.setText(RVAdapterDaySchedule.DAY_SEPARATOR_LABEL);
                     viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
                     viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
                     break;
             }
         } else {
-            if(!m_cursor.moveToPosition(position)) {
-                throw new IllegalStateException("Couldn't move cursor to position " + position);
+            boolean isDaySeparator = (position == 0 && m_mode == Mode.DAY_SCHEDULE);
+            if(!isDaySeparator) {
+                if(m_mode == Mode.DAY_SCHEDULE) {
+                    position--; // Decrement the position, because the 0th element is our "Day Separator" placeholder.
+                }
+                if(!m_cursor.moveToPosition(position)) {
+                    throw new IllegalStateException("Couldn't move cursor to position " + position);
+                }
+            }
+            final ExerciseEntry exerciseEntry = (isDaySeparator ? new ExerciseEntry(RVAdapterDaySchedule.DAY_SEPARATOR_ID,
+                    RVAdapterDaySchedule.DAY_SEPARATOR_LABEL, false) : new ExerciseEntry(m_cursor));
+            if (!isDaySeparator){
+                viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
+                viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
+            } else {
+                viewHolder.textViewExerciseName.setText(RVAdapterDaySchedule.DAY_SEPARATOR_LABEL);
             }
 
-            final ExerciseEntry exerciseEntry = new ExerciseEntry(m_cursor);
-            viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
-            viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
             switch(m_mode) {
                 case EXERCISE_ENTRY:
                     viewHolder.checkBoxIsReminder.setVisibility(View.VISIBLE);
@@ -152,6 +157,17 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
                     viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
                     break;
             }
+
+            // Register for drag and drop
+            switch(m_mode) {
+                case DAY_SCHEDULE:
+                    viewHolder.itemView.setBackground(m_context.getResources().getDrawable(R.drawable.shape_normal));
+                    if(m_dayScheduleDragManager != null) {
+                        long id = (exerciseEntry == null ? RVAdapterDaySchedule.DAY_SEPARATOR_ID : exerciseEntry.getId());
+                        m_dayScheduleDragManager.registerViewForLeftBehavior(viewHolder.itemView, id);
+                    }
+                    break;
+            }
         }
     }
 
@@ -160,10 +176,16 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
     public int getItemCount() {
         Log.d(TAG, "getItemCount: starts");
         if((m_cursor == null) || (m_cursor.getCount() == 0)) {
-            return 1; // fib, because we populate a single ViewHolder with instructions
+            return 1; // fib, because we populate a single ViewHolder with instructions, or the DAY_SEPARATOR for day schedule mode.
         } else {
-            return m_cursor.getCount();
+            switch(m_mode) {
+                case EXERCISE_ENTRY:
+                    return m_cursor.getCount();
+                case DAY_SCHEDULE:
+                    return m_cursor.getCount() + 1; // The first entry is always the DAY_SEPARATOR
+            }
         }
+        return 0;
     }
 
     /**

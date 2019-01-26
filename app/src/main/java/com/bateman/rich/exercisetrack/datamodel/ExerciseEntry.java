@@ -1,5 +1,7 @@
 package com.bateman.rich.exercisetrack.datamodel;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -47,6 +49,12 @@ public class ExerciseEntry {
         }
     }
 
+    public ExerciseEntry(long id, String name, boolean isDailyReminder) {
+        m_id = id;
+        m_name = name;
+        m_isDailyReminder = isDailyReminder;
+    }
+
     public ExerciseEntry(Cursor cursor) {
         m_id = cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_ID));
         m_name = cursor.getString(cursor.getColumnIndex(Contract.Columns.COL_NAME_NAME));
@@ -85,5 +93,18 @@ public class ExerciseEntry {
     @Override
     public String toString() {
         return "id: " + m_id + ", Name: " + m_name + ", Is Daily Reminder?: " + m_isDailyReminder + "\r\n";
+    }
+
+    /**
+     * Saves a new exercise entry to the database.
+     * @param c
+     * @param exerciseText
+     * @param isDailyReminder
+     */
+    public static void saveNewExerciseEntry(Context c, String exerciseText, boolean isDailyReminder) {
+        ContentValues values = new ContentValues();
+        values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, exerciseText);
+        values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, isDailyReminder);
+        c.getContentResolver().insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 }

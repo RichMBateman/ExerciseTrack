@@ -17,21 +17,25 @@ import java.util.ArrayList;
 
 /**
  * A RecyclerView adapter for Day Schedules.
+ * The Cursor will always accurately reflect how items are presented.
  */
 public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySchedule.ViewHolder> {
     private static final String TAG = "RVAdapterDaySchedule";
-    private static final String DAY_SEPARATOR_LABEL = "--separator--";
+    public static final long DAY_SEPARATOR_ID = -25000;
+    public static final String DAY_SEPARATOR_LABEL = "--separator--";
     private final Context m_context;
     private Cursor m_cursor;
     private DayScheduleDragManager m_dayScheduleDragManager;
-    private final ArrayList<String> m_itemList = new ArrayList<>();
+//    private final ArrayList<String> m_itemList = new ArrayList<>();
 
-    public RVAdapterDaySchedule(Context c, Cursor cursor, DayScheduleDragManager dayScheduleDragManager, RecyclerView rv) {
+    public RVAdapterDaySchedule(Context c, Cursor cursor) {
         Log.d(TAG, "RVAdapterDaySchedule: start");
         m_context = c;
         m_cursor = cursor;
-        m_dayScheduleDragManager = dayScheduleDragManager;
+    }
 
+    public void setDayScheduleDragManager(DayScheduleDragManager dayScheduleDragManager, RecyclerView rv) {
+        m_dayScheduleDragManager = dayScheduleDragManager;
         m_dayScheduleDragManager.registerRecyclerViewForAcceptingDrags(rv);
     }
 
@@ -39,79 +43,36 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         Log.d(TAG, "onCreateViewHolder: new view requested");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sched_maint_exercise_item, parent, false);
 
-        m_dayScheduleDragManager.registerViewForRightBehavior(view);
-
         return new RVAdapterDaySchedule.ViewHolder(view);
     }
 
     public void onBindViewHolder(RVAdapterDaySchedule.ViewHolder viewHolder, int position) {
         Log.d(TAG, "onBindViewHolder: start");
-        if(position < m_itemList.size()) {
-            viewHolder.textViewExerciseName.setText(m_itemList.get(position));
+        if(m_cursor == null || m_cursor.getCount() == 0) {
+            Log.d(TAG, "onBindViewHolder: No day schedule entries to load.");
         } else {
-            throw new IllegalStateException("Couldn't find an entry for position: " + position);
+            if(!m_cursor.moveToPosition(position)) {
+                throw new IllegalStateException("Couldn't move cursor to position " + position);
+            }
+
+            final DayScheduleEntry dayScheduleEntry = DayScheduleEntry.createDayScheduleEntryFromView(m_cursor);
+            viewHolder.textViewExerciseName.setText(dayScheduleEntry.getExerciseEntryName());
+            viewHolder.itemView.setTag(dayScheduleEntry.getPosition());
+            m_dayScheduleDragManager.registerViewForRightBehavior(viewHolder.itemView);
         }
-
-
-//        if(m_cursor == null || (m_cursor.getCount() == 0)) {
-//            Log.d(TAG, "onBindViewHolder: providing instructions.");
-//        } else {
-//            if(!m_cursor.moveToPosition(position)) {
-//                throw new IllegalStateException("Couldn't move cursor to position " + position);
-//            }
-//
-//            final DayScheduleEntry dayScheduleEntry = new DayScheduleEntry(m_cursor);
-//            viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
-//            viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
-//            viewHolder.checkBoxIsReminder.setVisibility(View.VISIBLE);
-//            viewHolder.buttonDeleteEntry.setVisibility(View.VISIBLE);
-//        }
     }
 
 
     @Override
     public int getItemCount() {
         Log.d(TAG, "getItemCount: starts");
-        deriveDayScheduleList();
-        return m_itemList.size();
-    }
-
-    /**
-     * Given a cursor of Day Schedules, this builds a list of exercise names or day separators.
-     */
-    private void deriveDayScheduleList() {
-        m_itemList.clear();
-        int lastPosition = 0;
-        if((m_cursor != null) &&(m_cursor.getCount() > 0)) {
-            do {
-                DayScheduleEntry dayScheduleEntry = new DayScheduleEntry(m_cursor);
-                int currentPosition = dayScheduleEntry.getPosition();
-                if(currentPosition != lastPosition) {
-                    if(lastPosition != 0) {
-                        m_itemList.add(DAY_SEPARATOR_LABEL);
-                    }
-                    lastPosition = currentPosition;
-                }
-
-                // Look up the exercise entry for the DaySchedule.  I hate this.  I have to imagine this is not performant.
-                // Something to look at in the future... like bulk loading all exercise entries and updating all day schedules on initial load, or something like that.
-                ExerciseEntry matchingExerciseEntry = null;
-                String selection = ExerciseEntry.Contract.Columns.COL_NAME_ID + "=?";
-                Cursor cursorExerciseEntries = m_context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI,
-                        ExerciseEntry.Contract.getProjectionFull(), selection, new String[]{String.format("%d", dayScheduleEntry.getExerciseEntryId())}, null);
-
-                if(cursorExerciseEntries != null && cursorExerciseEntries.getCount() > 0) {
-                    cursorExerciseEntries.moveToFirst();
-                    matchingExerciseEntry = new ExerciseEntry(cursorExerciseEntries);
-                    m_itemList.add(matchingExerciseEntry.getName());
-                } else {
-                    throw new IllegalStateException("Could not find a matching exercise entry for given day schedule.");
-                }
-
-                cursorExerciseEntries.close();
-            } while(m_cursor.moveToNext());
+        if((m_cursor == null) || (m_cursor.getCount() == 0)) {
+            return 0; // fib, because we populate a single ViewHolder with instructions, or the DAY_SEPARATOR for day schedule mode.
+        } else {
+            int recordCount = m_cursor.getCount();
+            Log.d(TAG, "getItemCount: there are " + recordCount + " records.");
+            return recordCount;
         }
-
     }
 
     /**
@@ -154,4 +115,50 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             if(this.textViewExerciseName == null) throw new IllegalStateException("Unable to find text view on Day Schedule view holder.");
         }
     }
+
+
+    // 2019.01.26: I had this idea that the data in the database would need to be modified so that it could be presented to the user.
+    // My thought was "day separators" would be derived based on how the data was stored, but I found this made things unnecessarily
+    // complicated.  Below is how i did it... but it succcks.
+    /**
+     * Given a cursor of Day Schedules, this builds a list of exercise names or day separators.
+     */
+//    private void deriveDayScheduleList() {
+//        Log.d(TAG, "deriveDayScheduleList: start");
+//        m_itemList.clear();
+//        int lastPosition = 0;
+//        if((m_cursor != null) &&(m_cursor.getCount() > 0)) {
+//            m_cursor.moveToFirst();
+//            Log.d(TAG, "deriveDayScheduleList: there are " + m_cursor.getCount() + " item(s) in the cursor.");
+//            do {
+//                DayScheduleEntry dayScheduleEntry = new DayScheduleEntry(m_cursor);
+//                int currentPosition = dayScheduleEntry.getPosition();
+//                if(currentPosition != lastPosition) {
+//                    if(lastPosition != 0) {
+//                        m_itemList.add(DAY_SEPARATOR_LABEL);
+//                    }
+//                    lastPosition = currentPosition;
+//                }
+//
+//                // Look up the exercise entry for the DaySchedule.  I hate this.  I have to imagine this is not performant.
+//                // Something to look at in the future... like bulk loading all exercise entries and updating all day schedules on initial load, or something like that.
+//                ExerciseEntry matchingExerciseEntry = null;
+//                String selection = ExerciseEntry.Contract.Columns.COL_NAME_ID + "=?";
+//                Cursor cursorExerciseEntries = m_context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI,
+//                        ExerciseEntry.Contract.getProjectionFull(), selection, new String[]{String.format("%d", dayScheduleEntry.getExerciseEntryId())}, null);
+//
+//                if(cursorExerciseEntries != null && cursorExerciseEntries.getCount() > 0) {
+//                    cursorExerciseEntries.moveToFirst();
+//                    matchingExerciseEntry = new ExerciseEntry(cursorExerciseEntries);
+//                    m_itemList.add(matchingExerciseEntry.getName());
+//                } else {
+//                    throw new IllegalStateException("Could not find a matching exercise entry for given day schedule.");
+//                }
+//
+//                cursorExerciseEntries.close();
+//            } while(m_cursor.moveToNext());
+//        }
+//
+//    }
+
 }

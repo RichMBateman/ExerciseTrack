@@ -70,11 +70,7 @@ public class ExerciseListActivity extends AppCompatActivity
                 if(exerciseText.length() > 0) {
                     boolean alreadyExists = m_rvAdapterExerciseEntry.checkForRedundantExerciseName(exerciseText);
                     if (!alreadyExists) {
-
-                        ContentValues values = new ContentValues();
-                        values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, exerciseText);
-                        values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, m_checkBoxIsReminder.isChecked());
-                        getContentResolver().insert(ExerciseEntry.Contract.CONTENT_URI, values);
+                        ExerciseEntry.saveNewExerciseEntry(getApplicationContext(), exerciseText, m_checkBoxIsReminder.isChecked());
 
                         // Clear input fields
                         m_editTextExercise.setText("");
