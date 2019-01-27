@@ -10,9 +10,11 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/sm_recyclerview_exercises"
-        android:layout_width="match_parent"
+        android:layout_width="313dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/simple_exercise_list_entry">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -20,5 +22,7 @@
         android:id="@+id/sm_recyclerview_scheduleboxes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/sched_maint_exercise_item" />
 </LinearLayout>

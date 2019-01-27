@@ -2,18 +2,17 @@ package com.bateman.rich.exercisetrack.gui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bateman.rich.exercisetrack.R;
 import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
-import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
-
-import java.util.ArrayList;
 
 /**
  * A RecyclerView adapter for Day Schedules.
@@ -26,6 +25,7 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     private final Context m_context;
     private Cursor m_cursor;
     private DayScheduleDragManager m_dayScheduleDragManager;
+    private RecyclerView m_recyclerView;
 //    private final ArrayList<String> m_itemList = new ArrayList<>();
 
     public RVAdapterDaySchedule(Context c, Cursor cursor) {
@@ -33,6 +33,19 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         m_context = c;
         m_cursor = cursor;
     }
+
+    /**
+     * A handy method that is called when the recycler viwe is attached to the adapter.
+     * @param recyclerView
+     */
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        m_recyclerView=recyclerView;
+    }
+
+    public RecyclerView getRecyclerView() {return m_recyclerView;}
+
 
     public void setDayScheduleDragManager(DayScheduleDragManager dayScheduleDragManager, RecyclerView rv) {
         m_dayScheduleDragManager = dayScheduleDragManager;
@@ -42,12 +55,15 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     public RVAdapterDaySchedule.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: new view requested");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sched_maint_exercise_item, parent, false);
-
         return new RVAdapterDaySchedule.ViewHolder(view);
     }
 
     public void onBindViewHolder(RVAdapterDaySchedule.ViewHolder viewHolder, int position) {
         Log.d(TAG, "onBindViewHolder: start");
+
+        viewHolder.textViewDropHereTop.setVisibility(View.GONE);
+        viewHolder.textViewDropHereBot.setVisibility(View.GONE);
+
         if(m_cursor == null || m_cursor.getCount() == 0) {
             Log.d(TAG, "onBindViewHolder: No day schedule entries to load.");
         } else {
@@ -107,12 +123,52 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         private static final String TAG = "ViewHolder";
 
         private TextView textViewExerciseName;
+        private TextView textViewDropHereTop;
+        private TextView textViewDropHereBot;
+        private ImageButton btnMoveDown;
+        private ImageButton btnMoveUp;
+        private ImageButton btnDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             this.textViewExerciseName = itemView.findViewById(R.id.sm_textview_exercise_item);
-            if(this.textViewExerciseName == null) throw new IllegalStateException("Unable to find text view on Day Schedule view holder.");
+            this.textViewDropHereTop = itemView.findViewById(R.id.sm_maint_tv_drop_here_top);
+            this.textViewDropHereBot = itemView.findViewById(R.id.sm_maint_tv_drop_here_bot);
+            this.btnDelete = itemView.findViewById(R.id.sm_maint_btn_delete);
+            this.btnMoveDown = itemView.findViewById(R.id.sm_maint_btn_move_down);
+            this.btnMoveUp = itemView.findViewById(R.id.sm_maint_btn_move_up);
+
+            if(this.textViewExerciseName == null) throw new IllegalStateException("Unable to find textViewExerciseName on Day Schedule view holder.");
+            if(this.textViewDropHereTop == null) throw new IllegalStateException("Unable to find textViewDropHereTop on Day Schedule view holder.");
+            if(this.textViewDropHereBot == null) throw new IllegalStateException("Unable to find textViewDropHereBot on Day Schedule view holder.");
+            if(this.btnDelete == null) throw new IllegalStateException("Unable to find btnDelete on Day Schedule view holder.");
+            if(this.btnMoveDown == null) throw new IllegalStateException("Unable to find btnMoveDown on Day Schedule view holder.");
+            if(this.btnMoveUp == null) throw new IllegalStateException("Unable to find btnMoveUp on Day Schedule view holder.");
+        }
+
+        public TextView getTextViewExerciseName() {
+            return textViewExerciseName;
+        }
+
+        public TextView getTextViewDropHereTop() {
+            return textViewDropHereTop;
+        }
+
+        public TextView getTextViewDropHereBot() {
+            return textViewDropHereBot;
+        }
+
+        public ImageButton getBtnMoveDown() {
+            return btnMoveDown;
+        }
+
+        public ImageButton getBtnMoveUp() {
+            return btnMoveUp;
+        }
+
+        public ImageButton getBtnDelete() {
+            return btnDelete;
         }
     }
 

@@ -76,6 +76,34 @@ public class DayScheduleDragManager {
     }
 
     /**
+     * Registers a "Drop Me" placeholder textview for dragging events.
+     * When something STARTS to drag, this view will become visible.
+     * If someothing drags INTO this view, it will light up.
+     * If you drop INTO this view, it will position the new exercise appropriately.
+     * @param placeholder
+     */
+    public void registerForDropMePlaceholderBehavior(View placeholder) {
+
+    }
+
+    private void setDropHerePlaceholderVisibility(boolean showDropHerePlaceholders) {
+        int visibility = (showDropHerePlaceholders ? View.VISIBLE : View.GONE);
+        RVAdapterDaySchedule.ViewHolder viewHolder;
+        RecyclerView recyclerView = m_rvAdapterDaySchedule.getRecyclerView();
+        for(int viewHolderIndex = 0; viewHolderIndex <= recyclerView.getChildCount(); viewHolderIndex++) {
+            viewHolder = (RVAdapterDaySchedule.ViewHolder) recyclerView.findViewHolderForAdapterPosition(viewHolderIndex);
+            if(viewHolder != null) {
+                viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                if (viewHolderIndex == m_rvAdapterDaySchedule.getRecyclerView().getChildCount() - 1) {
+                    viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                }
+            } else {
+                Log.d(TAG, "handleStartDrag: null viewHolder found for position: " + viewHolderIndex);
+            }
+        }
+    }
+
+    /**
      * A class to handle listening to drag events.  In this case, we are handling simple touches and long clicks to start dragging.
      * http://www.vogella.com/tutorials/AndroidDragAndDrop/article.html
      *
@@ -107,6 +135,9 @@ public class DayScheduleDragManager {
         }
 
         private void handleStartDrag(View view) {
+            // As we start dragging, make all appropriate "Drop Here" placeholders visible in the right recycler view.
+            setDropHerePlaceholderVisibility(true);
+
             ClipData dragData = ClipData.newPlainText("", "");
             View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
 
@@ -168,6 +199,11 @@ public class DayScheduleDragManager {
                     LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
 //                    m_rvAdapterDaySchedule.notifyDataSetChanged();
 
+
+                    // As we stop dragging, make all appropriate "Drop Here" placeholders invisible in the right recycler view.
+                    setDropHerePlaceholderVisibility(false);
+
+
                     Log.d(TAG, "onDrag: dropped exercise " + exerciseId + " onto schedule.");
                     // On dropping the exercise or day separator, need to do different things.
                     // Probably need to call an insert, or delete...
@@ -181,7 +217,9 @@ public class DayScheduleDragManager {
 //                    view.setVisibility(View.VISIBLE);
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
-                    v.setBackground(m_normalShape);
+                    //v.setBackground(m_normalShape);
+                    v.setBackground(null); // this will clear the background.
+                    setDropHerePlaceholderVisibility(false);
                 default:
                     break;
             }
