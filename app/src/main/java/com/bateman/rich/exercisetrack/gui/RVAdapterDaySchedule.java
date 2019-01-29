@@ -1,8 +1,10 @@
 package com.bateman.rich.exercisetrack.gui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,14 +26,16 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     public static final String DAY_SEPARATOR_LABEL = "--separator--";
     private final Context m_context;
     private Cursor m_cursor;
+    private final DayScheduleListActivity m_activity;
     private DayScheduleDragManager m_dayScheduleDragManager;
     private RecyclerView m_recyclerView;
 //    private final ArrayList<String> m_itemList = new ArrayList<>();
 
-    public RVAdapterDaySchedule(Context c, Cursor cursor) {
+    public RVAdapterDaySchedule(Context c, Cursor cursor, DayScheduleListActivity activitiy) {
         Log.d(TAG, "RVAdapterDaySchedule: start");
         m_context = c;
         m_cursor = cursor;
+        m_activity=activitiy;
     }
 
     /**
@@ -49,7 +53,8 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
 
     public void setDayScheduleDragManager(DayScheduleDragManager dayScheduleDragManager, RecyclerView rv) {
         m_dayScheduleDragManager = dayScheduleDragManager;
-        m_dayScheduleDragManager.registerRecyclerViewForAcceptingDrags(rv);
+        // I no longer want the entire recycler view listening to events.
+        //m_dayScheduleDragManager.registerRecyclerViewForAcceptingDrags(rv);
     }
 
     public RVAdapterDaySchedule.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -58,32 +63,121 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         return new RVAdapterDaySchedule.ViewHolder(view);
     }
 
-    public void onBindViewHolder(RVAdapterDaySchedule.ViewHolder viewHolder, int position) {
-        Log.d(TAG, "onBindViewHolder: start");
+    /**
+     *
+     * @param viewHolder
+     * @param position Ranges from 0 to N - 1.
+     */
+    public void onBindViewHolder(RVAdapterDaySchedule.ViewHolder viewHolder, final int position) {
+        Log.d(TAG, "onBindViewHolder: start for position: " + position);
 
         viewHolder.textViewDropHereTop.setVisibility(View.GONE);
         viewHolder.textViewDropHereBot.setVisibility(View.GONE);
 
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereTop, viewHolder, position + 1);
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereBot, viewHolder, position + 2);
+
         if(m_cursor == null || m_cursor.getCount() == 0) {
             Log.d(TAG, "onBindViewHolder: No day schedule entries to load.");
+            //m_dayScheduleDragManager.registerViewForRightBehavior(viewHolder.itemView);
+            viewHolder.textViewExerciseName.setVisibility(View.GONE);
+            viewHolder.btnMoveUp.setVisibility(View.GONE);
+            viewHolder.btnMoveDown.setVisibility(View.GONE);
+            viewHolder.btnDelete.setVisibility(View.GONE);
         } else {
             if(!m_cursor.moveToPosition(position)) {
                 throw new IllegalStateException("Couldn't move cursor to position " + position);
             }
 
+            viewHolder.textViewExerciseName.setVisibility(View.VISIBLE);
+            viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
+            viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
+            viewHolder.btnDelete.setVisibility(View.VISIBLE);
+
             final DayScheduleEntry dayScheduleEntry = DayScheduleEntry.createDayScheduleEntryFromView(m_cursor);
             viewHolder.textViewExerciseName.setText(dayScheduleEntry.getExerciseEntryName());
             viewHolder.itemView.setTag(dayScheduleEntry.getPosition());
-            m_dayScheduleDragManager.registerViewForRightBehavior(viewHolder.itemView);
+            //m_dayScheduleDragManager.registerViewForRightBehavior(viewHolder.itemView);
+            if(getItemCount() == 1) {
+                viewHolder.btnMoveUp.setVisibility(View.GONE);
+                viewHolder.btnMoveDown.setVisibility(View.GONE);
+            } else if(position == 0) {
+                viewHolder.btnMoveUp.setVisibility(View.GONE);
+            } else if(position == getItemCount() - 1) {
+                viewHolder.btnMoveDown.setVisibility(View.GONE);
+            }
+
+            viewHolder.btnMoveUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DayScheduleEntry.updateDaySchedulePosition(m_context, dayScheduleEntry.getId(), dayScheduleEntry.getPosition() -1);
+//                    notifyDataSetChanged();
+                    LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
+                }
+            });
+
+            viewHolder.btnMoveDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DayScheduleEntry.updateDaySchedulePosition(m_context, dayScheduleEntry.getId(), dayScheduleEntry.getPosition() +1);
+                    //notifyDataSetChanged();
+                    LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
+                }
+            });
+
+            viewHolder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DayScheduleEntry.deleteDaySchedule(m_context, dayScheduleEntry.getId());
+//                    notifyDataSetChanged();
+                    LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
+                }
+            });
         }
     }
 
+//    public void updateViewHolderVisibilitiesBasedOnDataChanges() {
+//        for(int viewHolderIndex = 0; viewHolderIndex <= m_recyclerView.getChildCount(); viewHolderIndex++) {
+//            ViewHolder viewHolder = (RVAdapterDaySchedule.ViewHolder) m_recyclerView.findViewHolderForAdapterPosition(viewHolderIndex);
+//            if(viewHolder != null) {
+//                if(viewHolderIndex == 0) {
+//                    if(m_cursor == null || m_cursor.getCount() == 0) {
+//                        viewHolder.textViewExerciseName.setVisibility(View.GONE);
+//                        viewHolder.btnMoveUp.setVisibility(View.GONE);
+//                        viewHolder.btnMoveDown.setVisibility(View.GONE);
+//                        viewHolder.btnDelete.setVisibility(View.GONE);
+//                    } else {
+//                        viewHolder.textViewExerciseName.setVisibility(View.VISIBLE);
+//                        viewHolder.btnDelete.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//
+//                if(viewHolderIndex == 0) {
+//                    viewHolder.btnMoveUp.setVisibility(View.GONE); // hide top most move up button
+//                    if(viewHolderIndex < getItemCount() - 1) {
+//                        viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
+//                    } else {
+//                        viewHolder.btnMoveDown.setVisibility(View.GONE);
+//                    }
+//                } else if(viewHolderIndex == getItemCount() - 1) {
+//                    viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
+//                    viewHolder.btnMoveDown.setVisibility(View.GONE);
+//                } else {
+//                    viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
+//                    viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
+//                }
+//
+//            } else {
+//                Log.d(TAG, "handleStartDrag: null viewHolder found for position: " + viewHolderIndex);
+//            }
+//        }
+//    }
 
     @Override
     public int getItemCount() {
         Log.d(TAG, "getItemCount: starts");
         if((m_cursor == null) || (m_cursor.getCount() == 0)) {
-            return 0; // fib, because we populate a single ViewHolder with instructions, or the DAY_SEPARATOR for day schedule mode.
+            return 1; // fib, because we want a single text holder view with a "Drop Here" placeholder
         } else {
             int recordCount = m_cursor.getCount();
             Log.d(TAG, "getItemCount: there are " + recordCount + " records.");
@@ -116,6 +210,8 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             // notify the observers about the lack of a data set
             notifyItemRangeRemoved(0, numItems);
         }
+
+        //updateViewHolderVisibilitiesBasedOnDataChanges();
         return oldCursor;
     }
 

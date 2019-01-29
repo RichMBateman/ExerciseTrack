@@ -152,6 +152,7 @@ public class DayScheduleEntry {
      * Saves a new day schedule entry to the database.
      */
     public static void saveNewDaySchedule(Context c, int position, long exerciseId, boolean isDaySeparator) {
+        Log.d(TAG, "saveNewDaySchedule: Saving a new schedule with position: " + position + ", exerciseId: " + exerciseId + ", and isDaySeparator: " + isDaySeparator);
         ContentValues values = new ContentValues();
         values.put(Contract.Columns.COL_NAME_POSITION, position);
         values.put(Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, exerciseId);
@@ -160,4 +161,18 @@ public class DayScheduleEntry {
         Log.d(TAG, "saveNewDaySchedule: returnedRow: " + returnedRow);
     }
 
+    public static void deleteDaySchedule(Context c, long dayScheduleId) {
+        int numDeletedRows = c.getContentResolver().delete(Contract.CONTENT_URI, Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(dayScheduleId)});
+        Log.d(TAG, "deleteDaySchedule: numDeletedRows: " + numDeletedRows);
+    }
+
+    public static void updateDaySchedulePosition(Context c, long dayScheduleId, int targetPosition) {
+        Log.d(TAG, "updateDaySchedulePosition: Updating dayScheduleId " + dayScheduleId + " to position " + targetPosition);
+        ContentValues values = new ContentValues();
+        values.put(Contract.Columns.COL_NAME_POSITION, targetPosition);
+        final String where = Contract.Columns.COL_NAME_ID +"=?";
+        final String[] selection = new String[]{Long.toString(dayScheduleId)};
+        int numRowsUpdated = c.getContentResolver().update(Contract.CONTENT_URI, values, where, selection);
+        Log.d(TAG, "updateDaySchedulePosition: numRowsUpdated: " + numRowsUpdated);
+    }
 }

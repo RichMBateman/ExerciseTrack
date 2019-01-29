@@ -12,6 +12,7 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 
 import com.bateman.rich.exercisetrack.R;
@@ -46,10 +47,11 @@ public class DayScheduleDragManager {
         m_recyclerViewRight = rightRV;
     }
 
-    public void registerRecyclerViewForAcceptingDrags(RecyclerView rv) {
-        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context);
-        rv.setOnDragListener(l);
-    }
+    // This function is not quite what I wanted.  I don't want the ENtIRE recycler view to respond to drag events.  Just individual parts.
+//    public void registerRecyclerViewForAcceptingDrags(RecyclerView rv) {
+//        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context);
+//        rv.setOnDragListener(l);
+//    }
 
     /**
      * Registers a view (probably just textview holding an exercise name or "--day separator--"
@@ -65,15 +67,18 @@ public class DayScheduleDragManager {
     }
 
     /**
+     * No longer allowing elements on the right recycler view to be dragged.
+     */
+    /**
      * Registers a view for "Right" recycler view behvaior.  You can drag it anywhere on the right recycler view,
      * it will disappear from origin while dragging, and when dropped, the old item will be deleted.
      * @param view
      */
-    public void registerViewForRightBehavior(View view) {
-        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(true, 0);
-        view.setOnLongClickListener(l);
-        view.setOnTouchListener(l);
-    }
+//    public void registerViewForRightBehavior(View view) {
+//        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(true, 0);
+//        view.setOnLongClickListener(l);
+//        view.setOnTouchListener(l);
+//    }
 
     /**
      * Registers a "Drop Me" placeholder textview for dragging events.
@@ -82,20 +87,32 @@ public class DayScheduleDragManager {
      * If you drop INTO this view, it will position the new exercise appropriately.
      * @param placeholder
      */
-    public void registerForDropMePlaceholderBehavior(View placeholder) {
-
+    public void registerForDropMePlaceholderBehavior(View placeholder, RVAdapterDaySchedule.ViewHolder viewHolder, int targetPosition) {
+        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context, viewHolder, targetPosition);
+        placeholder.setOnDragListener(l);
     }
 
     private void setDropHerePlaceholderVisibility(boolean showDropHerePlaceholders) {
         int visibility = (showDropHerePlaceholders ? View.VISIBLE : View.GONE);
         RVAdapterDaySchedule.ViewHolder viewHolder;
         RecyclerView recyclerView = m_rvAdapterDaySchedule.getRecyclerView();
+
         for(int viewHolderIndex = 0; viewHolderIndex <= recyclerView.getChildCount(); viewHolderIndex++) {
             viewHolder = (RVAdapterDaySchedule.ViewHolder) recyclerView.findViewHolderForAdapterPosition(viewHolderIndex);
             if(viewHolder != null) {
-                viewHolder.getTextViewDropHereTop().setVisibility(visibility);
-                if (viewHolderIndex == m_rvAdapterDaySchedule.getRecyclerView().getChildCount() - 1) {
-                    viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                if(viewHolderIndex == 0 && recyclerView.getChildCount() == 1) {
+                    // In this case, we only have one valid "drop here" text view, because there are no day schedules.
+                    if(viewHolder.getTextViewExerciseName().getVisibility() == View.GONE) {
+                        viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                    } else {
+                        viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                        viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                    }
+                } else {
+                    viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                    if (viewHolderIndex == m_rvAdapterDaySchedule.getRecyclerView().getChildCount() - 1) {
+                        viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                    }
                 }
             } else {
                 Log.d(TAG, "handleStartDrag: null viewHolder found for position: " + viewHolderIndex);
@@ -159,16 +176,21 @@ public class DayScheduleDragManager {
         private final Context m_context;
         private final Drawable m_enterShape;
         private final Drawable m_normalShape;
+        private final RVAdapterDaySchedule.ViewHolder m_viewHolder;
+        private final int m_targetPosition;
 
-        private DayScheduleReceiveDragHandler(Context c) {
+        private DayScheduleReceiveDragHandler(Context c, RVAdapterDaySchedule.ViewHolder viewHolder, int targetPosition) {
             m_activity = (DayScheduleListActivity) c;
             m_context = c;
+            m_viewHolder=viewHolder;
+            m_targetPosition=targetPosition;
             m_enterShape = m_context.getResources().getDrawable(R.drawable.shape_droptarget);
             m_normalShape = m_context.getResources().getDrawable(R.drawable.shape_normal);
         }
         @Override
         public boolean onDrag(View v, DragEvent event) {
             int action = event.getAction();
+            boolean isTopPlaceHolder = (v.getId() == R.id.sm_maint_tv_drop_here_top);
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // do nothing
@@ -185,17 +207,19 @@ public class DayScheduleDragManager {
                 case DragEvent.ACTION_DROP:
                     long exerciseId = (long) event.getLocalState();
                     boolean isDaySeparator = (exerciseId == RVAdapterDaySchedule.DAY_SEPARATOR_ID);
-                    View rightRvElement = m_recyclerViewRight.findChildViewUnder(event.getX(), event.getY());
-                    // For now, if we don't find any right element... just set the position to the max.
-                    int itemPosition = 0;
-                    if(rightRvElement == null) {
-                        // There are no elements in the list, so we can say the position = 1.
-                        itemPosition = 1;
-                        // There are no items
-                    } else {
-                        itemPosition = (int) rightRvElement.getTag();
-                    }
-                    DayScheduleEntry.saveNewDaySchedule(m_context, itemPosition, exerciseId, isDaySeparator);
+
+                    // old code for detecting what we've dragged over.  Now we know.
+//                    View rightRvElement = m_recyclerViewRight.findChildViewUnder(event.getX(), event.getY());
+//                    // For now, if we don't find any right element... just set the position to the max.
+//                    int itemPosition = 0;
+//                    if(rightRvElement == null) {
+//                        // There are no elements in the list, so we can say the position = 1.
+//                        itemPosition = 1;
+//                        // There are no items
+//                    } else {
+//                        itemPosition = (int) rightRvElement.getTag();
+//                    }
+                    DayScheduleEntry.saveNewDaySchedule(m_context, m_targetPosition, exerciseId, isDaySeparator);
                     LoaderManager.getInstance(m_activity).restartLoader(DayScheduleListActivity.LOADER_ID_DAY_SCHEDULES, null, m_activity);
 //                    m_rvAdapterDaySchedule.notifyDataSetChanged();
 

@@ -47,6 +47,9 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
         createDayScheduleTable(db);
         createDayScheduleTriggerOnDeleteExercise(db);
+        createDayScheduleTriggerOnInsertDaySchedule(db);
+        createDayScheduleTriggerOnDeleteDaySchedule(db);
+        createDayScheduleTriggerOnUpdateDaySchedulePosition(db);
         createViewDayScheduleWithExerciseNames(db);
 
         createLogTable(db);
@@ -113,6 +116,45 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
                 ExerciseEntry.Contract.TABLE_NAME,
                 DayScheduleEntry.Contract.TABLE_NAME, ExerciseEntry.Contract.Columns.COL_NAME_ID,
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID);
+    }
+
+    private void createDayScheduleTriggerOnInsertDaySchedule(SQLiteDatabase db) {
+        String sSqlStatement = "CREATE TRIGGER OnInsertDaySchedule "
+                + " AFTER INSERT ON " + DayScheduleEntry.Contract.TABLE_NAME
+                + " BEGIN "
+                + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
+                + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " + 1 "
+                + " WHERE " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION+ " >= NEW." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + " AND " + DayScheduleEntry.Contract.Columns.COL_NAME_ID + " <> NEW." + DayScheduleEntry.Contract.Columns.COL_NAME_ID + "; "
+                + " END;";
+        Log.d(TAG, "createDayScheduleTriggerOnInsertDaySchedule: " + sSqlStatement);
+        db.execSQL(sSqlStatement);
+    }
+
+    private void createDayScheduleTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
+        String sSqlStatement = "CREATE TRIGGER OnDeleteDaySchedule "
+                + " AFTER DELETE ON " + DayScheduleEntry.Contract.TABLE_NAME
+                + " BEGIN "
+                + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
+                + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " - 1 "
+                + " WHERE " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION+ " > OLD." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + ";"
+                + " END;";
+        Log.d(TAG, "createDayScheduleTriggerOnDeleteDaySchedule: " + sSqlStatement);
+        db.execSQL(sSqlStatement);
+    }
+
+    private void createDayScheduleTriggerOnUpdateDaySchedulePosition(SQLiteDatabase db) {
+        String sSqlStatement = "CREATE TRIGGER OnUpdateDaySchedulePosition "
+                + " AFTER UPDATE ON " + DayScheduleEntry.Contract.TABLE_NAME
+                + " WHEN old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " <> new." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + " BEGIN "
+                + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
+                + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + " WHERE " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION+ " = new." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + " AND " + DayScheduleEntry.Contract.Columns.COL_NAME_ID + " <> old." + DayScheduleEntry.Contract.Columns.COL_NAME_ID + "; "
+                + " END;";
+        Log.d(TAG, "createDayScheduleTriggerOnUpdateDaySchedulePosition: " + sSqlStatement);
+        db.execSQL(sSqlStatement);
     }
 
     private void createViewDayScheduleWithExerciseNames(SQLiteDatabase db) {
