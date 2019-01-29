@@ -1,8 +1,10 @@
 package com.bateman.rich.exercisetrack.gui;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 import com.bateman.rich.exercisetrack.R;
 import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
+import com.bateman.rich.exercisetrack.datamodel.ExerciseAppDBSetting;
 
 /**
  * A RecyclerView adapter for Day Schedules.
@@ -29,7 +32,9 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     private final DayScheduleListActivity m_activity;
     private DayScheduleDragManager m_dayScheduleDragManager;
     private RecyclerView m_recyclerView;
-//    private final ArrayList<String> m_itemList = new ArrayList<>();
+    private long m_currentDayScheduleId;
+
+    //    private final ArrayList<String> m_itemList = new ArrayList<>();
 
     public RVAdapterDaySchedule(Context c, Cursor cursor, DayScheduleListActivity activitiy) {
         Log.d(TAG, "RVAdapterDaySchedule: start");
@@ -90,6 +95,7 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             }
 
             viewHolder.textViewExerciseName.setVisibility(View.VISIBLE);
+
             viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
             viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
             viewHolder.btnDelete.setVisibility(View.VISIBLE);
@@ -106,6 +112,21 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             } else if(position == getItemCount() - 1) {
                 viewHolder.btnMoveDown.setVisibility(View.GONE);
             }
+
+            viewHolder.textViewExerciseName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    m_currentDayScheduleId = dayScheduleEntry.getId();
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY, ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY);
+                    final String where = ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + "=?";
+                    final String[] selection = new String[] {Long.toString(m_currentDayScheduleId)};
+                    m_context.getContentResolver().update(ExerciseAppDBSetting.Contract.CONTENT_URI, contentValues, where, selection);
+
+                    v.setBackgroundColor(Color.RED);
+                }
+            });
+
 
             viewHolder.btnMoveUp.setOnClickListener(new View.OnClickListener() {
                 @Override

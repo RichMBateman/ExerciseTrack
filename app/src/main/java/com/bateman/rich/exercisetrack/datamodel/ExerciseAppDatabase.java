@@ -43,6 +43,10 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "onCreate: starts.  Creating sqlIte database.");
+
+        createExerciseAppSettingsTable(db);
+        insertExerciseAppSettings(db);
+
         createExerciseEntryTable(db);
 
         createDayScheduleTable(db);
@@ -75,6 +79,29 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
                 throw new IllegalStateException("onUpgrade() with unknown newVersion: " + newVersion);
         }
         Log.d(TAG, "onUpgrade: ends");
+    }
+
+    private void createExerciseAppSettingsTable(SQLiteDatabase db) {
+        String sSqlStatement;
+        sSqlStatement = "CREATE TABLE " + ExerciseAppDBSetting.Contract.TABLE_NAME + " ("
+                + ExerciseAppDBSetting.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
+                + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " TEXT NOT NULL, "
+                + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + " TEXT NOT NULL);";
+        Log.d(TAG, sSqlStatement);
+        db.execSQL(sSqlStatement);
+    }
+
+    private void insertExerciseAppSettings(SQLiteDatabase db) {
+        String sqlStmt = "INSERT INTO " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                + "(" + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + ", " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE
+                + ") values ('" + ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY + "', '0'); ";
+        Log.d(TAG, "insertExerciseAppSettings: sqlStmt: " + sqlStmt);
+        db.execSQL(sqlStmt);
+        sqlStmt = "INSERT INTO " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                + "(" + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + ", " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE
+                + ") values ('" + ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "', 'No'); ";
+        Log.d(TAG, "insertExerciseAppSettings: sqlStmt: " + sqlStmt);
+        db.execSQL(sqlStmt);
     }
 
     /**
@@ -122,10 +149,18 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         String sSqlStatement = "CREATE TRIGGER OnInsertDaySchedule "
                 + " AFTER INSERT ON " + DayScheduleEntry.Contract.TABLE_NAME
                 + " BEGIN "
+                + " UPDATE " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                +       " SET " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + " = 'Yes' "
+                +       " WHERE " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
+                +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "';"
                 + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
                 + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " + 1 "
                 + " WHERE " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION+ " >= NEW." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
                 + " AND " + DayScheduleEntry.Contract.Columns.COL_NAME_ID + " <> NEW." + DayScheduleEntry.Contract.Columns.COL_NAME_ID + "; "
+                + " UPDATE " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                +       " SET " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + " = 'No' "
+                +       " WHERE " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
+                +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "';"
                 + " END;";
         Log.d(TAG, "createDayScheduleTriggerOnInsertDaySchedule: " + sSqlStatement);
         db.execSQL(sSqlStatement);
@@ -135,9 +170,17 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         String sSqlStatement = "CREATE TRIGGER OnDeleteDaySchedule "
                 + " AFTER DELETE ON " + DayScheduleEntry.Contract.TABLE_NAME
                 + " BEGIN "
+                + " UPDATE " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                +       " SET " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + " = 'Yes' "
+                +       " WHERE " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
+                +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "';"
                 + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
                 + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " - 1 "
                 + " WHERE " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION+ " > OLD." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + ";"
+                + " UPDATE " + ExerciseAppDBSetting.Contract.TABLE_NAME
+                +       " SET " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + " = 'No' "
+                +       " WHERE " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
+                +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "';"
                 + " END;";
         Log.d(TAG, "createDayScheduleTriggerOnDeleteDaySchedule: " + sSqlStatement);
         db.execSQL(sSqlStatement);
@@ -146,7 +189,12 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     private void createDayScheduleTriggerOnUpdateDaySchedulePosition(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnUpdateDaySchedulePosition "
                 + " AFTER UPDATE ON " + DayScheduleEntry.Contract.TABLE_NAME
-                + " WHEN old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " <> new." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                + " WHEN old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                +       " <> new." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
+                +       " and 'Yes' = (SELECT " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE
+                +       " FROM " + ExerciseAppDBSetting.Contract.TABLE_NAME + " WHERE "
+                +       ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
+                +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "')"
                 + " BEGIN "
                 + " UPDATE " + DayScheduleEntry.Contract.TABLE_NAME
                 + " SET " + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + " = old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION

@@ -35,6 +35,8 @@ public class ExerciseAppProvider extends ContentProvider {
     private static final int LOG_DAILY_EXERCISE_ENTRIES_ID = 401;
     private static final int VIEW_DAY_SCHEDULE_ENTRIES = 500;
     private static final int VIEW_DAY_SCHEDULE_ENTRIES_ID = 501;
+    private static final int EXERCISE_APP_SETTINGS = 600;
+    private static final int EXERCISE_APP_SETTINGS_ID = 601;
 
     private ExerciseAppDatabase m_exerciseAppDatabase;
 
@@ -108,6 +110,17 @@ public class ExerciseAppProvider extends ContentProvider {
                 long logDailyExerciseEntryid = ContentProviderHelper.getId(uri);
                 queryBuilder.appendWhere(LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " = " + logDailyExerciseEntryid);
                 break;
+
+            case EXERCISE_APP_SETTINGS:
+                queryBuilder.setTables(ExerciseAppDBSetting.Contract.TABLE_NAME);
+                break;
+
+            case EXERCISE_APP_SETTINGS_ID:
+                queryBuilder.setTables(ExerciseAppDBSetting.Contract.TABLE_NAME);
+                long settingId = ContentProviderHelper.getId(uri);
+                queryBuilder.appendWhere(ExerciseAppDBSetting.Contract.Columns.COL_NAME_ID + " = " + settingId);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
 
@@ -149,6 +162,11 @@ public class ExerciseAppProvider extends ContentProvider {
                 return LogDailyExerciseEntry.Contract.CONTENT_TYPE;
             case LOG_DAILY_EXERCISE_ENTRIES_ID:
                 return LogDailyExerciseEntry.Contract.CONTENT_ITEM_TYPE;
+
+            case EXERCISE_APP_SETTINGS:
+                return ExerciseAppDBSetting.Contract.CONTENT_TYPE;
+            case EXERCISE_APP_SETTINGS_ID:
+                return ExerciseAppDBSetting.Contract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("unknown Uri: " + uri);
@@ -200,6 +218,15 @@ public class ExerciseAppProvider extends ContentProvider {
                 recordId = db.insert(LogDailyExerciseEntry.Contract.TABLE_NAME, null, values);
                 if(recordId >=0) {
                     returnUri = ContentProviderHelper.buildUriFromId(LogDailyExerciseEntry.Contract.CONTENT_URI, recordId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+                }
+                break;
+            case EXERCISE_APP_SETTINGS:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                recordId = db.insert(ExerciseAppDBSetting.Contract.TABLE_NAME, null, values);
+                if(recordId >=0) {
+                    returnUri = ContentProviderHelper.buildUriFromId(ExerciseAppDBSetting.Contract.CONTENT_URI, recordId);
                 } else {
                     throw new android.database.SQLException("Failed to insert into " + uri.toString());
                 }
@@ -293,6 +320,22 @@ public class ExerciseAppProvider extends ContentProvider {
                 }
                 count = db.delete(LogDailyExerciseEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
                 break;
+
+            case EXERCISE_APP_SETTINGS:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.delete(ExerciseAppDBSetting.Contract.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case EXERCISE_APP_SETTINGS_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long settingId = ContentProviderHelper.getId(uri);
+                selectionCriteria = ExerciseAppDBSetting.Contract.Columns.COL_NAME_ID + " = " + settingId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.delete(ExerciseAppDBSetting.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
@@ -382,6 +425,22 @@ public class ExerciseAppProvider extends ContentProvider {
                 count = db.update(LogDailyExerciseEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
                 break;
 
+            case EXERCISE_APP_SETTINGS:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                count = db.update(ExerciseAppDBSetting.Contract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case EXERCISE_APP_SETTINGS_ID:
+                db = m_exerciseAppDatabase.getWritableDatabase();
+                long settingId = ContentProviderHelper.getId(uri);
+                selectionCriteria = ExerciseAppDBSetting.Contract.Columns.COL_NAME_ID + " = " + settingId;
+
+                if((selection != null) && (selection.length()>0)) {
+                    selectionCriteria += " AND (" + selection + ")";
+                }
+                count = db.update(ExerciseAppDBSetting.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
@@ -423,6 +482,9 @@ public class ExerciseAppProvider extends ContentProvider {
         matcher.addURI(CONTENT_AUTHORITY, LogDailyExerciseEntry.Contract.TABLE_NAME, LOG_DAILY_EXERCISE_ENTRIES);
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogDailyExerciseEntry/8 (8 representing an arbitrary ID number)
         matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(LogDailyExerciseEntry.Contract.TABLE_NAME), LOG_DAILY_EXERCISE_ENTRIES_ID);
+
+        matcher.addURI(CONTENT_AUTHORITY, ExerciseAppDBSetting.Contract.TABLE_NAME, EXERCISE_APP_SETTINGS);
+        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(ExerciseAppDBSetting.Contract.TABLE_NAME), EXERCISE_APP_SETTINGS_ID);
 
         Log.d(TAG, "buildUriMatcher: end.  returning UriMatcher: " + matcher);
         return matcher;
