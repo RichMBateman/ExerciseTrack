@@ -45,8 +45,6 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
     private OnExerciseButtonClickListener m_buttonClickListener;
     private DayScheduleDragManager m_dayScheduleDragManager;
 
-    private android.support.v7.widget.RecyclerView.LayoutParams layoutParams;
-
     public RVAdapterExerciseEntry(Mode m, Context context, Cursor cursor) {
         Log.d(TAG, "RVAdapterExerciseEntry: start");
         m_mode = m;
@@ -202,6 +200,8 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
             return null;
         }
 
+        // It's important to get the item count BEFORE replacing the cursor!
+        // otherwise, if you call getItemCount later, you will get potentially wrong info.
         int numItems = getItemCount();
 
         final Cursor oldCursor = m_cursor;

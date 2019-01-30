@@ -2,16 +2,23 @@ package com.bateman.rich.exercisetrack.datamodel;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
+
+import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
+
+import java.util.ArrayList;
 
 /**
  * A class to facilitate testing.  Can generate test data.
  */
 public class TestData {
 
+    private static ArrayList<ExerciseEntry> m_exerciseEntryList = new ArrayList<>();
 
     public static void generateTestData(ContentResolver contentResolver) {
         createExerciseEntries(contentResolver);
-        createDaySchedule(contentResolver);
+        createDaySchedules(contentResolver);
         createLogEntries(contentResolver);
         createLogDailyExerciseEntries(contentResolver);
     }
@@ -48,19 +55,58 @@ public class TestData {
         saveExerciseEntry(contentResolver, entry13);
         saveExerciseEntry(contentResolver, entry14);
         saveExerciseEntry(contentResolver, entry15);
+
+        // Load the saved exercise entries (which have ids set), so we can refer to them when creating our day schedule.
+        Cursor exerciseEntryCursor = contentResolver.query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null );
+        if(exerciseEntryCursor != null & exerciseEntryCursor.getCount() > 0) {
+            exerciseEntryCursor.moveToFirst();
+
+            // For ease, just group exercise into a random amount (1-3), and keep creating day schedules until you're done.
+            do {
+                ExerciseEntry ee = new ExerciseEntry(exerciseEntryCursor);
+                m_exerciseEntryList.add(ee);
+
+            } while(exerciseEntryCursor.moveToNext());
+        }
     }
 
     private static void saveExerciseEntry(ContentResolver contentResolver, ExerciseEntry entry) {
         ContentValues values = new ContentValues();
-        values.put(ExerciseEntry.Contract.Columns.COL_NAME_ID, entry.getId());
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, entry.getName());
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, entry.isDailyReminder());
 
         contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 
-    private static void createDaySchedule(ContentResolver contentResolver) {
+    private static void createDaySchedules(ContentResolver contentResolver) {
+        int numSchedulesToCreate = (int) (Math.random() * 20 + 5); // make some random number of schedules
+        int position = 1;
+        while (numSchedulesToCreate > 0) {
 
+
+            int numExercisesToGrab = (int) (Math.random() * 3 + 1);
+            while(numExercisesToGrab > 0) {
+                int randomSelectionExercise = (int) (Math.random() * m_exerciseEntryList.size());
+                long randomSelectionExerciseId = m_exerciseEntryList.get(randomSelectionExercise).getId();
+
+                ContentValues values = new ContentValues();
+                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, position);
+                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, randomSelectionExerciseId);
+                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR, false);
+                contentResolver.insert(DayScheduleEntry.Contract.CONTENT_URI, values);
+
+                numExercisesToGrab--;
+                position++;
+            }
+            ContentValues values = new ContentValues();
+            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, position);
+            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, RVAdapterDaySchedule.DAY_SEPARATOR_ID);
+            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR, true);
+            contentResolver.insert(DayScheduleEntry.Contract.CONTENT_URI, values);
+
+            position++;
+            numSchedulesToCreate--;
+        }
     }
 
     private static void saveDaySchedule(ContentResolver contentResolver, DayScheduleEntry entry) {

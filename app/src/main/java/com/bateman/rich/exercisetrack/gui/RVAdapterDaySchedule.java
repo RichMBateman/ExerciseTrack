@@ -239,6 +239,8 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             return null;
         }
 
+        // It's important to get the item count BEFORE replacing the cursor!
+        // otherwise, if you call getItemCount later, you will get potentially wrong info.
         int numItems = getItemCount();
 
         final Cursor oldCursor = m_cursor;
