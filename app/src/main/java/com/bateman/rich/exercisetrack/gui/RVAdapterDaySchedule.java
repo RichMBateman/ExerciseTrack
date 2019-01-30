@@ -51,6 +51,17 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         m_recyclerView=recyclerView;
+        initialzeCurrentDayScheduleId();
+    }
+
+    private void initialzeCurrentDayScheduleId() {
+        String selection = ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + "='" + ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY +"'";
+        String[] projection = {ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE};
+        Cursor cursor =m_context. getContentResolver().query(ExerciseAppDBSetting.Contract.CONTENT_URI, projection, selection, null, null);
+        if(cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            m_currentDayScheduleId = Long.parseLong(cursor.getString(0));
+        }
     }
 
     public RecyclerView getRecyclerView() {return m_recyclerView;}
@@ -96,12 +107,20 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
 
             viewHolder.textViewExerciseName.setVisibility(View.VISIBLE);
 
+
             viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
             viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
             viewHolder.btnDelete.setVisibility(View.VISIBLE);
 
             final DayScheduleEntry dayScheduleEntry = DayScheduleEntry.createDayScheduleEntryFromView(m_cursor);
             viewHolder.textViewExerciseName.setText(dayScheduleEntry.getExerciseEntryName());
+
+            if(m_currentDayScheduleId == dayScheduleEntry.getId()) {
+                viewHolder.textViewExerciseName.setBackgroundColor(Color.RED);
+            } else {
+                viewHolder.textViewExerciseName.setBackgroundColor(0);
+            }
+
             viewHolder.itemView.setTag(dayScheduleEntry.getPosition());
             //m_dayScheduleDragManager.registerViewForRightBehavior(viewHolder.itemView);
             if(getItemCount() == 1) {
@@ -118,12 +137,12 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
                 public void onClick(View v) {
                     m_currentDayScheduleId = dayScheduleEntry.getId();
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY, ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY);
-                    final String where = ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE + "=?";
-                    final String[] selection = new String[] {Long.toString(m_currentDayScheduleId)};
+                    contentValues.put(ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE, Long.toString(m_currentDayScheduleId));
+                    final String where = ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + "=?";
+                    final String[] selection = new String[] {ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY};
                     m_context.getContentResolver().update(ExerciseAppDBSetting.Contract.CONTENT_URI, contentValues, where, selection);
 
-                    v.setBackgroundColor(Color.RED);
+                    notifyDataSetChanged();
                 }
             });
 

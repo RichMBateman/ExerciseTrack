@@ -145,6 +145,10 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID);
     }
 
+    /**
+     * Creates a trigger for inserts to synchronize position across all rows.  Disables additional triggers from firing.
+     * @param db
+     */
     private void createDayScheduleTriggerOnInsertDaySchedule(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnInsertDaySchedule "
                 + " AFTER INSERT ON " + DayScheduleEntry.Contract.TABLE_NAME
@@ -166,6 +170,10 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         db.execSQL(sSqlStatement);
     }
 
+    /**
+     * Creates a trigger for deletes to synchronize position across all rows.  Disables additional triggers from firing.
+     * @param db
+     */
     private void createDayScheduleTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnDeleteDaySchedule "
                 + " AFTER DELETE ON " + DayScheduleEntry.Contract.TABLE_NAME
@@ -186,12 +194,16 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         db.execSQL(sSqlStatement);
     }
 
+    /**
+     * Creates a trigger for Updates (that can be optionally disabled).  Keeps "position" in sync for all records.
+     * @param db
+     */
     private void createDayScheduleTriggerOnUpdateDaySchedulePosition(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnUpdateDaySchedulePosition "
                 + " AFTER UPDATE ON " + DayScheduleEntry.Contract.TABLE_NAME
                 + " WHEN old." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
                 +       " <> new." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION
-                +       " and 'Yes' = (SELECT " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE
+                +       " and 'No' = (SELECT " + ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE
                 +       " FROM " + ExerciseAppDBSetting.Contract.TABLE_NAME + " WHERE "
                 +       ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY + " = '"
                 +       ExerciseAppDBSetting.SETTING_KEY_DISABLE_TRIGGERS + "')"
