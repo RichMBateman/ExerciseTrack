@@ -141,8 +141,9 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
                 "RemoveOnDeleteExercise",
                 ExerciseEntry.Contract.TABLE_NAME,
-                DayScheduleEntry.Contract.TABLE_NAME, ExerciseEntry.Contract.Columns.COL_NAME_ID,
-                DayScheduleEntry.Contract.Columns.COL_NAME_ID);
+                DayScheduleEntry.Contract.TABLE_NAME,
+                ExerciseEntry.Contract.Columns.COL_NAME_ID,
+                DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID);
     }
 
     /**

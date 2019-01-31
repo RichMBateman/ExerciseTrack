@@ -7,27 +7,47 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/cdblock_txtview_exercise_name"
-        android:layout_width="wrap_content"
+        android:id="@+id/cdblock_txtview_enter_num_reps"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Enter Num Reps:" />
+
+    <TextView
+        android:id="@+id/cdblock_txtview_weightlabel"
+        android:layout_width="155dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/cdblock_txtview_exercise_name"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Enter Weight:" />
+
+    <TextView
+        android:id="@+id/cdblock_txtview_exercise_name"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Exercise Name" />
 
     <EditText
         android:id="@+id/cdblock_ted_weight"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_width="155dp"
+        android:layout_height="38dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="95"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cdblock_txtview_exercise_name"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_weightlabel" />
 
     <EditText
         android:id="@+id/cdblock_ted_newsetreps"
@@ -47,18 +67,21 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Button"
+        android:text="Complete Set"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cdblock_ted_newsetreps"
         app:layout_constraintTop_toBottomOf="@+id/cdblock_ted_weight" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/cdblock_recview_finishedsets"
+    <LinearLayout
+        android:id="@+id/cdblock_linearlayout_finishedsets"
         android:layout_width="368dp"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/cdblock_seekbar_difficulty"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cdblock_ted_newsetreps" />
@@ -75,7 +98,7 @@
         android:progress="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_recview_finishedsets" />
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_linearlayout_finishedsets" />
 
     <TextView
         android:id="@+id/cdblock_txtview_totalreps"
@@ -83,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="Total Reps: 50"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cdblock_seekbar_difficulty" />
 </android.support.constraint.ConstraintLayout>

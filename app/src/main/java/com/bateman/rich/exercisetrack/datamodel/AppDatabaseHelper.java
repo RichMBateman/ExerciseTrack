@@ -26,7 +26,7 @@ public class AppDatabaseHelper {
                 + " FOR EACH ROW"
                 + " BEGIN"
                 + " DELETE FROM " + childTableName
-                + " WHERE " + childFkIdColName + " = OLD." + parentIdColName + ";"
+                + " WHERE " + childTableName + "." + childFkIdColName + " = OLD." + parentIdColName + ";"
                 + " END;";
         db.execSQL(sSqlStatement);
     }

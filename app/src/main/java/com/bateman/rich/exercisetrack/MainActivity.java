@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +32,14 @@ import com.bateman.rich.exercisetrack.datamodel.TestData;
 import com.bateman.rich.exercisetrack.gui.AppDialog;
 import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
+import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-    implements AppDialog.DialogEvents {
+    implements AppDialog.DialogEvents,
+        LoaderManager.LoaderCallbacks<Cursor> {
+
     private static final String TAG = "MainActivity";
     private static final int DIALOG_ID_CLEAR_EXERCISE_HISTORY=1001;
     private static final int DIALOG_ID_PURGE_SYSTEM_DATA=1002;
@@ -39,13 +47,24 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog m_dialog = null;         // module scope because we need to dismiss it in onStop
     // e.g. when orientation changes) to avoid memory leaks.
 
+    private Button m_btnStartStop;
+    private Button m_btnRest;
+    private TextView m_textViewSecondsToRest;
+
+    private static final int LOADER_ID = 0;
+    private RVAdapterCurrentDayExercise m_rvAdapterCurrentDayExercise;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: start");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        m_btnStartStop = findViewById(R.id.cd_btn_start_stop);
+        m_btnRest = findViewById(R.id.cd_btn_rest);
+        m_textViewSecondsToRest = findViewById(R.id.cd_ted_restseconds);
     }
 
     @Override
@@ -245,5 +264,21 @@ public class MainActivity extends AppCompatActivity
                 // No action required.
                 break;
         }
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 }
