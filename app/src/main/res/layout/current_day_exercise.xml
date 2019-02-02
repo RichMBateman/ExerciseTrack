@@ -15,36 +15,57 @@
         android:layout_marginTop="8dp"
         android:text="Start"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cd_tv_instructions_to_start" />
 
     <Button
         android:id="@+id/cd_btn_rest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="98dp"
+        android:layout_height="52dp"
         android:layout_marginStart="8dp"
-        android:text="Rest"
-        app:layout_constraintBaseline_toBaselineOf="@+id/cd_btn_start_stop"
-        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop" />
+        android:layout_marginEnd="8dp"
+        android:lines="2"
+        android:maxLines="2"
+        android:minLines="2"
+        android:text="REST (Seconds)"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cd_ted_restseconds"
+        tools:layout_editor_absoluteY="51dp" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
+        tools:layout_editor_absoluteY="51dp" />
 
     <EditText
         android:id="@+id/cd_ted_restseconds"
-        android:layout_width="176dp"
+        android:layout_width="78dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintBaseline_toBaselineOf="@+id/cd_btn_rest"
-        app:layout_constraintStart_toEndOf="@+id/cd_btn_rest" />
+        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
+        app:layout_constraintTop_toBottomOf="@+id/cd_tv_instructions_to_start" />
 
     <include
         layout="@layout/current_day_exercise_blockentry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="368dp"
+        android:layout_height="205dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cd_btn_rest" />
+
+    <TextView
+        android:id="@+id/cd_tv_instructions_to_start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Please create some exercises and schedules to get started."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

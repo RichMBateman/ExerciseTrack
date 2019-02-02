@@ -6,6 +6,9 @@ import android.provider.BaseColumns;
 
 import java.util.Date;
 
+/**
+ * Obsolete class
+ */
 public class LogEntry {
     private long m_id;
     private long m_dayScheduleId;

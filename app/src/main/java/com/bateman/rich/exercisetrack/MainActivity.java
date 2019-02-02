@@ -21,10 +21,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
+import com.bateman.rich.exercisetrack.datamodel.ExerciseAppDBSetting;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogDailyExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogEntry;
@@ -47,12 +50,28 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog m_dialog = null;         // module scope because we need to dismiss it in onStop
     // e.g. when orientation changes) to avoid memory leaks.
 
+    private TextView m_textViewInstructions;
     private Button m_btnStartStop;
     private Button m_btnRest;
     private TextView m_textViewSecondsToRest;
+    private View m_currentExerciseLayout;
+
+    private LinearLayout m_linearLayoutDailyReminders;
+    private TextView m_textViewEnterNumReps;
+    private TextView m_textViewWeightLabel;
+    private TextView m_textViewExerciseName;
+    private TextView m_textViewWeightInput;
+    private TextView m_textNewSetRepsInput;
+    private Button m_btnCompleteSet;
+    private LinearLayout m_linearLayoutFinishedSets;
+    private SeekBar m_seekBarDifficulty;
+    private TextView m_textViewDifficultyOutput;
 
     private static final int LOADER_ID = 0;
     private RVAdapterCurrentDayExercise m_rvAdapterCurrentDayExercise;
+
+    private long m_currentDayScheduleId;
+    private LogDailyExerciseEntry m_currentLogDailyExerciseEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +81,19 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        m_btnStartStop = findViewById(R.id.cd_btn_start_stop);
-        m_btnRest = findViewById(R.id.cd_btn_rest);
-        m_textViewSecondsToRest = findViewById(R.id.cd_ted_restseconds);
+        setupGui();
+        hookupButtonEvents();
+
+        determineCurrentExercise();
+    }
+
+    private void hookupButtonEvents() {
+        m_btnCompleteSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
@@ -280,5 +309,77 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
 
+    }
+
+    private void setupGui() {
+        m_textViewInstructions = findViewById(R.id.cd_tv_instructions_to_start);
+        m_btnStartStop = findViewById(R.id.cd_btn_start_stop);
+        m_btnRest = findViewById(R.id.cd_btn_rest);
+        m_textViewSecondsToRest = findViewById(R.id.cd_ted_restseconds);
+        m_currentExerciseLayout = findViewById(R.id.cd_main_constraint_layout);
+
+        m_textViewEnterNumReps = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
+        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
+        m_textViewExerciseName = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_exercise_name);
+        m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
+        m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
+        m_btnCompleteSet = m_currentExerciseLayout.findViewById(R.id.cdblock_btn_newsetreps);
+        m_linearLayoutFinishedSets = m_currentExerciseLayout.findViewById(R.id.cdblock_linearlayout_finishedsets);
+        m_seekBarDifficulty = m_currentExerciseLayout.findViewById(R.id.cdblock_seekbar_difficulty);
+        m_textViewDifficultyOutput = m_currentExerciseLayout.findViewById(R.id.cdblock_tv_difficulty);
+    }
+
+    private void determineCurrentExercise() {
+        Cursor cursor = this.getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
+        if(cursor != null && cursor.getCount() > 0) {
+            m_textViewInstructions.setVisibility(View.GONE);
+            m_textViewSecondsToRest.setVisibility(View.VISIBLE);
+            m_btnRest.setVisibility(View.VISIBLE);
+            m_btnStartStop.setVisibility(View.VISIBLE);
+            m_currentExerciseLayout.setVisibility(View.VISIBLE);
+
+            Cursor cursorDBSettings = getContentResolver().query(ExerciseAppDBSetting.Contract.CONTENT_URI, new String[]{ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE},
+                    ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY +"=?", new String[]{ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY}, null);
+
+            long dayScheduleId = -1;
+            if(cursorDBSettings != null && cursorDBSettings.getCount() > 0) {
+                cursorDBSettings.moveToFirst();
+                dayScheduleId = cursorDBSettings.getLong(0);
+            }
+
+            // Attempt to find the day schedule with this id.  If you cannot find it, find the first day schedule (by position) and update the setting.
+            Cursor matchingDaySchedule = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null,
+                    DayScheduleEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(dayScheduleId)}, null);
+            if(matchingDaySchedule == null || matchingDaySchedule.getCount() == 0) {
+                matchingDaySchedule = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null,
+                        null, null, DayScheduleEntry.Contract.Columns.COL_NAME_POSITION);
+            }
+            matchingDaySchedule.moveToFirst();
+            m_currentDayScheduleId = matchingDaySchedule.getLong(matchingDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+
+            Cursor cursorUnfinishedExercise = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI,
+                    null, LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " is null",
+                    null, null);
+            if(cursorUnfinishedExercise != null && cursorUnfinishedExercise.getCount() > 0) {
+                cursorUnfinishedExercise.moveToFirst();
+                m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
+            } else {
+                m_currentLogDailyExerciseEntry = LogDailyExerciseEntry.fromDayScheduleId(this, m_currentDayScheduleId);
+            }
+
+            populateGuiFromLogDailyExerciseEntry();
+
+        } else {
+            m_textViewInstructions.setVisibility(View.VISIBLE);
+            m_textViewSecondsToRest.setVisibility(View.GONE);
+            m_btnRest.setVisibility(View.GONE);
+            m_btnStartStop.setVisibility(View.GONE);
+            m_currentExerciseLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void populateGuiFromLogDailyExerciseEntry() {
+        ExerciseEntry exerciseEntry = m_currentLogDailyExerciseEntry.getExerciseEntry();
+        m_textViewExerciseName.setText(exerciseEntry.getName());
     }
 }

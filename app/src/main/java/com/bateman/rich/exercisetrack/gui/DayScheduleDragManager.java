@@ -92,26 +92,46 @@ public class DayScheduleDragManager {
         placeholder.setOnDragListener(l);
     }
 
-    private void setDropHerePlaceholderVisibility(boolean showDropHerePlaceholders) {
+    private void setDropHerePlaceholderVisibility(boolean showDropHerePlaceholders, boolean applyRulesForDaySeparatorSource) {
         int visibility = (showDropHerePlaceholders ? View.VISIBLE : View.GONE);
         RVAdapterDaySchedule.ViewHolder viewHolder;
         RecyclerView recyclerView = m_rvAdapterDaySchedule.getRecyclerView();
 
         for(int viewHolderIndex = 0; viewHolderIndex <= recyclerView.getChildCount(); viewHolderIndex++) {
+            boolean isItemAboveAnExercise = m_rvAdapterDaySchedule.isItemAboveAnExercise(viewHolderIndex);
+            boolean isCurrentItemADaySeparator = m_rvAdapterDaySchedule.isItemDaySeparator(viewHolderIndex);
+
             viewHolder = (RVAdapterDaySchedule.ViewHolder) recyclerView.findViewHolderForAdapterPosition(viewHolderIndex);
             if(viewHolder != null) {
                 if(viewHolderIndex == 0 && recyclerView.getChildCount() == 1) {
-                    // In this case, we only have one valid "drop here" text view, because there are no day schedules.
                     if(viewHolder.getTextViewExerciseName().getVisibility() == View.GONE) {
-                        viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                        // In this case, we only have one valid "drop here" text view, because there are no day schedules.
+                        // You cannot drag a day separator into an empty list. (so never show or hide... keep hidden)
+                        if(!applyRulesForDaySeparatorSource) {
+                            viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                        }
                     } else {
-                        viewHolder.getTextViewDropHereTop().setVisibility(visibility);
-                        viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                        // There's actually one valid exercise.
+                        // The only reason to show or hide items is if the current, only item, is an exercise.
+                        if(!isCurrentItemADaySeparator) {
+                            viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                            if(!applyRulesForDaySeparatorSource) {
+                                viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                            }
+                        }
                     }
                 } else {
-                    viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                    boolean okToShowTopDropHere = (!applyRulesForDaySeparatorSource) || (isItemAboveAnExercise && !isCurrentItemADaySeparator);
+                    if(okToShowTopDropHere) {
+                        viewHolder.getTextViewDropHereTop().setVisibility(visibility);
+                    }
                     if (viewHolderIndex == m_rvAdapterDaySchedule.getRecyclerView().getChildCount() - 1) {
-                        viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                        // It's ok to show the last bottom drop here if we're dragging an exercise...
+                        // OR we are dragging a day separator and the current item is an exercise)
+                        boolean okToShowFinalBottomDropHere = (!applyRulesForDaySeparatorSource) || (!isCurrentItemADaySeparator);
+                        if(okToShowFinalBottomDropHere) {
+                            viewHolder.getTextViewDropHereBot().setVisibility(visibility);
+                        }
                     }
                 }
             } else {
@@ -153,7 +173,8 @@ public class DayScheduleDragManager {
 
         private void handleStartDrag(View view) {
             // As we start dragging, make all appropriate "Drop Here" placeholders visible in the right recycler view.
-            setDropHerePlaceholderVisibility(true);
+            boolean applyDaySepRules = (m_exerciseId == RVAdapterDaySchedule.DAY_SEPARATOR_ID);
+            setDropHerePlaceholderVisibility(true, applyDaySepRules);
 
             ClipData dragData = ClipData.newPlainText("", "");
             View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
@@ -225,7 +246,7 @@ public class DayScheduleDragManager {
 
 
                     // As we stop dragging, make all appropriate "Drop Here" placeholders invisible in the right recycler view.
-                    setDropHerePlaceholderVisibility(false);
+                    setDropHerePlaceholderVisibility(false, false);
 
 
                     Log.d(TAG, "onDrag: dropped exercise " + exerciseId + " onto schedule.");
@@ -243,7 +264,7 @@ public class DayScheduleDragManager {
                 case DragEvent.ACTION_DRAG_ENDED:
                     //v.setBackground(m_normalShape);
                     v.setBackground(null); // this will clear the background.
-                    setDropHerePlaceholderVisibility(false);
+                    setDropHerePlaceholderVisibility(false, false);
                 default:
                     break;
             }

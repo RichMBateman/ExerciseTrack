@@ -35,7 +35,7 @@ public class DayScheduleEntry {
 
         private Contract() {} // prevent instantiation
 
-        static class Columns {
+        public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
             public static final String COL_NAME_EXERCISE_ENTRY_ID = "ExerciseEntryId";
             public static final String COL_NAME_POSITION = "Position";
@@ -53,8 +53,9 @@ public class DayScheduleEntry {
 
         private ContractViewDaySchedules() {} // prevent instantiation
 
-        static class Columns {
+        public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
+            public static final String COL_NAME_EXERCISE_ENTRY_ID = Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID;
             public static final String COL_NAME_EXERCISE_ENTRY = ExerciseEntry.Contract.Columns.COL_NAME_NAME;
             public static final String COL_NAME_POSITION = Contract.Columns.COL_NAME_POSITION;
             public static final String COL_NAME_IS_DAY_SEPARATOR = Contract.Columns.COL_NAME_IS_DAY_SEPARATOR;

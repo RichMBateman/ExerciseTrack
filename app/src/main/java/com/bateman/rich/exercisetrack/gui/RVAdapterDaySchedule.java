@@ -33,6 +33,7 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     private DayScheduleDragManager m_dayScheduleDragManager;
     private RecyclerView m_recyclerView;
     private long m_currentDayScheduleId;
+    private RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
     //    private final ArrayList<String> m_itemList = new ArrayList<>();
 
@@ -42,6 +43,8 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         m_cursor = cursor;
         m_activity=activitiy;
     }
+
+    public void setRvAdapterExerciseEntry(RVAdapterExerciseEntry rvAdapterExerciseEntry) {m_rvAdapterExerciseEntry=rvAdapterExerciseEntry;}
 
     /**
      * A handy method that is called when the recycler viwe is attached to the adapter.
@@ -79,6 +82,28 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         return new RVAdapterDaySchedule.ViewHolder(view);
     }
 
+    public boolean isItemAboveAnExercise(int currentDaySchedulePosition) {
+        boolean meetsCondition = false;
+        int adapterPositionCurrentItem = currentDaySchedulePosition - 1;
+        if(m_cursor.moveToPosition(adapterPositionCurrentItem)) {
+            DayScheduleEntry entry = new DayScheduleEntry(m_cursor);
+            if(entry.getExerciseEntryId() != DAY_SEPARATOR_ID)
+                meetsCondition=true;
+        }
+        return meetsCondition;
+    }
+
+    public boolean isItemDaySeparator(int currentDaySchedulePosition) {
+        boolean meetsCondition = false;
+        int adapterPositionCurrentItem = currentDaySchedulePosition;
+        if(m_cursor.moveToPosition(adapterPositionCurrentItem)) {
+            DayScheduleEntry entry = new DayScheduleEntry(m_cursor);
+            if(entry.getExerciseEntryId() == DAY_SEPARATOR_ID)
+                meetsCondition=true;
+        }
+        return meetsCondition;
+    }
+
     /**
      *
      * @param viewHolder
@@ -90,8 +115,11 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         viewHolder.textViewDropHereTop.setVisibility(View.GONE);
         viewHolder.textViewDropHereBot.setVisibility(View.GONE);
 
-        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereTop, viewHolder, position + 1);
-        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereBot, viewHolder, position + 2);
+        int daySchedulePosition = position + 1; // daySchedulePosition is 1-based.  ViewHolder position is 0-based.
+        // If you drop something ABOVE this, this item's position will be increased by one; the new item will then take its current position
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereTop, viewHolder, daySchedulePosition);
+        // If you drop something BELOW this, it's position will be one more than this.
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereBot, viewHolder, daySchedulePosition + 1);
 
         if(m_cursor == null || m_cursor.getCount() == 0) {
             Log.d(TAG, "onBindViewHolder: No day schedule entries to load.");
@@ -248,6 +276,8 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         if(newCursor != null) {
             // notify the observers about the new cursor
             notifyDataSetChanged();
+            // i know this sucks
+            m_rvAdapterExerciseEntry.notifyDataSetChanged();
         } else {
             // notify the observers about the lack of a data set
             notifyItemRangeRemoved(0, numItems);

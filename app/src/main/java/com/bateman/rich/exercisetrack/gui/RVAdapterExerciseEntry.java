@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bateman.rich.exercisetrack.R;
+import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 
 /**
@@ -69,6 +70,15 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
         return new ExerciseEntryViewHolder(view);
     }
 
+    private int getCountOfDaySchedules() {
+        Cursor cursorOfDaySchedules = m_context.getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
+        int countOfSchedules = 0;
+        if(cursorOfDaySchedules != null) {
+            countOfSchedules = cursorOfDaySchedules.getCount();
+        }
+        return countOfSchedules;
+    }
+
     /**
      * Checks to see whether there is already an exercise with this name.
      * @param name The name of the exercise to check.
@@ -101,25 +111,28 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
                     viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
                     break;
                 case DAY_SCHEDULE:
-                    Log.d(TAG, "creating empty day separator");
-                    viewHolder.textViewExerciseName.setText(RVAdapterDaySchedule.DAY_SEPARATOR_LABEL);
-                    viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
-                    viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
+                    // If there's no exercises... actually don't do anything.
+//                    Log.d(TAG, "creating empty day separator");
+//                    viewHolder.textViewExerciseName.setText(RVAdapterDaySchedule.DAY_SEPARATOR_LABEL);
+//                    viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
+//                    viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
                     break;
             }
         } else {
-            boolean isDaySeparator = (position == 0 && m_mode == Mode.DAY_SCHEDULE);
-            if(!isDaySeparator) {
-                if(m_mode == Mode.DAY_SCHEDULE) {
-                    position--; // Decrement the position, because the 0th element is our "Day Separator" placeholder.
+            boolean daySchedulesExist = (getCountOfDaySchedules() > 0);
+            boolean isDaySeparatorItem = (position == 0 && m_mode == Mode.DAY_SCHEDULE && daySchedulesExist);
+            if(!isDaySeparatorItem) {
+                if(m_mode == Mode.DAY_SCHEDULE && daySchedulesExist) {
+                    position--; // Decrement the position, because the 0th element is our "Day Separator" placeholder, which only exists
+                        // if someone created day schedules already.
                 }
                 if(!m_cursor.moveToPosition(position)) {
                     throw new IllegalStateException("Couldn't move cursor to position " + position);
                 }
             }
-            final ExerciseEntry exerciseEntry = (isDaySeparator ? new ExerciseEntry(RVAdapterDaySchedule.DAY_SEPARATOR_ID,
+            final ExerciseEntry exerciseEntry = (isDaySeparatorItem ? new ExerciseEntry(RVAdapterDaySchedule.DAY_SEPARATOR_ID,
                     RVAdapterDaySchedule.DAY_SEPARATOR_LABEL, false) : new ExerciseEntry(m_cursor));
-            if (!isDaySeparator){
+            if (!isDaySeparatorItem){
                 viewHolder.textViewExerciseName.setText(exerciseEntry.getName());
                 viewHolder.checkBoxIsReminder.setChecked(exerciseEntry.isDailyReminder());
             } else {
@@ -174,13 +187,20 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
     public int getItemCount() {
         Log.d(TAG, "getItemCount: starts");
         if((m_cursor == null) || (m_cursor.getCount() == 0)) {
+            switch(m_mode) {
+                case EXERCISE_ENTRY:
+                    return 1; // If we're in the exercise entry mode, return 1, so we can show instructions.
+                case DAY_SCHEDULE:
+                    return 0; // If we're in day schedule mode, show nothing.
+            }
             return 1; // fib, because we populate a single ViewHolder with instructions, or the DAY_SEPARATOR for day schedule mode.
         } else {
             switch(m_mode) {
                 case EXERCISE_ENTRY:
                     return m_cursor.getCount();
                 case DAY_SCHEDULE:
-                    return m_cursor.getCount() + 1; // The first entry is always the DAY_SEPARATOR
+                    int daySeparatorInclusion = (getCountOfDaySchedules() > 0 ? 1 : 0);
+                    return m_cursor.getCount() + daySeparatorInclusion; // The first entry is always the DAY_SEPARATOR, IFF there are existing day schedules.
             }
         }
         return 0;

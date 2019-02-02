@@ -137,14 +137,14 @@ public class TestData {
     }
 
     private static void saveLogDaliyExerciseEntry(ContentResolver contentResolver, LogDailyExerciseEntry entry) {
-        ContentValues values = new ContentValues();
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID, entry.getId());
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID, entry.getExerciseId());
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_LOG_ID, entry.getLogId());
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE, entry.getTotalRepsDone());
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT, entry.getWeight());
-        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY, entry.getDifficulty());
-
-        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
+//        ContentValues values = new ContentValues();
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID, entry.getId());
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID, entry.getExerciseId());
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_LOG_ID, entry.getLogId());
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE, entry.getTotalRepsDone());
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT, entry.getWeight());
+//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY, entry.getDifficulty());
+//
+//        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
     }
 }

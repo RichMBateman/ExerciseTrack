@@ -122,6 +122,7 @@ public class DayScheduleListActivity extends AppCompatActivity
 
         m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(RVAdapterExerciseEntry.Mode.DAY_SCHEDULE, this,null);
         m_rvAdapterDaySchedule = new RVAdapterDaySchedule(this,null, this);
+        m_rvAdapterDaySchedule.setRvAdapterExerciseEntry(m_rvAdapterExerciseEntry);
 
         m_dayScheduleDragManager = new DayScheduleDragManager(this, m_rvAdapterExerciseEntry, m_rvAdapterDaySchedule, m_recyclerViewAvailableExercises, m_recyclerViewScheduledDays);
         m_rvAdapterExerciseEntry.setDayScheduleDragManager(m_dayScheduleDragManager);

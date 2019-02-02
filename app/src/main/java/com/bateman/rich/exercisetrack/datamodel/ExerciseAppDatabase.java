@@ -56,11 +56,11 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         createDayScheduleTriggerOnUpdateDaySchedulePosition(db);
         createViewDayScheduleWithExerciseNames(db);
 
-        createLogTable(db);
-        createLogTriggerOnDeleteDaySchedule(db);
+//        createLogTable(db);
+//        createLogTriggerOnDeleteDaySchedule(db);
 
         createLogDailyExerciseTable(db);
-        createLogDailyExerciseTriggerOnDeleteLog(db);
+        //createLogDailyExerciseTriggerOnDeleteLog(db);
         createLogDailyExerciseTriggerOnDeleteExercise(db);
         Log.d(TAG, "onCreate: ends");
     }
@@ -221,6 +221,7 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     private void createViewDayScheduleWithExerciseNames(SQLiteDatabase db) {
         String sqlStatement = "CREATE VIEW " + DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME
                 + " AS SELECT " + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.ContractViewDaySchedules.Columns.COL_NAME_ID + ", "
+                + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.ContractViewDaySchedules.Columns.COL_NAME_EXERCISE_ENTRY_ID + ", "
                 + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_NAME + ", "
                 + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_POSITION + ", "
                 + DayScheduleEntry.Contract.TABLE_NAME + "." + DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR
@@ -241,23 +242,23 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
      * The total number of minutes devoted to a day of exercise can be derived.
      * @param db The SQLite database
      */
-    private void createLogTable(SQLiteDatabase db) {
-        String sSqlStatement = "CREATE TABLE " + LogEntry.Contract.TABLE_NAME + " ("
-                + LogEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
-                + LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID + " INTEGER NOT NULL, "
-                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
-                + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME);";
-        Log.d(TAG, sSqlStatement);
-        db.execSQL(sSqlStatement);
-    }
-
-    private void createLogTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
-        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-                "RemoveOnDeleteDaySchedule",
-                DayScheduleEntry.Contract.TABLE_NAME,
-                LogEntry.Contract.TABLE_NAME, DayScheduleEntry.Contract.Columns.COL_NAME_ID,
-                LogEntry.Contract.Columns.COL_NAME_ID);
-    }
+//    private void createLogTable(SQLiteDatabase db) {
+//        String sSqlStatement = "CREATE TABLE " + LogEntry.Contract.TABLE_NAME + " ("
+//                + LogEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
+//                + LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID + " INTEGER NOT NULL, "
+//                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
+//                + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME);";
+//        Log.d(TAG, sSqlStatement);
+//        db.execSQL(sSqlStatement);
+//    }
+//
+//    private void createLogTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
+//        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
+//                "RemoveOnDeleteDaySchedule",
+//                DayScheduleEntry.Contract.TABLE_NAME,
+//                LogEntry.Contract.TABLE_NAME, DayScheduleEntry.Contract.Columns.COL_NAME_ID,
+//                LogEntry.Contract.Columns.COL_NAME_ID);
+//    }
 
     /**
      * The log daily exercise table keeps track of the specific exercise done on a certain day,
@@ -269,23 +270,24 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     private void createLogDailyExerciseTable(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TABLE " + LogDailyExerciseEntry.Contract.TABLE_NAME + " ("
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_LOG_ID + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID + " INTEGER NOT NULL, "
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT + " INTEGER NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY + " INTEGER NOT NULL);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
-
-    private void createLogDailyExerciseTriggerOnDeleteLog(SQLiteDatabase db) {
-        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-                "RemoveOnDeleteLogEntry",
-                LogEntry.Contract.TABLE_NAME,
-                LogDailyExerciseEntry.Contract.TABLE_NAME,
-                LogEntry.Contract.Columns.COL_NAME_ID,
-                LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
-    }
+//
+//    private void createLogDailyExerciseTriggerOnDeleteLog(SQLiteDatabase db) {
+//        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
+//                "RemoveOnDeleteLogEntry",
+//                LogEntry.Contract.TABLE_NAME,
+//                LogDailyExerciseEntry.Contract.TABLE_NAME,
+//                LogEntry.Contract.Columns.COL_NAME_ID,
+//                LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
+//    }
 
     private void createLogDailyExerciseTriggerOnDeleteExercise(SQLiteDatabase db) {
         AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,

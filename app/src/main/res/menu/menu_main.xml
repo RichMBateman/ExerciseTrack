@@ -7,6 +7,10 @@
         android:orderInCategory="101"
         android:title="Schedules" />
     <item
+        android:id="@+id/menu_see_records"
+        android:orderInCategory="102"
+        android:title="View Records" />
+    <item
         android:id="@+id/menu_exercise_list"
         android:orderInCategory="100"
         android:title="Exercises" />
