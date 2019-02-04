@@ -75,6 +75,7 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
         int countOfSchedules = 0;
         if(cursorOfDaySchedules != null) {
             countOfSchedules = cursorOfDaySchedules.getCount();
+            cursorOfDaySchedules.close();
         }
         return countOfSchedules;
     }

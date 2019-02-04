@@ -31,12 +31,14 @@ public class LogDailyExerciseEntry {
 
         cursorDaySchedule.moveToFirst();
         long exerciseId = cursorDaySchedule.getLong(cursorDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID));
+        cursorDaySchedule.close();
 
         Cursor cursorExercise = context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
                     ExerciseEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(exerciseId)}, null);
 
         cursorExercise.moveToFirst();
         entry.m_exerciseEntry = new ExerciseEntry(cursorExercise);
+        cursorExercise.close();
 
         return entry;
     }
@@ -116,6 +118,22 @@ public class LogDailyExerciseEntry {
 
     public void setDifficulty(int difficulty) {
         m_difficulty = difficulty;
+    }
+
+    public Date getStartDateTime() {
+        return m_startDateTime;
+    }
+
+    public void setStartDateTime(Date startDateTime) {
+        m_startDateTime = startDateTime;
+    }
+
+    public Date getEndDateTime() {
+        return m_endDateTime;
+    }
+
+    public void setEndDateTime(Date endDateTime) {
+        m_endDateTime = endDateTime;
     }
 
     @Override

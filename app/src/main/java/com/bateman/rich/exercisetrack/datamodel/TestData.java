@@ -68,6 +68,7 @@ public class TestData {
 
             } while(exerciseEntryCursor.moveToNext());
         }
+        exerciseEntryCursor.close();
     }
 
     private static void saveExerciseEntry(ContentResolver contentResolver, ExerciseEntry entry) {

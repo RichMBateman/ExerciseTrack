@@ -38,6 +38,9 @@ import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
 import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity
     implements AppDialog.DialogEvents,
@@ -56,14 +59,14 @@ public class MainActivity extends AppCompatActivity
     private TextView m_textViewSecondsToRest;
     private View m_currentExerciseLayout;
 
-    private LinearLayout m_linearLayoutDailyReminders;
+    private TextView m_textViewStartTimeLabel;
+    private TextView m_textViewStartTimeDisplay;
     private TextView m_textViewEnterNumReps;
     private TextView m_textViewWeightLabel;
     private TextView m_textViewExerciseName;
     private TextView m_textViewWeightInput;
     private TextView m_textNewSetRepsInput;
     private Button m_btnCompleteSet;
-    private LinearLayout m_linearLayoutFinishedSets;
     private SeekBar m_seekBarDifficulty;
     private TextView m_textViewDifficultyOutput;
 
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity
         hookupButtonEvents();
 
         determineCurrentExercise();
+        flashDailyReminders();
     }
 
     private void hookupButtonEvents() {
@@ -92,6 +96,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        m_btnStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(m_currentLogDailyExerciseEntry.getStartDateTime() == null) {
+                    m_currentLogDailyExerciseEntry.setStartDateTime(new Date());
+                    GregorianCalendar gCal = new GregorianCalendar();
+                    //gCal.setTimeZone(TimeZone.getDefault());
+                    gCal.setTime(m_currentLogDailyExerciseEntry.getStartDateTime());
+                    m_textViewStartTimeLabel.setVisibility(View.VISIBLE);
+                    m_textViewStartTimeDisplay.setVisibility(View.VISIBLE);
+                    int hour = gCal.get(GregorianCalendar.HOUR);
+                    int minute = gCal.get(GregorianCalendar.MINUTE);
+                    int amPm = gCal.get(GregorianCalendar.AM_PM);
+                    String textTime = String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
+                    m_textViewStartTimeDisplay.setText(textTime);
+                    m_btnStartStop.setText("Complete Exercise");
+                } else {
+                    m_currentLogDailyExerciseEntry.setEndDateTime(new Date());
+                    GregorianCalendar gCal = new GregorianCalendar();
+                    gCal.setTime(m_currentLogDailyExerciseEntry.getEndDateTime());
+                    Snackbar.make(m_btnStartStop, "Exercise completed at: " + gCal.toString(), Snackbar.LENGTH_LONG);
+                    m_btnStartStop.setText("Start Exercise");
+                }
             }
         });
     }
@@ -316,17 +346,20 @@ public class MainActivity extends AppCompatActivity
         m_btnStartStop = findViewById(R.id.cd_btn_start_stop);
         m_btnRest = findViewById(R.id.cd_btn_rest);
         m_textViewSecondsToRest = findViewById(R.id.cd_ted_restseconds);
+        m_textViewStartTimeDisplay = findViewById(R.id.cd_tv_startime_value);
+        m_textViewStartTimeLabel = findViewById(R.id.cd_tv_startime_label);
         m_currentExerciseLayout = findViewById(R.id.cd_main_constraint_layout);
 
-        m_textViewEnterNumReps = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
-        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
+        m_textViewStartTimeLabel.setVisibility(View.INVISIBLE);
+        m_textViewStartTimeDisplay.setVisibility(View.INVISIBLE);
+
+//        m_textViewEnterNumReps = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
+//        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
         m_textViewExerciseName = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_exercise_name);
-        m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
-        m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
+//        m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
+//        m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
         m_btnCompleteSet = m_currentExerciseLayout.findViewById(R.id.cdblock_btn_newsetreps);
-        m_linearLayoutFinishedSets = m_currentExerciseLayout.findViewById(R.id.cdblock_linearlayout_finishedsets);
-        m_seekBarDifficulty = m_currentExerciseLayout.findViewById(R.id.cdblock_seekbar_difficulty);
-        m_textViewDifficultyOutput = m_currentExerciseLayout.findViewById(R.id.cdblock_tv_difficulty);
+//        m_seekBarDifficulty = m_currentExerciseLayout.findViewById(R.id.cdblock_seekbar_difficulty);
     }
 
     private void determineCurrentExercise() {
@@ -345,6 +378,7 @@ public class MainActivity extends AppCompatActivity
             if(cursorDBSettings != null && cursorDBSettings.getCount() > 0) {
                 cursorDBSettings.moveToFirst();
                 dayScheduleId = cursorDBSettings.getLong(0);
+                cursorDBSettings.close();
             }
 
             // Attempt to find the day schedule with this id.  If you cannot find it, find the first day schedule (by position) and update the setting.
@@ -356,6 +390,7 @@ public class MainActivity extends AppCompatActivity
             }
             matchingDaySchedule.moveToFirst();
             m_currentDayScheduleId = matchingDaySchedule.getLong(matchingDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+            matchingDaySchedule.close();
 
             Cursor cursorUnfinishedExercise = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI,
                     null, LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " is null",
@@ -363,6 +398,7 @@ public class MainActivity extends AppCompatActivity
             if(cursorUnfinishedExercise != null && cursorUnfinishedExercise.getCount() > 0) {
                 cursorUnfinishedExercise.moveToFirst();
                 m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
+                cursorUnfinishedExercise.close();
             } else {
                 m_currentLogDailyExerciseEntry = LogDailyExerciseEntry.fromDayScheduleId(this, m_currentDayScheduleId);
             }
@@ -381,5 +417,23 @@ public class MainActivity extends AppCompatActivity
     private void populateGuiFromLogDailyExerciseEntry() {
         ExerciseEntry exerciseEntry = m_currentLogDailyExerciseEntry.getExerciseEntry();
         m_textViewExerciseName.setText(exerciseEntry.getName());
+    }
+
+    private void flashDailyReminders() {
+        Cursor cursorReminders = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
+                ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER +"=?", new String[]{"1"}, null);
+        if(cursorReminders!= null) {
+            cursorReminders.moveToFirst();
+            do {
+                ExerciseEntry dailyReminder = new ExerciseEntry(cursorReminders);
+                String reminderText = dailyReminder.getName();
+                Snackbar.make(m_btnStartStop, reminderText, Snackbar.LENGTH_LONG).show();
+            } while(cursorReminders.moveToNext());
+            cursorReminders.close();
+        }
+    }
+
+    private void completeExercise() {
+
     }
 }

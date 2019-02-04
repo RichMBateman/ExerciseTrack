@@ -7,6 +7,15 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:layout_editor_absoluteY="81dp">
 
+    <TextView
+        android:id="@+id/cd_tv_startime_value"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/cd_tv_startime_label"
+        app:layout_constraintTop_toBottomOf="@+id/cd_tv_startime_label"
+        tools:text="12:31pm" />
+
     <Button
         android:id="@+id/cd_btn_start_stop"
         android:layout_width="wrap_content"
@@ -28,33 +37,37 @@
         android:minLines="2"
         android:text="REST (Seconds)"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cd_ted_restseconds"
-        tools:layout_editor_absoluteY="51dp" />
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
-        tools:layout_editor_absoluteY="51dp" />
+        app:layout_constraintStart_toEndOf="@+id/cd_ted_restseconds"
+        app:layout_constraintTop_toTopOf="@+id/cd_ted_restseconds" />
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
+    tools:layout_editor_absoluteY="51dp" />
 
     <EditText
         android:id="@+id/cd_ted_restseconds"
-        android:layout_width="78dp"
+        android:layout_width="49dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
-        app:layout_constraintTop_toBottomOf="@+id/cd_tv_instructions_to_start" />
+        android:text="0"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toEndOf="@+id/cd_tv_startime_label"
+        app:layout_constraintTop_toBottomOf="@+id/cd_tv_instructions_to_start"
+        tools:text="0" />
 
     <include
         layout="@layout/current_day_exercise_blockentry"
-        android:layout_width="368dp"
-        android:layout_height="205dp"
+        android:layout_width="wrap_content"
+        android:layout_height="221dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cd_btn_rest" />
+        app:layout_constraintTop_toBottomOf="@+id/cd_btn_start_stop" />
 
     <TextView
         android:id="@+id/cd_tv_instructions_to_start"
@@ -67,5 +80,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cd_tv_startime_label"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="Start Time:"
+        app:layout_constraintStart_toEndOf="@+id/cd_btn_start_stop"
+        app:layout_constraintTop_toTopOf="@+id/cd_btn_start_stop" />
 
 </android.support.constraint.ConstraintLayout>

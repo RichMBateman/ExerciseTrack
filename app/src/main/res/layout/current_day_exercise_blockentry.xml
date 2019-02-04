@@ -1,155 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cd_main_constraint_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cd_main_constraint_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="81dp">
+
+    <TextView
+        android:id="@+id/cdblock_textview_difficulty_label_hard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Hard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cdblock_seekbar_difficulty" />
+
+    <TextView
+        android:id="@+id/cdblock_textview_difficulty_label_easy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Easy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_tv_difficulty_label" />
+
+    <TextView
+        android:id="@+id/cdblock_textview_totalreps_label"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Total Reps:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_enter_num_reps" />
 
     <TextView
         android:id="@+id/cdblock_txtview_enter_num_reps"
         android:layout_width="72dp"
-        android:layout_height="39dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
-        android:lines="2"
-        android:maxLines="2"
-        android:minLines="2"
-        android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toStartOf="@+id/cdblock_ted_newsetreps"
-        app:layout_constraintHorizontal_bias="0.97"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_weightlabel"
-        tools:text="Enter Num Reps:" />
-
-    <TextView
-        android:id="@+id/cdblock_txtview_weightlabel"
-        android:layout_width="71dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="140dp"
         android:layout_marginTop="8dp"
         android:lines="2"
         android:maxLines="2"
         android:minLines="2"
+        android:text="Enter Num Reps:"
         android:textAlignment="viewEnd"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_exercise_name"
-        tools:text="Enter Weight:" />
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_weightlabel" />
+
+    <TextView
+        android:id="@+id/cdblock_txtview_weightlabel"
+        android:layout_width="71dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:lines="2"
+        android:maxLines="2"
+        android:minLines="2"
+        android:text="Enter Weight:"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_textview_exerciselabel" />
 
     <TextView
         android:id="@+id/cdblock_txtview_exercise_name"
         android:layout_width="206dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_linearlayout_daily_reminders"
-        tools:text="Exercise Name" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/cdblock_textview_exerciselabel"
+        app:layout_constraintStart_toEndOf="@+id/cdblock_textview_exerciselabel"
+        tools:text="&lt;Exercise Name&gt;" />
 
     <EditText
         android:id="@+id/cdblock_ted_weight"
-        android:layout_width="155dp"
-        android:layout_height="38dp"
+        android:layout_width="85dp"
+        android:layout_height="41dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="number"
-        android:text="95"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:text="0"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/cdblock_txtview_weightlabel"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_linearlayout_daily_reminders" />
+        app:layout_constraintTop_toTopOf="@+id/cdblock_txtview_weightlabel"
+        tools:text="0" />
 
     <EditText
         android:id="@+id/cdblock_ted_newsetreps"
-        android:layout_width="153dp"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_ted_weight" />
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/cdblock_txtview_enter_num_reps"
+        app:layout_constraintTop_toTopOf="@+id/cdblock_txtview_enter_num_reps"
+        tools:text="0" />
 
     <Button
         android:id="@+id/cdblock_btn_newsetreps"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="199dp"
+        android:layout_height="45dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:text="Complete Set"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.52"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_enter_num_reps" />
-
-    <LinearLayout
-        android:id="@+id/cdblock_linearlayout_finishedsets"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/cdblock_btn_newsetreps"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_btn_newsetreps"
-        app:layout_constraintVertical_bias="0.507" />
+        app:layout_constraintStart_toEndOf="@+id/cdblock_ted_newsetreps"
+        app:layout_constraintTop_toTopOf="@+id/cdblock_ted_newsetreps" />
 
     <SeekBar
         android:id="@+id/cdblock_seekbar_difficulty"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="0dp"
+        android:layout_width="253dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:max="10"
         android:progress="3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_linearlayout_finishedsets" />
+        app:layout_constraintEnd_toStartOf="@+id/cdblock_textview_difficulty_label_hard"
+        app:layout_constraintStart_toEndOf="@+id/cdblock_textview_difficulty_label_easy"
+        app:layout_constraintTop_toTopOf="@+id/cdblock_textview_difficulty_label_easy" />
 
     <TextView
-        android:id="@+id/cdblock_txtview_totalreps"
+        android:id="@+id/cdblock_txtview_totalreps_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="0"
+        app:layout_constraintBaseline_toBaselineOf="@+id/cdblock_textview_totalreps_label"
+        app:layout_constraintStart_toEndOf="@+id/cdblock_textview_totalreps_label" />
+
+    <TextView
+        android:id="@+id/cdblock_tv_difficulty_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="Indicate Difficulty with Slider:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_textview_totalreps_label" />
+
+    <TextView
+        android:id="@+id/cdblock_textview_exerciselabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Total Reps: 50"
+        android:text="Exercise:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_seekbar_difficulty" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/cdblock_tv_difficulty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="Difficulty: "
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.956"
-        app:layout_constraintStart_toEndOf="@+id/cdblock_txtview_totalreps"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_seekbar_difficulty" />
-
-    <LinearLayout
-        android:id="@+id/cdblock_linearlayout_daily_reminders"
-        android:layout_width="369dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 </android.support.constraint.ConstraintLayout>
