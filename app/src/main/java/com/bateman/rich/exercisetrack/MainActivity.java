@@ -2,11 +2,13 @@ package com.bateman.rich.exercisetrack;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -36,11 +38,14 @@ import com.bateman.rich.exercisetrack.gui.AppDialog;
 import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
 import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
+import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
     implements AppDialog.DialogEvents,
@@ -109,21 +114,49 @@ public class MainActivity extends AppCompatActivity
                     gCal.setTime(m_currentLogDailyExerciseEntry.getStartDateTime());
                     m_textViewStartTimeLabel.setVisibility(View.VISIBLE);
                     m_textViewStartTimeDisplay.setVisibility(View.VISIBLE);
-                    int hour = gCal.get(GregorianCalendar.HOUR);
-                    int minute = gCal.get(GregorianCalendar.MINUTE);
-                    int amPm = gCal.get(GregorianCalendar.AM_PM);
-                    String textTime = String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
+                    String textTime = getHourString(gCal);
                     m_textViewStartTimeDisplay.setText(textTime);
                     m_btnStartStop.setText("Complete Exercise");
                 } else {
-                    m_currentLogDailyExerciseEntry.setEndDateTime(new Date());
-                    GregorianCalendar gCal = new GregorianCalendar();
-                    gCal.setTime(m_currentLogDailyExerciseEntry.getEndDateTime());
-                    Snackbar.make(m_btnStartStop, "Exercise completed at: " + gCal.toString(), Snackbar.LENGTH_LONG);
-                    m_btnStartStop.setText("Start Exercise");
+                    completeExercise();
                 }
             }
         });
+
+        m_btnRest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setupRestTimer();
+            }
+        });
+    }
+
+    private void setupRestTimer() {
+        Context appContext = this;
+        final Handler handler = new Handler();
+        final Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                m_textViewSecondsToRest.setText("hello");
+                timer.cancel();
+            }
+        };
+
+        int delayInMs = 0;
+        int periodInMs = 1000;
+        // "schedule" only does it ONE time.
+        //timer.schedule(doAsynchronousTask, delayInMs);
+        timer.scheduleAtFixedRate(doAsynchronousTask, delayInMs, periodInMs);
+
+    }
+
+    private String getHourString(GregorianCalendar gCal) {
+        int hour = gCal.get(GregorianCalendar.HOUR);
+        int minute = gCal.get(GregorianCalendar.MINUTE);
+        int amPm = gCal.get(GregorianCalendar.AM_PM);
+        String textTime = String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
+        return textTime;
     }
 
     @Override
@@ -371,15 +404,7 @@ public class MainActivity extends AppCompatActivity
             m_btnStartStop.setVisibility(View.VISIBLE);
             m_currentExerciseLayout.setVisibility(View.VISIBLE);
 
-            Cursor cursorDBSettings = getContentResolver().query(ExerciseAppDBSetting.Contract.CONTENT_URI, new String[]{ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE},
-                    ExerciseAppDBSetting.Contract.Columns.COL_NAME_KEY +"=?", new String[]{ExerciseAppDBSetting.SETTING_KEY_CURRENT_DAY}, null);
-
-            long dayScheduleId = -1;
-            if(cursorDBSettings != null && cursorDBSettings.getCount() > 0) {
-                cursorDBSettings.moveToFirst();
-                dayScheduleId = cursorDBSettings.getLong(0);
-                cursorDBSettings.close();
-            }
+            long dayScheduleId = ExerciseAppDBSetting.getCurrentDayScheduleId(this);
 
             // Attempt to find the day schedule with this id.  If you cannot find it, find the first day schedule (by position) and update the setting.
             Cursor matchingDaySchedule = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null,
@@ -392,18 +417,7 @@ public class MainActivity extends AppCompatActivity
             m_currentDayScheduleId = matchingDaySchedule.getLong(matchingDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
             matchingDaySchedule.close();
 
-            Cursor cursorUnfinishedExercise = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI,
-                    null, LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " is null",
-                    null, null);
-            if(cursorUnfinishedExercise != null && cursorUnfinishedExercise.getCount() > 0) {
-                cursorUnfinishedExercise.moveToFirst();
-                m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
-                cursorUnfinishedExercise.close();
-            } else {
-                m_currentLogDailyExerciseEntry = LogDailyExerciseEntry.fromDayScheduleId(this, m_currentDayScheduleId);
-            }
-
-            populateGuiFromLogDailyExerciseEntry();
+            updateGuiWithCurrentExercise();
 
         } else {
             m_textViewInstructions.setVisibility(View.VISIBLE);
@@ -433,7 +447,77 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Called when the user signals they are done with the current exercise.
+     */
     private void completeExercise() {
+        m_currentLogDailyExerciseEntry.setEndDateTime(new Date());
+        GregorianCalendar gCal = new GregorianCalendar();
+        gCal.setTime(m_currentLogDailyExerciseEntry.getEndDateTime());
 
+        String textTime = getHourString(gCal);
+        Snackbar.make(m_btnStartStop, "Exercise completed at: " + textTime, Snackbar.LENGTH_LONG).show();
+
+        m_btnStartStop.setText("Start Exercise");
+
+        long currentDayScheduleId = ExerciseAppDBSetting.getCurrentDayScheduleId(this);
+
+        boolean hasNextExercise = false;
+
+        Cursor daySchedules = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
+        if(daySchedules != null) {
+            daySchedules.moveToFirst();
+            do {
+                DayScheduleEntry dse = new DayScheduleEntry(daySchedules);
+                if(dse.getId() == currentDayScheduleId) {
+                    if(daySchedules.moveToNext()) {
+                        DayScheduleEntry nextEntry = new DayScheduleEntry(daySchedules);
+                        if(nextEntry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
+                            hasNextExercise = true;
+                            ExerciseAppDBSetting.setCurrentDayScheduleId(this, nextEntry.getId());
+                        }
+                    }
+                    break;
+                }
+            } while(daySchedules.moveToNext());
+        }
+
+        if(!hasNextExercise) {
+            Snackbar.make(m_btnStartStop, "End of Routine!  Congrats!", Snackbar.LENGTH_LONG).show();
+            prepareNextExercise(daySchedules);
+        }
+
+        daySchedules.close();
+    }
+
+    private void prepareNextExercise(Cursor daySchedules) {
+        boolean exerciseFound = false;
+        if(!daySchedules.moveToNext()) {
+            daySchedules.moveToFirst();
+        }
+        do {
+            DayScheduleEntry entry = new DayScheduleEntry(daySchedules);
+            if(entry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
+                m_currentDayScheduleId = daySchedules.getLong(daySchedules.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+                exerciseFound=true;
+            }
+        } while(!exerciseFound);
+
+        updateGuiWithCurrentExercise();
+    }
+
+    private void updateGuiWithCurrentExercise() {
+        Cursor cursorUnfinishedExercise = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI,
+                null, LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " is null",
+                null, null);
+        if(cursorUnfinishedExercise != null && cursorUnfinishedExercise.getCount() > 0) {
+            cursorUnfinishedExercise.moveToFirst();
+            m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
+            cursorUnfinishedExercise.close();
+        } else {
+            m_currentLogDailyExerciseEntry = LogDailyExerciseEntry.fromDayScheduleId(this, m_currentDayScheduleId);
+        }
+
+        populateGuiFromLogDailyExerciseEntry();
     }
 }
