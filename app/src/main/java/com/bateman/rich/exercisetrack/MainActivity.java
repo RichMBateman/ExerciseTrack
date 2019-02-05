@@ -7,8 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -81,6 +84,10 @@ public class MainActivity extends AppCompatActivity
     private long m_currentDayScheduleId;
     private LogDailyExerciseEntry m_currentLogDailyExerciseEntry;
 
+    private boolean m_resting;
+    private int m_secondsToRest;
+    private Timer m_timerRest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: start");
@@ -126,28 +133,68 @@ public class MainActivity extends AppCompatActivity
         m_btnRest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setupRestTimer();
+                if(!m_resting) {
+                    m_resting = true;
+                    setupRestTimer();
+                } else {
+                    m_resting=false;
+                    cancelRestTimer();
+                    m_textViewSecondsToRest.setText("120");
+                }
+
             }
         });
     }
 
+    private void cancelRestTimer() {
+        m_timerRest.cancel();
+        m_resting=false;
+        m_btnRest.setText("Rest");
+        m_textViewSecondsToRest.setText("120");
+    }
+
+    private void vibratePhone() {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        // That version code is O for Oreo, not ZERO.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(500);
+        }
+    }
+
     private void setupRestTimer() {
+        m_timerRest = new Timer();
         Context appContext = this;
         final Handler handler = new Handler();
-        final Timer timer = new Timer();
+        m_btnRest.setText("Cancel");
+
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
-                m_textViewSecondsToRest.setText("hello");
-                timer.cancel();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int secondsToRest = Integer.parseInt(m_textViewSecondsToRest.getText().toString());
+                        secondsToRest -= 60;
+                        m_textViewSecondsToRest.setText(Integer.toString(secondsToRest));
+                        if(secondsToRest <= 0) {
+                            vibratePhone();
+                            cancelRestTimer();
+                        }
+                    }
+                });
             }
         };
 
         int delayInMs = 0;
-        int periodInMs = 1000;
-        // "schedule" only does it ONE time.
+        int periodInMs = 1000; // we want the event to fire every second.
+        // "schedule" only fires the task ONE time.
         //timer.schedule(doAsynchronousTask, delayInMs);
-        timer.scheduleAtFixedRate(doAsynchronousTask, delayInMs, periodInMs);
+        // "scheduleAtFixedRate" will fire multiple times.
+        m_timerRest.scheduleAtFixedRate(doAsynchronousTask, delayInMs, periodInMs);
 
     }
 
@@ -436,13 +483,15 @@ public class MainActivity extends AppCompatActivity
     private void flashDailyReminders() {
         Cursor cursorReminders = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
                 ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER +"=?", new String[]{"1"}, null);
-        if(cursorReminders!= null) {
-            cursorReminders.moveToFirst();
-            do {
-                ExerciseEntry dailyReminder = new ExerciseEntry(cursorReminders);
-                String reminderText = dailyReminder.getName();
-                Snackbar.make(m_btnStartStop, reminderText, Snackbar.LENGTH_LONG).show();
-            } while(cursorReminders.moveToNext());
+        if(cursorReminders != null) {
+            if(cursorReminders.getCount() > 0) {
+                cursorReminders.moveToFirst();
+                do {
+                    ExerciseEntry dailyReminder = new ExerciseEntry(cursorReminders);
+                    String reminderText = dailyReminder.getName();
+                    Snackbar.make(m_btnStartStop, reminderText, Snackbar.LENGTH_LONG).show();
+                } while (cursorReminders.moveToNext());
+            }
             cursorReminders.close();
         }
     }

@@ -7,4 +7,6 @@
     <string name="about_weblink_21">Instructions available at www.learnprogramming.academy</string>
     <string name="about_email">For support, email tasktimer@learnprogramming.academy</string>
     <string name="about_credits">Icon derived from <b>analog clock</b> at openclipart.org by <b>Anonymous</b></string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 </resources>

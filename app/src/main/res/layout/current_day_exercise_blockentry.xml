@@ -31,10 +31,10 @@
         android:layout_width="97dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:text="Total Reps:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_enter_num_reps" />
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_btn_newsetreps" />
 
     <TextView
         android:id="@+id/cdblock_txtview_enter_num_reps"
@@ -100,15 +100,14 @@
 
     <Button
         android:id="@+id/cdblock_btn_newsetreps"
-        android:layout_width="199dp"
+        android:layout_width="169dp"
         android:layout_height="45dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:text="Complete Set"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cdblock_ted_newsetreps"
-        app:layout_constraintTop_toTopOf="@+id/cdblock_ted_newsetreps" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdblock_txtview_enter_num_reps" />
 
     <SeekBar
         android:id="@+id/cdblock_seekbar_difficulty"
@@ -118,7 +117,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:max="10"
-        android:progress="3"
+        android:progress="5"
         app:layout_constraintEnd_toStartOf="@+id/cdblock_textview_difficulty_label_hard"
         app:layout_constraintStart_toEndOf="@+id/cdblock_textview_difficulty_label_easy"
         app:layout_constraintTop_toTopOf="@+id/cdblock_textview_difficulty_label_easy" />

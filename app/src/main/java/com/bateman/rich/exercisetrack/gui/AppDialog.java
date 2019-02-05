@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bateman.rich.exercisetrack.R;
+
 /**
  * Based on the AppDialog class created by Tim Buchalka in the
  * udemy course Android Java Masterclass - Become an App Developer.
@@ -82,11 +84,11 @@ public class AppDialog extends AppCompatDialogFragment {
 
             positiveStringId = arguments.getInt(DIALOG_POSITIVE_RID);
             if(positiveStringId == 0) {
-               // positiveStringId = R.string.ok; // TODO create string resource for OK
+               positiveStringId = R.string.ok; // TODO create string resource for OK
             }
             negativeStringId = arguments.getInt(DIALOG_NEGATIVE_RID);
             if(negativeStringId == 0) {
-              //  negativeStringId = R.string.cancel; // TODO create string resource for Cancel
+                negativeStringId = R.string.cancel; // TODO create string resource for Cancel
             }
         } else {
             throw new IllegalArgumentException("Must pass DIALOG_ID and DIALOG_MESSAGE in the bundle");
