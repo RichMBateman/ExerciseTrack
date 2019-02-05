@@ -5,7 +5,12 @@ import android.net.Uri;
 
 import java.io.FileOutputStream;
 
-public class FileWriter {
+/**
+ * Good lord... there's already a java.io.FileWriterBad class...
+ * I bet i'm doing something wrong.
+ * Part of this may be write... i had to do a ton of changes until something started working.  Would like to experiment more.
+ */
+public class FileWriterBad {
     /**
      * Write a file.  Returns a Uri representing this file
      * https://developer.android.com/training/data-storage/files

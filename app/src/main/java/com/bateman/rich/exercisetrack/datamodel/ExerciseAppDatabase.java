@@ -271,11 +271,11 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         String sSqlStatement = "CREATE TABLE " + LogDailyExerciseEntry.Contract.TABLE_NAME + " ("
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID + " INTEGER NOT NULL, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME, " // used to be NOT NULL, but means I cannot save without this
                 + LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE + " INTEGER NOT NULL, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT + " INTEGER NOT NULL, "
-                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY + " INTEGER NOT NULL);";
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE + " INTEGER, "
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT + " INTEGER, "
+                + LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY + " INTEGER);";
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }

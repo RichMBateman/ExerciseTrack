@@ -9,12 +9,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,10 +42,12 @@ import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
 import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog m_dialog = null;         // module scope because we need to dismiss it in onStop
     // e.g. when orientation changes) to avoid memory leaks.
 
+    private final Context m_context = this;
+
     private TextView m_textViewInstructions;
     private Button m_btnStartStop;
     private Button m_btnRest;
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity
 
     private TextView m_textViewStartTimeLabel;
     private TextView m_textViewStartTimeDisplay;
-    private TextView m_textViewEnterNumReps;
+    private TextView m_textViewEnterNumRepsLabel;
     private TextView m_textViewWeightLabel;
     private TextView m_textViewExerciseName;
     private TextView m_textViewWeightInput;
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private Button m_btnCompleteSet;
     private SeekBar m_seekBarDifficulty;
     private TextView m_textViewDifficultyOutput;
+    private TextView m_textViewTotalRepsDoneValue;
 
     private static final int LOADER_ID = 0;
     private RVAdapterCurrentDayExercise m_rvAdapterCurrentDayExercise;
@@ -104,10 +108,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void hookupButtonEvents() {
+        m_seekBarDifficulty.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                m_currentLogDailyExerciseEntry.setDifficulty(progress);
+                if(fromUser) {
+                    m_currentLogDailyExerciseEntry.save(m_context);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         m_btnCompleteSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(m_currentLogDailyExerciseEntry.getStartDateTime() == null) {
+                    startExercise();
+                }
 
+                int numRepsToAdd = Integer.parseInt(m_textNewSetRepsInput.getText().toString());
+                m_currentLogDailyExerciseEntry.addToTotalRepsDone(numRepsToAdd);
+                m_currentLogDailyExerciseEntry.save(m_context);
+
+                m_textViewTotalRepsDoneValue.setText(Integer.toString(m_currentLogDailyExerciseEntry.getTotalRepsDone()));
             }
         });
 
@@ -115,15 +146,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if(m_currentLogDailyExerciseEntry.getStartDateTime() == null) {
-                    m_currentLogDailyExerciseEntry.setStartDateTime(new Date());
-                    GregorianCalendar gCal = new GregorianCalendar();
-                    //gCal.setTimeZone(TimeZone.getDefault());
-                    gCal.setTime(m_currentLogDailyExerciseEntry.getStartDateTime());
-                    m_textViewStartTimeLabel.setVisibility(View.VISIBLE);
-                    m_textViewStartTimeDisplay.setVisibility(View.VISIBLE);
-                    String textTime = getHourString(gCal);
-                    m_textViewStartTimeDisplay.setText(textTime);
-                    m_btnStartStop.setText("Complete Exercise");
+                    startExercise();
+                    m_currentLogDailyExerciseEntry.save(m_context);
                 } else {
                     completeExercise();
                 }
@@ -146,6 +170,19 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void startExercise() {
+        flashDailyReminders();
+        m_currentLogDailyExerciseEntry.setStartDateTime(new Date());
+        GregorianCalendar gCal = new GregorianCalendar();
+        //gCal.setTimeZone(TimeZone.getDefault());
+        gCal.setTime(m_currentLogDailyExerciseEntry.getStartDateTime());
+        m_textViewStartTimeLabel.setVisibility(View.VISIBLE);
+        m_textViewStartTimeDisplay.setVisibility(View.VISIBLE);
+        String textTime = getHourString(gCal);
+        m_textViewStartTimeDisplay.setText(textTime);
+        m_btnStartStop.setText("Complete Exercise");
+    }
+
     private void cancelRestTimer() {
         m_timerRest.cancel();
         m_resting=false;
@@ -158,10 +195,12 @@ public class MainActivity extends AppCompatActivity
         // Vibrate for 500 milliseconds
         // That version code is O for Oreo, not ZERO.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            // Default amplitude is based on the device.
+            // Otherwise you can specify a number from 1 and 255
+            v.vibrate(VibrationEffect.createOneShot(1500, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             //deprecated in API 26
-            v.vibrate(500);
+            v.vibrate(1500);
         }
     }
 
@@ -200,6 +239,7 @@ public class MainActivity extends AppCompatActivity
 
     private String getHourString(GregorianCalendar gCal) {
         int hour = gCal.get(GregorianCalendar.HOUR);
+        if(hour == 0) hour = 12; // 12 is represented as 0, not 12.  Great!
         int minute = gCal.get(GregorianCalendar.MINUTE);
         int amPm = gCal.get(GregorianCalendar.AM_PM);
         String textTime = String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
@@ -301,50 +341,99 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void handleMenuEmailReport() {
-        String fileDataString = "";
+        try {
 
-        Cursor cursor = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
-        if(cursor != null & cursor.moveToFirst()) {
-            fileDataString += "<exercise entries>\r\n";
-            do {
-                ExerciseEntry entry = new ExerciseEntry(cursor);
-                fileDataString += entry.toString();
-            } while(cursor.moveToNext());
-            cursor.close();
+
+            String fileDataString = "";
+
+            Cursor cursor = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
+            if (cursor != null & cursor.moveToFirst()) {
+                fileDataString += "<exercise entries>\r\n";
+                do {
+                    ExerciseEntry entry = new ExerciseEntry(cursor);
+                    fileDataString += entry.toString();
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+            cursor = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
+            if (cursor != null & cursor.moveToFirst()) {
+                fileDataString += "<day schedule entries>\r\n";
+                do {
+                    DayScheduleEntry entry = new DayScheduleEntry(cursor);
+                    fileDataString += entry.toString();
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+            cursor = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
+            if (cursor != null & cursor.moveToFirst()) {
+                fileDataString += "<log entries>\r\n";
+                do {
+                    LogDailyExerciseEntry entry = new LogDailyExerciseEntry(cursor);
+                    fileDataString += entry.toString();
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+            //String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+            String baseDir = Environment.getExternalStorageDirectory().toString();
+            // This "exerciseapp_data" will be visible to user on their phone.
+            File myAppDir = new File(baseDir + "/exerciseapp_data");
+            Log.d(TAG, "handleMenuEmailReport: does myAppDir " + myAppDir + " Exist?: " + myAppDir.exists());
+            if(!myAppDir.exists()) myAppDir.mkdirs();
+            Log.d(TAG, "handleMenuEmailReport: does myAppDir " + myAppDir + " Exist?: " + myAppDir.exists());
+
+            String filename = "ExerciseAppData.txt";
+            File writtenFile = new File(myAppDir, filename);
+            if(writtenFile.exists()) writtenFile.delete();
+
+            try {
+                FileOutputStream out = new FileOutputStream(writtenFile);
+                out.write(fileDataString.getBytes());
+                out.flush();
+                out.close();
+            } catch(Exception exc) {
+                Log.e(TAG, "handleMenuEmailReport:", exc);
+            }
+
+            Log.d(TAG, "handleMenuEmailReport: does file exist?: " + writtenFile.exists());
+
+            //File writtenFileDirectory = new File(Environment.getExternalStorageDirectory(), "exerciseApp");
+//            if (!writtenFileDirectory.exists()) {
+//                Log.d(TAG, "handleMenuEmailReport: writtenFileDirectory does not exist.  Creating.  " + writtenFileDirectory);
+//                writtenFileDirectory.mkdirs();
+//                if (!writtenFileDirectory.exists()) {
+//                    Log.d(TAG, "handleMenuEmailReport: writtenFileDirectory STILL does not exist!");
+//                }
+//            }
+            //File writtenFile = new File(writtenFileDirectory, filename);
+            //File writtenFile = new File(baseDir + File.separator + filename);
+//            writtenFile.getParentFile().mkdirs();
+//            if(!writtenFile.exists()) {
+//                writtenFile.createNewFile();
+//            }
+            //FileOutputStream stream = new FileOutputStream(writtenFile);
+            //FileWriter fw = new FileWriter(writtenFile);
+//            FileWriter fw = new FileWriter(writtenFile);
+//            fw.append(fileDataString);
+//            fw.flush();
+//            fw.close();
+
+            //FileWriterBad fileWriter = new FileWriterBad();
+
+            // WOOPS.  this is my own helper class.  Not java.io.FileWriterBad!!!
+            //Uri fileUri = FileWriterBad.writeFile(this, "ExerciseAppData.txt", fileDataString);
+
+            //Uri fileUri = Uri.parse(writtenFile.getAbsolutePath());
+            Uri fileUri = Uri.parse("file://" + writtenFile);
+            Log.d(TAG, "handleMenuEmailReport: file uri to e-mail: " + fileUri);
+            EmailSender.launchEmailIntentWithAttachment(this, "Exercise App Data",fileUri);
+//            Log.d(TAG, "handleMenuEmailReport: fileUri of written file is: " + fileUri);
+//            EmailSender.launchEmailIntentWithAttachment(this, "Exercise App Data", fileUri);
+        } catch (Exception exc) {
+            Log.e(TAG, "handleMenuEmailReport: ", exc);
         }
-
-        cursor = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
-        if(cursor != null & cursor.moveToFirst()) {
-            fileDataString += "<day schedule entries>\r\n";
-            do {
-                DayScheduleEntry entry = new DayScheduleEntry(cursor);
-                fileDataString += entry.toString();
-            } while(cursor.moveToNext());
-            cursor.close();
-        }
-
-        cursor = getContentResolver().query(LogEntry.Contract.CONTENT_URI, null, null, null, null);
-        if(cursor != null & cursor.moveToFirst()) {
-            fileDataString += "<log entries>\r\n";
-            do {
-                LogEntry entry = new LogEntry(cursor);
-                fileDataString += entry.toString();
-            } while(cursor.moveToNext());
-            cursor.close();
-        }
-
-        cursor = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
-        if(cursor != null & cursor.moveToFirst()) {
-            fileDataString += "<exercise entries>\r\n";
-            do {
-                LogDailyExerciseEntry entry = new LogDailyExerciseEntry(cursor);
-                fileDataString += entry.toString();
-            } while(cursor.moveToNext());
-            cursor.close();
-        }
-
-        Uri fileUri = FileWriter.writeFile(this, "ExerciseAppData.txt", fileDataString);
-        EmailSender.foo(this, "Exercise App Data", fileUri);
     }
 
     private void handleMenuClearExerciseHistory() {
@@ -433,13 +522,14 @@ public class MainActivity extends AppCompatActivity
         m_textViewStartTimeLabel.setVisibility(View.INVISIBLE);
         m_textViewStartTimeDisplay.setVisibility(View.INVISIBLE);
 
-//        m_textViewEnterNumReps = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
-//        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
+        m_textViewEnterNumRepsLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
+        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
         m_textViewExerciseName = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_exercise_name);
-//        m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
-//        m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
+        m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
+        m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
         m_btnCompleteSet = m_currentExerciseLayout.findViewById(R.id.cdblock_btn_newsetreps);
-//        m_seekBarDifficulty = m_currentExerciseLayout.findViewById(R.id.cdblock_seekbar_difficulty);
+        m_seekBarDifficulty = m_currentExerciseLayout.findViewById(R.id.cdblock_seekbar_difficulty);
+        m_textViewTotalRepsDoneValue = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_totalreps_amount);
     }
 
     private void determineCurrentExercise() {
@@ -462,6 +552,7 @@ public class MainActivity extends AppCompatActivity
             }
             matchingDaySchedule.moveToFirst();
             m_currentDayScheduleId = matchingDaySchedule.getLong(matchingDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+            ExerciseAppDBSetting.setCurrentDayScheduleId(this, m_currentDayScheduleId);
             matchingDaySchedule.close();
 
             updateGuiWithCurrentExercise();
@@ -476,11 +567,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void populateGuiFromLogDailyExerciseEntry() {
-        ExerciseEntry exerciseEntry = m_currentLogDailyExerciseEntry.getExerciseEntry();
+        ExerciseEntry exerciseEntry = m_currentLogDailyExerciseEntry.getExerciseEntry(this);
         m_textViewExerciseName.setText(exerciseEntry.getName());
+
+        m_textViewWeightInput.setText(Integer.toString(m_currentLogDailyExerciseEntry.getWeight()));
+        m_textViewTotalRepsDoneValue.setText(Integer.toString(m_currentLogDailyExerciseEntry.getTotalRepsDone()));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            m_seekBarDifficulty.setProgress(m_currentLogDailyExerciseEntry.getDifficulty(), true);
+        } else {
+            m_seekBarDifficulty.setProgress(m_currentLogDailyExerciseEntry.getDifficulty());
+        }
     }
 
     private void flashDailyReminders() {
+        // Build up a string containing all reminder messages.  I don't think flashing one reminder after another
+        // is straightforward (or even desirable)
+        StringBuilder reminderTextSB = new StringBuilder();
         Cursor cursorReminders = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
                 ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER +"=?", new String[]{"1"}, null);
         if(cursorReminders != null) {
@@ -489,8 +592,11 @@ public class MainActivity extends AppCompatActivity
                 do {
                     ExerciseEntry dailyReminder = new ExerciseEntry(cursorReminders);
                     String reminderText = dailyReminder.getName();
-                    Snackbar.make(m_btnStartStop, reminderText, Snackbar.LENGTH_LONG).show();
+                    reminderTextSB.append(reminderText);
+                    reminderTextSB.append("\r\n");
                 } while (cursorReminders.moveToNext());
+
+                Snackbar.make(m_btnStartStop, reminderTextSB, Snackbar.LENGTH_INDEFINITE).show();
             }
             cursorReminders.close();
         }
@@ -500,70 +606,89 @@ public class MainActivity extends AppCompatActivity
      * Called when the user signals they are done with the current exercise.
      */
     private void completeExercise() {
+        // Wrap up the current exercise.  Set the end date, and save it.
         m_currentLogDailyExerciseEntry.setEndDateTime(new Date());
+        m_currentLogDailyExerciseEntry.save(m_context);
+        m_textViewStartTimeDisplay.setText("");
+
         GregorianCalendar gCal = new GregorianCalendar();
         gCal.setTime(m_currentLogDailyExerciseEntry.getEndDateTime());
-
         String textTime = getHourString(gCal);
-        Snackbar.make(m_btnStartStop, "Exercise completed at: " + textTime, Snackbar.LENGTH_LONG).show();
+        // You can only show one snackbar at a time!  So this one gets hidden by one at end of function.
+        //Snackbar.make(m_btnStartStop, "Exercise completed at: " + textTime, Snackbar.LENGTH_LONG).show();
 
         m_btnStartStop.setText("Start Exercise");
 
+        // Get the day schedule id for what we JUST wrapped up.
         long currentDayScheduleId = ExerciseAppDBSetting.getCurrentDayScheduleId(this);
+        Log.d(TAG, "completeExercise: We just completed the exercise for day schedule id: " + currentDayScheduleId);
 
-        boolean hasNextExercise = false;
+        boolean hasNextExerciseInRoutine = false;
 
-        Cursor daySchedules = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
-        if(daySchedules != null) {
-            daySchedules.moveToFirst();
+        // The goal is to get the next exercise that is STILL IN THIS ROUTINE!
+        // AND TO ADVANCE THE CURSOR THERE
+        Cursor cursorDaySchedules = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null,
+                DayScheduleEntry.Contract.Columns.COL_NAME_POSITION); // must sort by position in order for algorithm to work.
+        if(cursorDaySchedules != null) {
+            cursorDaySchedules.moveToFirst();
             do {
-                DayScheduleEntry dse = new DayScheduleEntry(daySchedules);
+                DayScheduleEntry dse = new DayScheduleEntry(cursorDaySchedules);
                 if(dse.getId() == currentDayScheduleId) {
-                    if(daySchedules.moveToNext()) {
-                        DayScheduleEntry nextEntry = new DayScheduleEntry(daySchedules);
-                        if(nextEntry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
-                            hasNextExercise = true;
+                    if(cursorDaySchedules.moveToNext()) {
+                        DayScheduleEntry nextEntry = new DayScheduleEntry(cursorDaySchedules);
+                        if (nextEntry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
+                            hasNextExerciseInRoutine = true;
                             ExerciseAppDBSetting.setCurrentDayScheduleId(this, nextEntry.getId());
+                        } else {
+                            // We found a day separator.  The next exercise (if there is one, will be the next one, or the first in cursor)
+                            if(!cursorDaySchedules.moveToNext()) {
+                                cursorDaySchedules.moveToFirst();
+                            }
                         }
+                    } else {
+                        // If we run out of records, then there is definitely no next exercise in this routine.
+                        // We need to move to the first record
+                        cursorDaySchedules.moveToFirst();
                     }
+                    // We're done!  Exit loop.
                     break;
                 }
-            } while(daySchedules.moveToNext());
+            } while(cursorDaySchedules.moveToNext());
         }
 
-        if(!hasNextExercise) {
-            Snackbar.make(m_btnStartStop, "End of Routine!  Congrats!", Snackbar.LENGTH_LONG).show();
-            prepareNextExercise(daySchedules);
+        String message = "Exercise completed at: " + textTime + "\r\n";
+        if(!hasNextExerciseInRoutine) {
+            message += "End of Routine!  Congrats!";
+        } else {
+            message += "Moving on to next exercise...";
         }
-
-        daySchedules.close();
-    }
-
-    private void prepareNextExercise(Cursor daySchedules) {
-        boolean exerciseFound = false;
-        if(!daySchedules.moveToNext()) {
-            daySchedules.moveToFirst();
-        }
-        do {
-            DayScheduleEntry entry = new DayScheduleEntry(daySchedules);
-            if(entry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
-                m_currentDayScheduleId = daySchedules.getLong(daySchedules.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
-                exerciseFound=true;
-            }
-        } while(!exerciseFound);
-
+        Snackbar.make(m_btnStartStop, message, Snackbar.LENGTH_LONG).show();
+        m_currentDayScheduleId = cursorDaySchedules.getLong(cursorDaySchedules.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
+        ExerciseAppDBSetting.setCurrentDayScheduleId(this, m_currentDayScheduleId);
+        Log.d(TAG, "completeExercise: moving onto day schedule id: " + m_currentDayScheduleId);
         updateGuiWithCurrentExercise();
+
+        cursorDaySchedules.close();
     }
 
     private void updateGuiWithCurrentExercise() {
+        m_currentLogDailyExerciseEntry = null;
+
         Cursor cursorUnfinishedExercise = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI,
                 null, LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " is null",
                 null, null);
-        if(cursorUnfinishedExercise != null && cursorUnfinishedExercise.getCount() > 0) {
-            cursorUnfinishedExercise.moveToFirst();
-            m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
+        if(cursorUnfinishedExercise != null) {
+            int cursorCount = cursorUnfinishedExercise.getCount();
+            Log.d(TAG, "updateGuiWithCurrentExercise: Found " + cursorCount + " unfinished exercise(s).");
+            if (cursorUnfinishedExercise.getCount() > 0) {
+                cursorUnfinishedExercise.moveToFirst();
+                m_currentLogDailyExerciseEntry = new LogDailyExerciseEntry(cursorUnfinishedExercise);
+                Toast.makeText(this, "Resuming in-progress workout.", Toast.LENGTH_LONG).show();
+            }
             cursorUnfinishedExercise.close();
-        } else {
+        }
+
+        if (m_currentLogDailyExerciseEntry == null) {
             m_currentLogDailyExerciseEntry = LogDailyExerciseEntry.fromDayScheduleId(this, m_currentDayScheduleId);
         }
 

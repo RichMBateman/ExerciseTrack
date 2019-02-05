@@ -8,6 +8,8 @@ import android.net.Uri;
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * A class to facilitate testing.  Can generate test data.
@@ -15,11 +17,11 @@ import java.util.ArrayList;
 public class TestData {
 
     private static ArrayList<ExerciseEntry> m_exerciseEntryList = new ArrayList<>();
+    private static ArrayList<DayScheduleEntry> m_dayScheduleEntryList = new ArrayList<>();
 
     public static void generateTestData(ContentResolver contentResolver) {
         createExerciseEntries(contentResolver);
         createDaySchedules(contentResolver);
-        createLogEntries(contentResolver);
         createLogDailyExerciseEntries(contentResolver);
     }
 
@@ -38,7 +40,7 @@ public class TestData {
         ExerciseEntry entry12 = new ExerciseEntry("Cycling", false);
         ExerciseEntry entry13 = new ExerciseEntry("Push Up", false);
         ExerciseEntry entry14 = new ExerciseEntry("Wide Push Up", false);
-        ExerciseEntry entry15 = new ExerciseEntry("5 Minutes Cycling Warmpup", true);
+        ExerciseEntry entry15 = new ExerciseEntry("5 Minutes Cycling Warm up", true);
 
         saveExerciseEntry(contentResolver, entry1);
         saveExerciseEntry(contentResolver, entry2);
@@ -56,19 +58,20 @@ public class TestData {
         saveExerciseEntry(contentResolver, entry14);
         saveExerciseEntry(contentResolver, entry15);
 
-        // Load the saved exercise entries (which have ids set), so we can refer to them when creating our day schedule.
-        Cursor exerciseEntryCursor = contentResolver.query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null );
-        if(exerciseEntryCursor != null & exerciseEntryCursor.getCount() > 0) {
-            exerciseEntryCursor.moveToFirst();
-
-            // For ease, just group exercise into a random amount (1-3), and keep creating day schedules until you're done.
-            do {
-                ExerciseEntry ee = new ExerciseEntry(exerciseEntryCursor);
-                m_exerciseEntryList.add(ee);
-
-            } while(exerciseEntryCursor.moveToNext());
-        }
-        exerciseEntryCursor.close();
+        // There's no reason to use below.  We can grab id ON insert.
+//        // Load the saved exercise entries (which have ids set), so we can refer to them when creating our day schedule.
+//        Cursor exerciseEntryCursor = contentResolver.query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null );
+//        if(exerciseEntryCursor != null & exerciseEntryCursor.getCount() > 0) {
+//            exerciseEntryCursor.moveToFirst();
+//
+//            // For ease, just group exercise into a random amount (1-3), and keep creating day schedules until you're done.
+//            do {
+//                ExerciseEntry ee = new ExerciseEntry(exerciseEntryCursor);
+//                m_exerciseEntryList.add(ee);
+//
+//            } while(exerciseEntryCursor.moveToNext());
+//        }
+//        exerciseEntryCursor.close();
     }
 
     private static void saveExerciseEntry(ContentResolver contentResolver, ExerciseEntry entry) {
@@ -76,7 +79,8 @@ public class TestData {
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_NAME, entry.getName());
         values.put(ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER, entry.isDailyReminder());
 
-        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
+        entry.setId(ContentProviderHelper.getId(contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values)));
+        m_exerciseEntryList.add(entry);
     }
 
     private static void createDaySchedules(ContentResolver contentResolver) {
@@ -90,20 +94,20 @@ public class TestData {
                 int randomSelectionExercise = (int) (Math.random() * m_exerciseEntryList.size());
                 long randomSelectionExerciseId = m_exerciseEntryList.get(randomSelectionExercise).getId();
 
-                ContentValues values = new ContentValues();
-                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, position);
-                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, randomSelectionExerciseId);
-                values.put(DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR, false);
-                contentResolver.insert(DayScheduleEntry.Contract.CONTENT_URI, values);
+                DayScheduleEntry dayScheduleEntry = new DayScheduleEntry();
+                dayScheduleEntry.setExerciseEntryId(randomSelectionExerciseId);
+                dayScheduleEntry.setDaySeparator(false);
+                dayScheduleEntry.setPosition(position);
+                saveDaySchedule(contentResolver, dayScheduleEntry);
 
                 numExercisesToGrab--;
                 position++;
             }
-            ContentValues values = new ContentValues();
-            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, position);
-            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, RVAdapterDaySchedule.DAY_SEPARATOR_ID);
-            values.put(DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR, true);
-            contentResolver.insert(DayScheduleEntry.Contract.CONTENT_URI, values);
+            DayScheduleEntry dayScheduleEntry = new DayScheduleEntry();
+            dayScheduleEntry.setExerciseEntryId(RVAdapterDaySchedule.DAY_SEPARATOR_ID);
+            dayScheduleEntry.setDaySeparator(true);
+            dayScheduleEntry.setPosition(position);
+            saveDaySchedule(contentResolver, dayScheduleEntry);
 
             position++;
             numSchedulesToCreate--;
@@ -111,41 +115,71 @@ public class TestData {
     }
 
     private static void saveDaySchedule(ContentResolver contentResolver, DayScheduleEntry entry) {
-//        ContentValues values = new ContentValues();
-//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_ID, entry.getId());
-//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, entry.getPosition());
-//        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, entry.getExerciseEntryId());
-//
-//        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
-    }
+        ContentValues values = new ContentValues();
+        // This is a mistake.  We don't have the id, yet.  I had this here back when i had zero clue
+        // how we would learn the id of the recently inserted item.
+        //values.put(DayScheduleEntry.Contract.Columns.COL_NAME_ID, entry.getId());
+        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_POSITION, entry.getPosition());
+        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID, entry.getExerciseEntryId());
+        values.put(DayScheduleEntry.Contract.Columns.COL_NAME_IS_DAY_SEPARATOR, entry.isDaySeparator());
 
-    private static void createLogEntries(ContentResolver contentResolver) {
-
-    }
-
-    private static void saveLogEntry(ContentResolver contentResolver, LogEntry entry) {
-//        ContentValues values = new ContentValues();
-//        values.put(LogEntry.Contract.Columns.COL_NAME_ID, entry.getId());
-//        values.put(LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID, entry.getDayScheduleId());
-//        values.put(LogEntry.Contract.Columns.COL_NAME_START_DATETIME, entry.getStartDateTime());
-//        values.put(LogEntry.Contract.Columns.COL_NAME_END_DATETIME, entry.getEndDateTime());
-//
-//        contentResolver.insert(ExerciseEntry.getContract().CONTENT_URI, values);
+        entry.setId(ContentProviderHelper.getId(contentResolver.insert(DayScheduleEntry.Contract.CONTENT_URI, values)));
+        m_dayScheduleEntryList.add(entry);
     }
 
     private static void createLogDailyExerciseEntries(ContentResolver contentResolver) {
+        // Create 3 days of logs
+        int dayCount = 3;
+        while(dayCount > 0) {
+            for(DayScheduleEntry dayScheduleEntry : m_dayScheduleEntryList) {
+                LogDailyExerciseEntry logDailyExerciseEntry = new LogDailyExerciseEntry();
+                logDailyExerciseEntry.setDifficulty((int) (Math.random() * 10 + 1));
+                logDailyExerciseEntry.setTotalRepsDone((int) (Math.random() * 51 + 10));
+                Date startTime = new Date();
+                Date endTime = new Date();
+                getRandomDateTimes(startTime, endTime);
+                logDailyExerciseEntry.setEndDateTime(endTime);
+                logDailyExerciseEntry.setStartDateTime(startTime);
+                logDailyExerciseEntry.setExerciseId(dayScheduleEntry.getExerciseEntryId());
 
+                saveLogDaliyExerciseEntry(contentResolver, logDailyExerciseEntry);
+            }
+            dayCount--;
+        }
     }
 
     private static void saveLogDaliyExerciseEntry(ContentResolver contentResolver, LogDailyExerciseEntry entry) {
-//        ContentValues values = new ContentValues();
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID, entry.getId());
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID, entry.getExerciseId());
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_LOG_ID, entry.getLogId());
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE, entry.getTotalRepsDone());
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT, entry.getWeight());
-//        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY, entry.getDifficulty());
-//
-//        contentResolver.insert(ExerciseEntry.Contract.CONTENT_URI, values);
+        ContentValues values = new ContentValues();
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID, entry.getExerciseId());
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE, entry.getTotalRepsDone());
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT, entry.getWeight());
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_DIFFICULTY, entry.getDifficulty());
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_START_DATETIME, entry.getStartDateTime().getTime());
+        values.put(LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME, entry.getEndDateTime().getTime());
+
+        contentResolver.insert(LogDailyExerciseEntry.Contract.CONTENT_URI, values);
+    }
+// from tim buchalka
+    private static int getRandomInt(int max) {
+        return (int) Math.round(Math.random() * max);
+    }
+
+    // Modified version from randomDateTime() From Tim Buchalka
+    private static void getRandomDateTimes(Date startTime, Date endTime) {
+        GregorianCalendar calendarToday = new GregorianCalendar();
+        int year = calendarToday.get(GregorianCalendar.YEAR);
+
+        int sec = getRandomInt(59);
+        int min = getRandomInt(59);
+        int hour = getRandomInt(23);
+        int month = getRandomInt(11);
+
+        GregorianCalendar gc = new GregorianCalendar(year, month, 1);
+        int day = 1 + getRandomInt(gc.getActualMaximum(GregorianCalendar.DAY_OF_MONTH) -1);
+
+        gc.set(year, month, day, hour, min, sec);
+        startTime.setTime(gc.getTimeInMillis());
+
+        endTime.setTime(gc.getTimeInMillis() + getRandomInt(1000 * 60 * 30) + 1000 * 60 * 15);
     }
 }

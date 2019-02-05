@@ -1,5 +1,6 @@
 package com.bateman.rich.exercisetrack.datamodel;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,15 +31,17 @@ public class LogDailyExerciseEntry {
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(currentDayScheduleId)}, null);
 
         cursorDaySchedule.moveToFirst();
-        long exerciseId = cursorDaySchedule.getLong(cursorDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID));
+        entry.m_exerciseId = cursorDaySchedule.getLong(cursorDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID));
         cursorDaySchedule.close();
 
         Cursor cursorExercise = context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
-                    ExerciseEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(exerciseId)}, null);
+                    ExerciseEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(entry.m_exerciseId)}, null);
 
         cursorExercise.moveToFirst();
         entry.m_exerciseEntry = new ExerciseEntry(cursorExercise);
         cursorExercise.close();
+
+        entry.m_difficulty=5; // default difficulty.
 
         return entry;
     }
@@ -64,8 +67,8 @@ public class LogDailyExerciseEntry {
         }
     }
 
-    private LogDailyExerciseEntry() {
-
+    public LogDailyExerciseEntry() {
+        m_difficulty=5; // default difficulty.
     }
 
     public LogDailyExerciseEntry(Cursor cursor) {
@@ -78,7 +81,20 @@ public class LogDailyExerciseEntry {
         m_difficulty = cursor.getInt(cursor.getColumnIndex(Contract.Columns.COL_NAME_DIFFICULTY));
     }
 
-    public ExerciseEntry getExerciseEntry() {return m_exerciseEntry;}
+    public ExerciseEntry getExerciseEntry(Context context)
+    {
+        if(m_exerciseEntry == null) {
+            Cursor exerciseEntryCursor = context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI,
+                    null, ExerciseEntry.Contract.Columns.COL_NAME_ID +"=?",
+                    new String[] {Long.toString(m_exerciseId)}, null);
+            if(exerciseEntryCursor != null && exerciseEntryCursor.getCount() > 0) {
+                exerciseEntryCursor.moveToFirst();
+                m_exerciseEntry = new ExerciseEntry(exerciseEntryCursor);
+                exerciseEntryCursor.close();
+            }
+        }
+        return m_exerciseEntry;
+    }
 
     public long getId() {
         return m_id;
@@ -92,7 +108,7 @@ public class LogDailyExerciseEntry {
         return m_exerciseId;
     }
 
-    public void setExerciseId(int exerciseId) {
+    public void setExerciseId(long exerciseId) {
         m_exerciseId = exerciseId;
     }
 
@@ -120,6 +136,10 @@ public class LogDailyExerciseEntry {
         m_difficulty = difficulty;
     }
 
+    public void addToTotalRepsDone(int numRepsToAdd) {
+        m_totalRepsDone+=numRepsToAdd;
+    }
+
     public Date getStartDateTime() {
         return m_startDateTime;
     }
@@ -141,5 +161,36 @@ public class LogDailyExerciseEntry {
         return "id: " + m_id + ", exercise id: " + m_exerciseId +
                 ", total reps done: " + m_totalRepsDone + ", weight: " + m_weight +
                 ", difficulty: " + m_difficulty + "\r\n";
+    }
+
+    /**
+     * Inserts or updates the appropriate database record for this log daily exercise entry.
+     * @param c
+     */
+    public void save(Context c) {
+        ContentValues values = new ContentValues();
+        if(m_id > 0) {
+            values.put(Contract.Columns.COL_NAME_ID, m_id);
+        }
+        values.put(Contract.Columns.COL_NAME_DIFFICULTY, m_difficulty);
+        values.put(Contract.Columns.COL_NAME_EXERCISE_ID, m_exerciseId);
+        if(m_endDateTime != null) {
+            values.put(Contract.Columns.COL_NAME_END_DATETIME, m_endDateTime.getTime());
+        }
+        if(m_startDateTime != null) {
+            values.put(Contract.Columns.COL_NAME_START_DATETIME, m_startDateTime.getTime());
+        }
+        values.put(Contract.Columns.COL_NAME_TOTAL_REPS_DONE, m_totalRepsDone);
+        values.put(Contract.Columns.COL_NAME_WEIGHT, m_weight);
+
+        if(m_id <= 0) {
+            Uri returnedRow = c.getContentResolver().insert(Contract.CONTENT_URI, values);
+            m_id = ContentProviderHelper.getId(returnedRow);
+        } else {
+            String where = Contract.Columns.COL_NAME_ID +"=?";
+            String[] selectionArgs = {Long.toString(m_id)};
+            c.getContentResolver().update(Contract.CONTENT_URI, values,
+                    where, selectionArgs);
+        }
     }
 }

@@ -66,6 +66,7 @@ public class ContentProviderHelper {
 
     /**
      * Given a URI, returns the id.
+     * Useful for retrieving the generated id from an insert statement.
      * @param uri
      * @return
      */

@@ -97,7 +97,7 @@ public class DayScheduleEntry {
         return m_id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         m_id = id;
     }
 

@@ -12,11 +12,12 @@ public class EmailSender {
      * @param subject
      * @param attachment
      */
-    public static void foo(Context context, String subject, Uri attachment) {
+    public static void launchEmailIntentWithAttachment(Context context, String subject, Uri attachment) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("*/*");
+        emailIntent.setType("text/plain"); // mime type for plain text.
+            // I think the "type" here controls what kind of apps popup for sending.
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        //emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message text");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Your exercise data is attached.");
         emailIntent.putExtra(Intent.EXTRA_STREAM, attachment);
         if (emailIntent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(emailIntent);
