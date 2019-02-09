@@ -132,17 +132,21 @@ public class TestData {
         int dayCount = 3;
         while(dayCount > 0) {
             for(DayScheduleEntry dayScheduleEntry : m_dayScheduleEntryList) {
-                LogDailyExerciseEntry logDailyExerciseEntry = new LogDailyExerciseEntry();
-                logDailyExerciseEntry.setDifficulty((int) (Math.random() * 10 + 1));
-                logDailyExerciseEntry.setTotalRepsDone((int) (Math.random() * 51 + 10));
-                Date startTime = new Date();
-                Date endTime = new Date();
-                getRandomDateTimes(startTime, endTime);
-                logDailyExerciseEntry.setEndDateTime(endTime);
-                logDailyExerciseEntry.setStartDateTime(startTime);
-                logDailyExerciseEntry.setExerciseId(dayScheduleEntry.getExerciseEntryId());
+                if(!dayScheduleEntry.isDaySeparator()) {
+                    // Don't create entries for day separators.
+                    LogDailyExerciseEntry logDailyExerciseEntry = new LogDailyExerciseEntry();
+                    logDailyExerciseEntry.setDifficulty((int) (Math.random() * 10 + 1));
+                    logDailyExerciseEntry.setWeight((int) (Math.random() * 18 + 1) * 5);
+                    logDailyExerciseEntry.setTotalRepsDone((int) (Math.random() * 51 + 10));
+                    Date startTime = new Date();
+                    Date endTime = new Date();
+                    getRandomDateTimes(startTime, endTime);
+                    logDailyExerciseEntry.setEndDateTime(endTime);
+                    logDailyExerciseEntry.setStartDateTime(startTime);
+                    logDailyExerciseEntry.setExerciseId(dayScheduleEntry.getExerciseEntryId());
 
-                saveLogDaliyExerciseEntry(contentResolver, logDailyExerciseEntry);
+                    saveLogDaliyExerciseEntry(contentResolver, logDailyExerciseEntry);
+                }
             }
             dayCount--;
         }

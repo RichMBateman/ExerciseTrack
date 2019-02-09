@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/exc_rpt_hdr_reps"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="Reps"
+        android:textAlignment="viewStart"
+        app:layout_constraintBaseline_toBaselineOf="@+id/exc_rpt_hdr_weight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/exc_rpt_hdr_weight" />
+
+    <Button
+        android:id="@+id/exc_rpt_btn_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Previous"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/exc_rpt_x_of_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="X / Y"
+        app:layout_constraintStart_toEndOf="@+id/exc_rpt_btn_prev"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/exc_rpt_btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Next"
+        app:layout_constraintStart_toEndOf="@+id/exc_rpt_x_of_y"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/exc_rpt_hdr_exercise_name"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Exercise"
+        android:textAlignment="viewStart"
+        app:layout_constraintEnd_toStartOf="@+id/exc_rpt_hdr_weight"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exc_rpt_btn_prev" />
+
+    <TextView
+        android:id="@+id/exc_rpt_hdr_weight"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="Weight"
+        android:textAlignment="viewStart"
+        app:layout_constraintBaseline_toBaselineOf="@+id/exc_rpt_hdr_exercise_name"
+        app:layout_constraintEnd_toStartOf="@+id/exc_rpt_hdr_reps"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/exc_rpt_hdr_exercise_name" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/exc_rpt_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exc_rpt_hdr_weight"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/activity_exercise_report_entry" />
+</android.support.constraint.ConstraintLayout>

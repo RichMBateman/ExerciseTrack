@@ -18,7 +18,7 @@ import android.util.Log;
 class ExerciseAppDatabase extends SQLiteOpenHelper {
     private static final String TAG = "ExerciseAppDatabase";
     private static final String DATABASE_NAME = "ExerciseTrack.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Singleton
     private static ExerciseAppDatabase m_instance = null;
@@ -40,6 +40,11 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         return m_instance;
     }
 
+    /**
+     * Create the database.  This is called only when the database does not exist.  So if you upgrade the database,
+     * any upgrade functions must be called here, too.
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "onCreate: starts.  Creating sqlIte database.");
@@ -62,6 +67,7 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         createLogDailyExerciseTable(db);
         //createLogDailyExerciseTriggerOnDeleteLog(db);
         createLogDailyExerciseTriggerOnDeleteExercise(db);
+        createViewLogDailyExercisesSortedByExerciseName(db);
         Log.d(TAG, "onCreate: ends");
     }
 
@@ -69,11 +75,12 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
      * Called when we are seeing whether we need to upgrade the database.
      */
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "onUpgrade: starts");
         switch(oldVersion) {
             case 1:
                 // upgrade logic from version 1
+                createViewLogDailyExercisesSortedByExerciseName(db);
                 break;
             default:
                 throw new IllegalStateException("onUpgrade() with unknown newVersion: " + newVersion);
@@ -295,8 +302,27 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
                 ExerciseEntry.Contract.TABLE_NAME,
                 LogDailyExerciseEntry.Contract.TABLE_NAME,
                 ExerciseEntry.Contract.Columns.COL_NAME_ID,
-                LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
+                LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID
+                );
     }
 
+    private void createViewLogDailyExercisesSortedByExerciseName(SQLiteDatabase db) {
+        String sqlStatement = "CREATE VIEW " + LogDailyExerciseEntry.ContractViewReport.TABLE_NAME
+                + " AS SELECT "
+                + LogDailyExerciseEntry.Contract.TABLE_NAME + "." + LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID + ", "
+                + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_NAME + " AS "
+                + LogDailyExerciseEntry.ContractViewReport.Columns.COL_NAME_EXERCISE_NAME + ", "
+                + LogDailyExerciseEntry.Contract.TABLE_NAME + "." + LogDailyExerciseEntry.Contract.Columns.COL_NAME_TOTAL_REPS_DONE + ", "
+                + LogDailyExerciseEntry.Contract.TABLE_NAME + "." + LogDailyExerciseEntry.Contract.Columns.COL_NAME_WEIGHT + " "
+                + " FROM " + ExerciseEntry.Contract.TABLE_NAME + " INNER JOIN " + LogDailyExerciseEntry.Contract.TABLE_NAME
+                + " ON " + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_ID + " = "
+                + LogDailyExerciseEntry.Contract.TABLE_NAME + "." +  LogDailyExerciseEntry.Contract.Columns.COL_NAME_EXERCISE_ID
+                + " WHERE " + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_IS_DAILY_REMINDER + " = 0 "
+                + " ORDER BY " + ExerciseEntry.Contract.TABLE_NAME + "." + ExerciseEntry.Contract.Columns.COL_NAME_NAME + " ASC"
+                + ", " + LogDailyExerciseEntry.Contract.TABLE_NAME + "." + LogDailyExerciseEntry.Contract.Columns.COL_NAME_END_DATETIME + " DESC"
+                + ";";
+        db.execSQL(sqlStatement);
+        Log.d(TAG, "createViewLogDailyExercisesSortedByExerciseName: sqlStatement: " + sqlStatement);
+    }
 
 }

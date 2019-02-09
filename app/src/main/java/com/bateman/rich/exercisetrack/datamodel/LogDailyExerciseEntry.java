@@ -67,6 +67,24 @@ public class LogDailyExerciseEntry {
         }
     }
 
+    public static class ContractViewReport {
+        public static final String TABLE_NAME = "ViewExerciseLogReport";
+        public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
+        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+
+        private ContractViewReport() { } // prevent instantiation
+
+        public static class Columns {
+            public static final String COL_NAME_ID = BaseColumns._ID;
+            public static final String COL_NAME_EXERCISE_NAME = "ExerciseName";
+            public static final String COL_NAME_TOTAL_REPS_DONE = "TotalRepsDone";
+            public static final String COL_NAME_WEIGHT = "Weight";
+
+            private Columns() { /* private constructor; no instantiation allowed */ }
+        }
+    }
+
     public LogDailyExerciseEntry() {
         m_difficulty=5; // default difficulty.
     }

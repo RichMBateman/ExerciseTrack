@@ -37,6 +37,7 @@ public class ExerciseAppProvider extends ContentProvider {
     private static final int VIEW_DAY_SCHEDULE_ENTRIES_ID = 501;
     private static final int EXERCISE_APP_SETTINGS = 600;
     private static final int EXERCISE_APP_SETTINGS_ID = 601;
+    private static final int VIEW_EXERCISE_REPORT = 700;
 
     private ExerciseAppDatabase m_exerciseAppDatabase;
 
@@ -121,6 +122,11 @@ public class ExerciseAppProvider extends ContentProvider {
                 queryBuilder.appendWhere(ExerciseAppDBSetting.Contract.Columns.COL_NAME_ID + " = " + settingId);
                 break;
 
+            case VIEW_EXERCISE_REPORT:
+                queryBuilder.setTables(LogDailyExerciseEntry.ContractViewReport.TABLE_NAME);
+                break;
+
+
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
 
@@ -167,6 +173,9 @@ public class ExerciseAppProvider extends ContentProvider {
                 return ExerciseAppDBSetting.Contract.CONTENT_TYPE;
             case EXERCISE_APP_SETTINGS_ID:
                 return ExerciseAppDBSetting.Contract.CONTENT_ITEM_TYPE;
+
+            case VIEW_EXERCISE_REPORT:
+                return LogDailyExerciseEntry.ContractViewReport.CONTENT_TYPE;
 
             default:
                 throw new IllegalArgumentException("unknown Uri: " + uri);
@@ -485,6 +494,8 @@ public class ExerciseAppProvider extends ContentProvider {
 
         matcher.addURI(CONTENT_AUTHORITY, ExerciseAppDBSetting.Contract.TABLE_NAME, EXERCISE_APP_SETTINGS);
         matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(ExerciseAppDBSetting.Contract.TABLE_NAME), EXERCISE_APP_SETTINGS_ID);
+
+        matcher.addURI(CONTENT_AUTHORITY, LogDailyExerciseEntry.ContractViewReport.TABLE_NAME, VIEW_EXERCISE_REPORT);
 
         Log.d(TAG, "buildUriMatcher: end.  returning UriMatcher: " + matcher);
         return matcher;

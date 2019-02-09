@@ -30,6 +30,8 @@
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".gui.DayScheduleListActivity"
             android:parentActivityName=".MainActivity"/>/>
+        <activity android:name=".gui.ActivityExerciseReport"
+            android:parentActivityName=".MainActivity"/>/>
         <provider
             android:authorities="com.bateman.rich.exercisetrack.datamodel.provider"
             android:name="com.bateman.rich.exercisetrack.datamodel.ExerciseAppProvider"

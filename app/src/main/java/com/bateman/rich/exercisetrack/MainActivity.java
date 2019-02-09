@@ -36,6 +36,7 @@ import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogDailyExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogEntry;
 import com.bateman.rich.exercisetrack.datamodel.TestData;
+import com.bateman.rich.exercisetrack.gui.ActivityExerciseReport;
 import com.bateman.rich.exercisetrack.gui.AppDialog;
 import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
@@ -288,6 +289,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.menu_schedule_list:
                 startActivity(new Intent(this, DayScheduleListActivity.class));
                 break;
+            case R.id.menu_see_records:
+                startActivity(new Intent(this, ActivityExerciseReport.class));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -338,6 +342,8 @@ public class MainActivity extends AppCompatActivity
 
     private void handleMenuGenerateTestData() {
         TestData.generateTestData(getContentResolver());
+        determineCurrentExercise();
+        ExerciseAppDBSetting.setCurrentDayScheduleId(this, 0);
     }
 
     private void handleMenuEmailReport() {
@@ -449,7 +455,7 @@ public class MainActivity extends AppCompatActivity
         AppDialog dialog = new AppDialog();
         Bundle args = new Bundle();
         args.putInt(AppDialog.DIALOG_ID, DIALOG_ID_PURGE_SYSTEM_DATA);
-        args.putString(AppDialog.DIALOG_MESSAGE, "Are you sure you want to complete purge all app data?");
+        args.putString(AppDialog.DIALOG_MESSAGE, "Are you sure you want to completely purge all app data?");
         dialog.setArguments(args);
         dialog.show(getSupportFragmentManager(), null);
     }
@@ -458,14 +464,19 @@ public class MainActivity extends AppCompatActivity
     public void onPositiveDialogResult(int dialogId, Bundle args) {
         switch(dialogId){
             case DIALOG_ID_CLEAR_EXERCISE_HISTORY:
-                getContentResolver().delete(LogEntry.Contract.CONTENT_URI, null, null);
+                getContentResolver().delete(LogDailyExerciseEntry.Contract.CONTENT_URI, null, null);
+                determineCurrentExercise();
                 break;
             case DIALOG_ID_PURGE_SYSTEM_DATA:
                 getContentResolver().delete(ExerciseEntry.Contract.CONTENT_URI, null, null);
+                // Need to also delete day schedule entries, which will include day separator entries.
+                getContentResolver().delete(DayScheduleEntry.Contract.CONTENT_URI, null, null);
                 // Triggers should automatically clear these.
-    //            getContentResolver().delete(DayScheduleEntry.Contract.CONTENT_URI, null, null);
+//                getContentResolver().delete(DayScheduleEntry.Contract.CONTENT_URI, null, null);
 //                getContentResolver().delete(LogEntry.Contract.CONTENT_URI, null, null);
 //                getContentResolver().delete(LogDailyExerciseEntry.Contract.CONTENT_URI, null, null);
+                ExerciseAppDBSetting.setCurrentDayScheduleId(this, 0);
+                determineCurrentExercise();
                 break;
         }
     }
