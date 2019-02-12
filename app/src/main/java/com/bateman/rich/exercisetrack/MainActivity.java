@@ -1,9 +1,6 @@
 package com.bateman.rich.exercisetrack;
 
-import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,13 +15,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,7 +30,6 @@ import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseAppDBSetting;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogDailyExerciseEntry;
-import com.bateman.rich.exercisetrack.datamodel.LogEntry;
 import com.bateman.rich.exercisetrack.datamodel.TestData;
 import com.bateman.rich.exercisetrack.gui.ActivityExerciseReport;
 import com.bateman.rich.exercisetrack.gui.AppDialog;
@@ -42,11 +37,10 @@ import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
 import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
+import com.bateman.rich.rmblibrary.gui.AboutAppDialog;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Timer;
@@ -59,9 +53,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     private static final int DIALOG_ID_CLEAR_EXERCISE_HISTORY=1001;
     private static final int DIALOG_ID_PURGE_SYSTEM_DATA=1002;
-
-    private AlertDialog m_dialog = null;         // module scope because we need to dismiss it in onStop
-    // e.g. when orientation changes) to avoid memory leaks.
 
     private final Context m_context = this;
 
@@ -298,46 +289,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void handleMenuShowAboutDialog() {
-        @SuppressLint("InflateParams") View messageView = getLayoutInflater().inflate(R.layout.common_about_app, null, false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.app_name);
-        builder.setIcon(R.mipmap.ic_launcher);
-
-        builder.setView(messageView);
-
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                    if(m_dialog != null && m_dialog.isShowing()) {
-                    m_dialog.dismiss();
-                }
-            }
-        });
-
-        m_dialog = builder.create();
-        m_dialog.setCanceledOnTouchOutside(true);
-
-        TextView tv = messageView.findViewById(R.id.about_version);
-        tv.setText("v" + BuildConfig.VERSION_NAME);
-
-        TextView about_url = messageView.findViewById(R.id.about_url);
-        if(about_url != null) {
-            about_url.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    String s = ((TextView) v).getText().toString();
-                    intent.setData(Uri.parse(s));
-                    try {
-                        startActivity(intent);
-                    } catch(ActivityNotFoundException e) {
-                        Toast.makeText(MainActivity.this, "No browser application found, cannot visit world-wide web", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
-
-        m_dialog.show();
+        AboutAppDialog aboutDialog = new AboutAppDialog(this); // I had a major bug here where I was mistakenly using "getApplicationContext()"
+        aboutDialog.setIconId(R.mipmap.ic_launcher)
+                .setTitleId(R.string.app_name)
+                .setVersionName(BuildConfig.VERSION_NAME)
+                .setCopyrightYear(2019)
+                .show();
     }
 
     private void handleMenuGenerateTestData() {
@@ -348,8 +305,6 @@ public class MainActivity extends AppCompatActivity
 
     private void handleMenuEmailReport() {
         try {
-
-
             String fileDataString = "";
 
             Cursor cursor = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
