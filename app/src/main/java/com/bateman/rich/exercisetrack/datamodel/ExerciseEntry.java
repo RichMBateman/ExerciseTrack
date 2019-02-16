@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+
+import com.bateman.rich.rmblibrary.persistence.AppDatabaseHelper;
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 /**
  * I had tried creating a "DatabaseContractBase" which would handle creating the CONTENT URI, CONTENT_ITEM_TYPE, etc.
@@ -18,31 +22,28 @@ public class ExerciseEntry {
     private boolean m_isDailyReminder;
 
     public static class Contract {
-        public static final String TABLE_NAME = "ExerciseEntries";
+        static final String TABLE_NAME = "ExerciseEntries";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private Contract() {} // prevent instances.
         /**
          * Gets a full projection for this table (all columns).
-         * @return
          */
         public static String[] getProjectionFull() {
-            String[] projection = {Columns.COL_NAME_ID,
+            return new String[]{Columns.COL_NAME_ID,
                     Columns.COL_NAME_NAME,
                     Columns.COL_NAME_IS_DAILY_REMINDER};
-            return projection;
         }
 
         public static String getSortOrderStandard() {
-            String sortOrder = Columns.COL_NAME_NAME + "," + Columns.COL_NAME_IS_DAILY_REMINDER + " COLLATE NOCASE";
-            return sortOrder;
+            return Columns.COL_NAME_NAME + "," + Columns.COL_NAME_IS_DAILY_REMINDER + " COLLATE NOCASE";
         }
 
         public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
-            public static final String COL_NAME_NAME = "Name";
+            static final String COL_NAME_NAME = "Name";
             public static final String COL_NAME_IS_DAILY_REMINDER = "IsDailyReminder";
 
             private Columns() { /* private constructor; no instantiation allowed */ }
@@ -86,10 +87,7 @@ public class ExerciseEntry {
         return m_isDailyReminder;
     }
 
-    public void setDailyReminder(boolean dailyReminder) {
-        m_isDailyReminder = dailyReminder;
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return "id: " + m_id + ", Name: " + m_name + ", Is Daily Reminder?: " + m_isDailyReminder + "\r\n";
@@ -97,9 +95,6 @@ public class ExerciseEntry {
 
     /**
      * Saves a new exercise entry to the database.
-     * @param c
-     * @param exerciseText
-     * @param isDailyReminder
      */
     public static void saveNewExerciseEntry(Context c, String exerciseText, boolean isDailyReminder) {
         ContentValues values = new ContentValues();

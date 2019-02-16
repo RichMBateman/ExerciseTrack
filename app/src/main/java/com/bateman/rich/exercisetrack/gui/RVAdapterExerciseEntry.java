@@ -46,22 +46,23 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
     private OnExerciseButtonClickListener m_buttonClickListener;
     private DayScheduleDragManager m_dayScheduleDragManager;
 
-    public RVAdapterExerciseEntry(Mode m, Context context, Cursor cursor) {
+    RVAdapterExerciseEntry(Mode m, Context context, Cursor cursor) {
         Log.d(TAG, "RVAdapterExerciseEntry: start");
         m_mode = m;
         m_context = context;
         m_cursor = cursor;
     }
 
-    public void setOnExerciseButtonClickListener(OnExerciseButtonClickListener l) {
+    void setOnExerciseButtonClickListener(OnExerciseButtonClickListener l) {
         m_buttonClickListener = l;
     }
 
-    public void setDayScheduleDragManager(DayScheduleDragManager m) {
+    void setDayScheduleDragManager(DayScheduleDragManager m) {
         m_dayScheduleDragManager=m;
     }
 
-    public ExerciseEntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public ExerciseEntryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: new view requested");
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.simple_exercise_list_entry, parent, false);
 
@@ -85,7 +86,7 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
      * @param name The name of the exercise to check.
      * @return Whether this name already exists.
      */
-    public boolean checkForRedundantExerciseName(String name) {
+    boolean checkForRedundantExerciseName(String name) {
         boolean nameExists = false;
         if(m_cursor != null && m_cursor.getCount() > 0) {
             m_cursor.moveToFirst();
@@ -100,14 +101,14 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
         return nameExists;
     }
 
-    public void onBindViewHolder(ExerciseEntryViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull ExerciseEntryViewHolder viewHolder, int position) {
         Log.d(TAG, "onBindViewHolder: start");
 
         if(m_cursor == null || (m_cursor.getCount() == 0)) {
             switch(m_mode) {
                 case EXERCISE_ENTRY:
                     Log.d(TAG, "onBindViewHolder: providing instructions.");
-                    viewHolder.textViewExerciseName.setText("Enter exercise/reminder to start.");
+                    viewHolder.textViewExerciseName.setText(m_context.getString(R.string.exercise_entry_instructions));
                     viewHolder.checkBoxIsReminder.setVisibility(View.GONE);
                     viewHolder.buttonDeleteEntry.setVisibility(View.GONE);
                     break;
@@ -175,7 +176,7 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
                 case DAY_SCHEDULE:
                     viewHolder.itemView.setBackground(m_context.getResources().getDrawable(R.drawable.shape_normal));
                     if(m_dayScheduleDragManager != null) {
-                        long id = (exerciseEntry == null ? RVAdapterDaySchedule.DAY_SEPARATOR_ID : exerciseEntry.getId());
+                        long id = exerciseEntry.getId();
                         m_dayScheduleDragManager.registerViewForLeftBehavior(viewHolder.itemView, id);
                     }
                     break;
@@ -238,13 +239,13 @@ public class RVAdapterExerciseEntry extends RecyclerView.Adapter<RVAdapterExerci
     }
 
     static class ExerciseEntryViewHolder extends RecyclerView.ViewHolder {
-        private static final String TAG = "ExerciseEntryViewHolder";
+//        private static final String TAG = "ExerciseEntryViewHolder";
 
         private Button buttonDeleteEntry;
         private TextView textViewExerciseName;
         private CheckBox checkBoxIsReminder;
 
-        public ExerciseEntryViewHolder(View itemView) {
+        ExerciseEntryViewHolder(View itemView) {
             super(itemView);
 
             this.buttonDeleteEntry = itemView.findViewById(R.id.sele_btn_delete);

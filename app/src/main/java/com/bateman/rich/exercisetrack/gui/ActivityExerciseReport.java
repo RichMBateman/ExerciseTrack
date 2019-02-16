@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -87,17 +86,12 @@ public class ActivityExerciseReport extends AppCompatActivity implements LoaderM
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_MAIN_CURSOR:
-                String[] projection = null;
-                String selection = null;
-                String[] selectionArgs = null;
-                String sortOrder = null;
-
                 return new CursorLoader(this,
                         LogDailyExerciseEntry.ContractViewReport.CONTENT_URI,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        sortOrder);
+                        null,
+                        null,
+                        null,
+                        null);
 
             default:
                 throw new InvalidParameterException(TAG + ".onCreateLoader called with invalid loader id " + id);
@@ -128,6 +122,7 @@ public class ActivityExerciseReport extends AppCompatActivity implements LoaderM
 
     private void updateLabelXofY() {
         TextView textViewXofY = findViewById(R.id.exc_rpt_x_of_y);
-        textViewXofY.setText("" + m_rvAdapterExerciseReport.getCurrentPageNumber() + "/" + m_rvAdapterExerciseReport.getLastPageNumber());
+        String pageXOfYtext = getString(R.string.page_x_of_y, m_rvAdapterExerciseReport.getCurrentPageNumber(), m_rvAdapterExerciseReport.getLastPageNumber());
+        textViewXofY.setText(pageXOfYtext);
     }
 }

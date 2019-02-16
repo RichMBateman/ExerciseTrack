@@ -25,12 +25,8 @@ public class DayScheduleListActivity extends AppCompatActivity
     public static final int LOADER_ID_AVAILABLE_EXERCISES = 1;
     public static final int LOADER_ID_DAY_SCHEDULES = 2;
 
-    private DayScheduleDragManager m_dayScheduleDragManager;
-    
-    private RecyclerView m_recyclerViewAvailableExercises;
     private RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
-    private RecyclerView m_recyclerViewScheduledDays;
     private RVAdapterDaySchedule m_rvAdapterDaySchedule;
 
     
@@ -90,7 +86,8 @@ public class DayScheduleListActivity extends AppCompatActivity
                 Log.d(TAG, "onLoadFinished: there are " + m_rvAdapterExerciseEntry.getItemCount() + " exercise entries.");
                 break;
             case LOADER_ID_DAY_SCHEDULES:
-                m_rvAdapterDaySchedule.swapCursor(data);
+                Cursor oldCursor = m_rvAdapterDaySchedule.swapCursor(data);
+                if(oldCursor != null) oldCursor.close();
                 Log.d(TAG, "onLoadFinished: there are " + m_rvAdapterDaySchedule.getItemCount() + " day schedules.");
                 break;
         }
@@ -102,11 +99,13 @@ public class DayScheduleListActivity extends AppCompatActivity
         int loaderId = loader.getId();
         switch(loaderId) {
             case LOADER_ID_AVAILABLE_EXERCISES:
-                m_rvAdapterExerciseEntry.swapCursor(null);
+                Cursor oldCursor = m_rvAdapterExerciseEntry.swapCursor(null);
+                if(oldCursor != null) oldCursor.close();
                 Log.d(TAG, "onLoaderReset: there are " + m_rvAdapterExerciseEntry.getItemCount() + " exercise entries.");
                 break;
             case LOADER_ID_DAY_SCHEDULES:
-                m_rvAdapterDaySchedule.swapCursor(null);
+                Cursor oldCursor2 = m_rvAdapterDaySchedule.swapCursor(null);
+                if(oldCursor2 != null) oldCursor2.close();
                 Log.d(TAG, "onLoaderReset: there are " + m_rvAdapterDaySchedule.getItemCount() + " day schedules.");
                 break;
         }
@@ -114,22 +113,22 @@ public class DayScheduleListActivity extends AppCompatActivity
 
 
     private void setupRecyclerViews() {
-        m_recyclerViewAvailableExercises = findViewById(R.id.sm_recyclerview_exercises);
-        m_recyclerViewScheduledDays = findViewById(R.id.sm_recyclerview_scheduleboxes);
+        RecyclerView recyclerViewAvailableExercises = findViewById(R.id.sm_recyclerview_exercises);
+        RecyclerView recyclerViewScheduledDays = findViewById(R.id.sm_recyclerview_scheduleboxes);
 
-        m_recyclerViewAvailableExercises.setLayoutManager(new LinearLayoutManager(this));
-        m_recyclerViewScheduledDays.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewAvailableExercises.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewScheduledDays.setLayoutManager(new LinearLayoutManager(this));
 
         m_rvAdapterExerciseEntry = new RVAdapterExerciseEntry(RVAdapterExerciseEntry.Mode.DAY_SCHEDULE, this,null);
         m_rvAdapterDaySchedule = new RVAdapterDaySchedule(this,null, this);
         m_rvAdapterDaySchedule.setRvAdapterExerciseEntry(m_rvAdapterExerciseEntry);
 
-        m_dayScheduleDragManager = new DayScheduleDragManager(this, m_rvAdapterExerciseEntry, m_rvAdapterDaySchedule, m_recyclerViewAvailableExercises, m_recyclerViewScheduledDays);
-        m_rvAdapterExerciseEntry.setDayScheduleDragManager(m_dayScheduleDragManager);
+        DayScheduleDragManager dayScheduleDragManager = new DayScheduleDragManager(this, m_rvAdapterDaySchedule);
+        m_rvAdapterExerciseEntry.setDayScheduleDragManager(dayScheduleDragManager);
 
-        m_rvAdapterDaySchedule.setDayScheduleDragManager(m_dayScheduleDragManager, m_recyclerViewScheduledDays);
+        m_rvAdapterDaySchedule.setDayScheduleDragManager(dayScheduleDragManager);
 
-        m_recyclerViewAvailableExercises.setAdapter(m_rvAdapterExerciseEntry);
-        m_recyclerViewScheduledDays.setAdapter(m_rvAdapterDaySchedule);
+        recyclerViewAvailableExercises.setAdapter(m_rvAdapterExerciseEntry);
+        recyclerViewScheduledDays.setAdapter(m_rvAdapterDaySchedule);
     }
 }

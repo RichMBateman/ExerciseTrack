@@ -2,13 +2,17 @@ package com.bateman.rich.exercisetrack.datamodel;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 /**
  * Based off the AppProvider class created by Tim Buchalka in the udemy course Android Java Masterclass - Become an App Developer.
@@ -29,8 +33,6 @@ public class ExerciseAppProvider extends ContentProvider {
     private static final int EXERCISE_ENTRIES_ID = 101;
     private static final int DAY_SCHEDULE_ENTRIES = 200;
     private static final int DAY_SCHEDULE_ENTRIES_ID = 201;
-    private static final int LOG_ENTRIES = 300;
-    private static final int LOG_ENTRIES_ID = 301;
     private static final int LOG_DAILY_EXERCISE_ENTRIES = 400;
     private static final int LOG_DAILY_EXERCISE_ENTRIES_ID = 401;
     private static final int VIEW_DAY_SCHEDULE_ENTRIES = 500;
@@ -51,7 +53,7 @@ public class ExerciseAppProvider extends ContentProvider {
 
     @Nullable // This annotation means the returned object may be null.
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.d(TAG, "query: called with URI " + uri);
         final int match = s_uriMatcher.match(uri);
         Log.d(TAG, "query: match is " + match);
@@ -91,17 +93,6 @@ public class ExerciseAppProvider extends ContentProvider {
             }
                 break;
 
-
-            case LOG_ENTRIES:
-                queryBuilder.setTables(LogEntry.Contract.TABLE_NAME);
-                break;
-
-            case LOG_ENTRIES_ID:
-                queryBuilder.setTables(LogEntry.Contract.TABLE_NAME);
-                long logEntryId = ContentProviderHelper.getId(uri);
-                queryBuilder.appendWhere(LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId);
-                break;
-
             case LOG_DAILY_EXERCISE_ENTRIES:
                 queryBuilder.setTables(LogDailyExerciseEntry.Contract.TABLE_NAME);
                 break;
@@ -135,13 +126,14 @@ public class ExerciseAppProvider extends ContentProvider {
         SQLiteDatabase db = m_exerciseAppDatabase.getReadableDatabase();
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         Log.d(TAG, "query: rows in returned cursor = " + cursor.getCount());
+        //noinspection ConstantConditions
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match = s_uriMatcher.match(uri);
         switch (match) {
             case EXERCISE_ENTRIES:
@@ -158,11 +150,6 @@ public class ExerciseAppProvider extends ContentProvider {
                 return DayScheduleEntry.ContractViewDaySchedules.CONTENT_TYPE;
             case VIEW_DAY_SCHEDULE_ENTRIES_ID:
                 return DayScheduleEntry.ContractViewDaySchedules.CONTENT_ITEM_TYPE;
-
-            case LOG_ENTRIES:
-                return LogEntry.Contract.CONTENT_TYPE;
-            case LOG_ENTRIES_ID:
-                return LogEntry.Contract.CONTENT_ITEM_TYPE;
 
             case LOG_DAILY_EXERCISE_ENTRIES:
                 return LogDailyExerciseEntry.Contract.CONTENT_TYPE;
@@ -184,7 +171,7 @@ public class ExerciseAppProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         Log.d(TAG, "Entering insert, called with uri:" + uri);
         final int match = s_uriMatcher.match(uri);
         Log.d(TAG, "match is " + match);
@@ -213,15 +200,6 @@ public class ExerciseAppProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert into " + uri.toString());
                 }
                 break;
-            case LOG_ENTRIES:
-                db = m_exerciseAppDatabase.getWritableDatabase();
-                recordId = db.insert(LogEntry.Contract.TABLE_NAME, null, values);
-                if(recordId >=0) {
-                    returnUri = ContentProviderHelper.buildUriFromId(LogEntry.Contract.CONTENT_URI, recordId);
-                } else {
-                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
-                }
-                break;
             case LOG_DAILY_EXERCISE_ENTRIES:
                 db = m_exerciseAppDatabase.getWritableDatabase();
                 recordId = db.insert(LogDailyExerciseEntry.Contract.TABLE_NAME, null, values);
@@ -244,13 +222,15 @@ public class ExerciseAppProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
 
-        if (recordId >= 0) {
-            // something was inserted
-            Log.d(TAG, "insert: Setting notifyChanged with " + uri);
-            getContext().getContentResolver().notifyChange(uri, null);
+        // recordId must always be greater than 0 at this point; otherwise an exception would have been thrown.
+        Log.d(TAG, "insert: Setting notifyChanged with " + uri);
+        Context context = getContext();
+        if(context != null) {
+            context.getContentResolver().notifyChange(uri, null);
         } else {
-            Log.d(TAG, "insert: nothing inserted");
+            throw new IllegalStateException("Null context returned.");
         }
+
 
         Log.d(TAG, "Exiting insert, returning " + returnUri);
         return returnUri;
@@ -258,7 +238,7 @@ public class ExerciseAppProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         Log.d(TAG, "update called with uri " + uri);
         final int match = s_uriMatcher.match(uri);
         Log.d(TAG, "match is " + match);
@@ -299,21 +279,6 @@ public class ExerciseAppProvider extends ContentProvider {
                 }
                 count = db.delete(DayScheduleEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
                 break;
-            case LOG_ENTRIES:
-                db = m_exerciseAppDatabase.getWritableDatabase();
-                count = db.delete(LogEntry.Contract.TABLE_NAME, selection, selectionArgs);
-                break;
-
-            case LOG_ENTRIES_ID:
-                db = m_exerciseAppDatabase.getWritableDatabase();
-                long logEntryId = ContentProviderHelper.getId(uri);
-                selectionCriteria = LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId;
-
-                if((selection != null) && (selection.length()>0)) {
-                    selectionCriteria += " AND (" + selection + ")";
-                }
-                count = db.delete(LogEntry.Contract.TABLE_NAME, selectionCriteria, selectionArgs);
-                break;
             case LOG_DAILY_EXERCISE_ENTRIES:
                 db = m_exerciseAppDatabase.getWritableDatabase();
                 count = db.delete(LogDailyExerciseEntry.Contract.TABLE_NAME, selection, selectionArgs);
@@ -352,7 +317,13 @@ public class ExerciseAppProvider extends ContentProvider {
         if(count > 0) {
             // something was deleted
             Log.d(TAG, "delete: Setting notifyChange with " + uri);
-            getContext().getContentResolver().notifyChange(uri, null);
+            Context context = getContext();
+            if(context != null) {
+                context.getContentResolver().notifyChange(uri, null);
+            } else {
+                throw new IllegalStateException("Null context returned.");
+            }
+
         } else {
             Log.d(TAG, "delete: nothing deleted");
         }
@@ -362,7 +333,7 @@ public class ExerciseAppProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.d(TAG, "update called with uri " + uri);
         final int match = s_uriMatcher.match(uri);
         Log.d(TAG, "match is " + match);
@@ -403,21 +374,6 @@ public class ExerciseAppProvider extends ContentProvider {
                 }
                 count = db.update(DayScheduleEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
                 break;
-            case LOG_ENTRIES:
-                db = m_exerciseAppDatabase.getWritableDatabase();
-                count = db.update(LogEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
-                break;
-
-            case LOG_ENTRIES_ID:
-                db = m_exerciseAppDatabase.getWritableDatabase();
-                long logEntryId = ContentProviderHelper.getId(uri);
-                selectionCriteria = LogEntry.Contract.Columns.COL_NAME_ID + " = " + logEntryId;
-
-                if((selection != null) && (selection.length()>0)) {
-                    selectionCriteria += " AND (" + selection + ")";
-                }
-                count = db.update(LogEntry.Contract.TABLE_NAME, values, selectionCriteria, selectionArgs);
-                break;
             case LOG_DAILY_EXERCISE_ENTRIES:
                 db = m_exerciseAppDatabase.getWritableDatabase();
                 count = db.update(LogDailyExerciseEntry.Contract.TABLE_NAME, values, selection, selectionArgs);
@@ -457,7 +413,13 @@ public class ExerciseAppProvider extends ContentProvider {
         if(count > 0) {
             // something was deleted
             Log.d(TAG, "update: Setting notifyChange with " + uri);
-            getContext().getContentResolver().notifyChange(uri, null);
+            Context context = getContext();
+            if(context != null) {
+                context.getContentResolver().notifyChange(uri, null);
+            } else {
+                throw new IllegalStateException("Null context returned.");
+            }
+
         } else {
             Log.d(TAG, "update: nothing deleted");
         }
@@ -481,11 +443,6 @@ public class ExerciseAppProvider extends ContentProvider {
 
         matcher.addURI(CONTENT_AUTHORITY, DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME, VIEW_DAY_SCHEDULE_ENTRIES);
         matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(DayScheduleEntry.ContractViewDaySchedules.TABLE_NAME), VIEW_DAY_SCHEDULE_ENTRIES_ID);
-
-        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogEntry
-        matcher.addURI(CONTENT_AUTHORITY, LogEntry.Contract.TABLE_NAME, LOG_ENTRIES);
-        //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogEntry/8 (8 representing an arbitrary ID number)
-        matcher.addURI(CONTENT_AUTHORITY, ContentProviderHelper.buildUriPathForId(LogEntry.Contract.TABLE_NAME), LOG_ENTRIES_ID);
 
         //  eg. content://com.bateman.rich.exercisetrack.datamodel.provider/LogDailyExerciseEntry
         matcher.addURI(CONTENT_AUTHORITY, LogDailyExerciseEntry.Contract.TABLE_NAME, LOG_DAILY_EXERCISE_ENTRIES);

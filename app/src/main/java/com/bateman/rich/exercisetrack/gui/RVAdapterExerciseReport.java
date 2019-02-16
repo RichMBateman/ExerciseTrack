@@ -1,5 +1,6 @@
 package com.bateman.rich.exercisetrack.gui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -32,21 +33,21 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
      */
     private int m_lastPageNumber;
 
-    public int getCurrentPageNumber() {
+    int getCurrentPageNumber() {
         return m_currentPageNumber;
     }
 
-    public void setCurrentPageNumber(int currentPageNumber) {
+    void setCurrentPageNumber(int currentPageNumber) {
         m_currentPageNumber = currentPageNumber;
     }
 
-    public int getLastPageNumber() {
+    int getLastPageNumber() {
         return m_lastPageNumber;
     }
 
     private static class ViewHolderData {
         public String name;
-        public int reps;
+        int reps;
         public int weight;
     }
 
@@ -55,7 +56,7 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
         TextView weight;
         TextView reps;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             this.name = itemView.findViewById(R.id.exc_rpt_entry_exercise_value);
             this.weight = itemView.findViewById(R.id.exc_rpt_entry_exercise_weight);
@@ -70,6 +71,7 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         if(position < 0 || position > m_arrayListOfLogLinkedLists.size()) throw new IllegalArgumentException("i is outside the bounds of the array.");
@@ -99,7 +101,7 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
         return m_arrayListOfLogLinkedLists.size();
     }
 
-    public Cursor swapCursor(Cursor newCursor) {
+    Cursor swapCursor(Cursor newCursor) {
         if (newCursor == m_cursorViewExerciseLogs) {
             return null;
         }
@@ -121,10 +123,9 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
 
     /**
      * Create a new RecyclerView adapter for the exercise report.
-     * @param context
      * @param cursorViewExerciseLogs Must be sorted by exercise name ascending.
      */
-    public RVAdapterExerciseReport(Context context, Cursor cursorViewExerciseLogs) {
+    RVAdapterExerciseReport(Context context, Cursor cursorViewExerciseLogs) {
         m_context = context;
         m_cursorViewExerciseLogs = cursorViewExerciseLogs;
         m_arrayListOfLogLinkedLists = new ArrayList<>();
@@ -162,6 +163,7 @@ public class RVAdapterExerciseReport extends RecyclerView.Adapter<RVAdapterExerc
                 viewHolderData.name = currentExerciseName;
                 viewHolderData.reps = reps;
                 viewHolderData.weight = weight;
+                assert targetLinkedListOfLogsForExercise != null;
                 targetLinkedListOfLogsForExercise.add(viewHolderData);
 
                 // If this list is largest, remember its size.

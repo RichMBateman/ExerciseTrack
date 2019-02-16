@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
+
 /**
  * Represents a simple key/value pair table for general app settings.
  */
@@ -16,39 +18,28 @@ public class ExerciseAppDBSetting {
      * Used to retrieve the current day schedule that is set in the database.
      * Will store, as a string, the id of the Day Schedule we want to use for the current day.
      */
-    public static final String SETTING_KEY_CURRENT_DAY = "CurrentDay";
+    static final String SETTING_KEY_CURRENT_DAY = "CurrentDay";
     /**
      * A way to mark that we should ignore triggers from firing.
      * Values are simply Yes or No.
      */
-    public static final String SETTING_KEY_DISABLE_TRIGGERS = "DisableTriggers";
+    static final String SETTING_KEY_DISABLE_TRIGGERS = "DisableTriggers";
 
     private long m_id;
     private String m_key;
-    private String m_val;
 
     public static class Contract {
-        public static final String TABLE_NAME = "ExerciseSettings";
+        static final String TABLE_NAME = "ExerciseSettings";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private Contract() {} // prevent instances.
-        /**
-         * Gets a full projection for this table (all columns).
-         * @return
-         */
-        public static String[] getProjectionFull() {
-            String[] projection = {Columns.COL_NAME_ID,
-                    Columns.COL_NAME_KEY,
-                    Columns.COL_NAME_VALUE};
-            return projection;
-        }
 
         public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
-            public static final String COL_NAME_KEY = "KeyName";
-            public static final String COL_NAME_VALUE = "Value";
+            static final String COL_NAME_KEY = "KeyName";
+            static final String COL_NAME_VALUE = "Value";
 
             private Columns() { /* private constructor; no instantiation allowed */ }
         }
@@ -57,13 +48,10 @@ public class ExerciseAppDBSetting {
     public ExerciseAppDBSetting(Cursor cursor) {
         m_id = cursor.getLong(cursor.getColumnIndex(Contract.Columns.COL_NAME_ID));
         m_key = cursor.getString(cursor.getColumnIndex(Contract.Columns.COL_NAME_KEY));
-        m_val = cursor.getString(cursor.getColumnIndex(Contract.Columns.COL_NAME_VALUE));
     }
 
     /**
      * Loads the current day schedule id.
-     * @param context
-     * @return
      */
     public static long getCurrentDayScheduleId(Context context) {
         String value = getSettingValue(context, SETTING_KEY_CURRENT_DAY);
@@ -78,13 +66,12 @@ public class ExerciseAppDBSetting {
 
     /**
      * Sets the current day schedule id.
-     * @param context
-     * @param dayScheduleId
      */
     public static void setCurrentDayScheduleId(Context context, long dayScheduleId) {
         setSettingValue(context, SETTING_KEY_CURRENT_DAY, Long.toString(dayScheduleId));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void setSettingValue(Context context, String key, String value) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(ExerciseAppDBSetting.Contract.Columns.COL_NAME_VALUE, value);
@@ -95,10 +82,8 @@ public class ExerciseAppDBSetting {
 
     /**
      * Queries for a specific setting value, given a key.
-     * @param context
-     * @param key
-     * @return
      */
+    @SuppressWarnings("SameParameterValue")
     private static String getSettingValue(Context context, String key) {
         final String[] projection =  new String[]{Contract.Columns.COL_NAME_VALUE};
         final String selection = Contract.Columns.COL_NAME_KEY +"=?";
@@ -129,13 +114,5 @@ public class ExerciseAppDBSetting {
 
     public void setKey(String key) {
         m_key = key;
-    }
-
-    public String getVal() {
-        return m_val;
-    }
-
-    public void setVal(String val) {
-        m_val = val;
     }
 }

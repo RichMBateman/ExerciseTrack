@@ -15,17 +15,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2fb6f2ec-d96d-48fb-8c0a-cbd8d61dd426" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/FileWriterBad.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout-v21/common_about_web_url.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/common_about_app.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/common_about_web_url.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabaseHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDBSetting.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDBSetting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogEntry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/AppDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterCurrentDayExercise.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RecyclerViewItemClickListener.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rmblibrary-debug/rmblibrary-debug.aar" beforeDir="false" afterPath="$PROJECT_DIR$/rmblibrary-debug/rmblibrary-debug.aar" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -47,7 +64,134 @@
     </system>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ExerciseListActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="222">
+              <caret line="37" column="4" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="4" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RVAdapterDaySchedule.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="294">
+              <caret line="210" column="15" selection-start-line="210" selection-start-column="15" selection-end-line="210" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ActivityExerciseReport.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="532">
+              <caret line="125" column="43" selection-start-line="125" selection-start-column="43" selection-end-line="125" selection-end-column="43" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#4619#4747#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DayScheduleDragManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1461">
+              <caret line="56" column="64" selection-start-line="56" selection-start-column="64" selection-end-line="56" selection-end-column="64" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DayScheduleListActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="410">
+              <caret line="107" column="49" selection-start-line="107" selection-start-column="49" selection-end-line="107" selection-end-column="49" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExerciseAppProvider.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="294">
+              <caret line="445" selection-start-line="445" selection-end-line="445" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RVAdapterExerciseEntry.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="313">
+              <caret line="242" selection-start-line="242" selection-end-line="242" />
+              <folding>
+                <element signature="e#4312#4369#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-85">
+              <caret line="13" column="44" selection-start-line="13" selection-start-column="44" selection-end-line="13" selection-end-column="44" />
+              <folding>
+                <element signature="e#5445#5475#0" expanded="true" />
+                <element signature="e#6105#6142#0" expanded="true" />
+                <element signature="e#6270#6294#0" expanded="true" />
+                <element signature="e#6319#6338#0" expanded="true" />
+                <element signature="e#7126#7152#0" expanded="true" />
+                <element signature="e#7431#8093#0" expanded="true" />
+                <element signature="e#7532#8067#0" expanded="true" />
+                <element signature="e#8066#8067#0" expanded="true" />
+                <element signature="e#8092#8093#0" expanded="true" />
+                <element signature="e#24207#24239#0" expanded="true" />
+                <element signature="e#24664#24698#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RVAdapterExerciseReport.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="398">
+              <caret line="165" column="65" selection-start-line="165" selection-start-column="65" selection-end-line="165" selection-end-column="65" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1058#1059#0" expanded="true" />
+                <element signature="e#1100#1101#0" expanded="true" />
+                <element signature="e#1149#1150#0" expanded="true" />
+                <element signature="e#1204#1205#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EmailSender.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -60,14 +204,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getContract()</find>
-      <find>while(</find>
-      <find>onSingleTapUp</find>
-      <find>onLongPress</find>
-      <find>RecyclerViewItemClickListener</find>
-      <find>m_buttonClickListener</find>
-      <find>CursorLoader</find>
-      <find>COLLATE NoCase</find>
       <find>insert</find>
       <find>.insert</find>
       <find>separator</find>
@@ -90,6 +226,14 @@
       <find>GenerateTestD</find>
       <find>COL_NAME_IS_DAILY_REMINDER</find>
       <find>m_dialog</find>
+      <find>DatabaseContractBase</find>
+      <find>ContentProviderHelper</find>
+      <find>ContentProvider</find>
+      <find>AppDialog</find>
+      <find>RecyclerViewItemClickListener</find>
+      <find>m_val</find>
+      <find>DayScheduleDragManager</find>
+      <find>RVAdapterCurrentDayExercise</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -2437,11 +2581,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RecyclerViewItemClickListener.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/FileWriter.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabase.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/common_about_web_url.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout-v21/common_about_web_url.xml" />
@@ -2452,35 +2592,41 @@
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/border.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/shape_normal.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/shape_droptarget.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/schedule_maintenance.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/sched_maint_exercise_item.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/exercise_list.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabaseHelper.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogEntry.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/menu_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/AppDialog.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/current_day_exercise_blockentry.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/current_day_exercise.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_exercise_report_entry.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_exercise_report.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabaseHelper.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RecyclerViewItemClickListener.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/AppDialog.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDBSetting.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogEntry.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterCurrentDayExercise.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java" />
       </list>
     </option>
   </component>
@@ -2498,9 +2644,50 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="AndroidView">
         <subPane>
           <expand>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="exercisetrack" type="cbb59c9e:AndroidPsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="exercisetrack" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="datamodel" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="exercisetrack" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="gui" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+            </path>
+            <path>
+              <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
             <path>
               <item name="ExerciseTrack" type="1abcf292:AndroidViewProjectNode" />
               <item name="Gradle Scripts" type="ae0cef3a:AndroidBuildScriptsGroupNode" />
@@ -2509,16 +2696,15 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
-    <property name="device.picker.selection" value="188fec11" />
+    <property name="device.picker.selection" value="Nexus_5X_API_27" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../RMBLibrary/rmblibrary/build/outputs/aar/rmblibrary-debug.aar" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="Errors" />
@@ -2608,6 +2794,47 @@
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <module name="rmblibrary-debug" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <module name="rmblibrary-debug" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -2659,8 +2886,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info anchor="bottom" id="Android Profiler" order="7" show_stripe_button="false" weight="0.3297062" />
+      <window_info anchor="bottom" id="Android Profiler" order="7" weight="0.3297062" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49946696" weight="0.3297062" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
@@ -2676,6 +2904,7 @@
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2489339" />
       <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.49733475" visible="true" weight="0.22089228" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49946696" weight="0.3297062" />
       <window_info anchor="right" id="Gradle" order="5" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Device File Explorer" order="8" side_tool="true" weight="0.32995737" />
@@ -2690,7 +2919,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49946696" weight="0.3297062" />
     </layout>
     <layout-to-restore>
       <window_info anchor="bottom" id="Build" order="7" sideWeight="0.49946696" weight="0.343852" />
@@ -2733,126 +2961,85 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java</url>
-          <line>35</line>
-          <properties />
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java</url>
-          <line>471</line>
+          <line>433</line>
           <properties />
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java</url>
-          <line>256</line>
+          <line>245</line>
           <properties />
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java</url>
-          <line>108</line>
+          <line>106</line>
           <properties />
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java</url>
-          <line>219</line>
+          <line>182</line>
           <properties />
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java</url>
-          <line>179</line>
+          <line>172</line>
           <properties />
           <option name="timeStamp" value="45" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java</url>
-          <line>130</line>
+          <line>131</line>
           <properties />
           <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java</url>
-          <line>125</line>
+          <line>126</line>
           <properties />
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java</url>
-          <line>123</line>
+          <line>90</line>
           <properties />
           <option name="timeStamp" value="50" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java</url>
-          <line>141</line>
-          <properties />
-          <option name="timeStamp" value="53" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java</url>
-          <line>200</line>
-          <properties />
-          <option name="timeStamp" value="54" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java</url>
-          <line>148</line>
+          <line>149</line>
           <properties />
           <option name="timeStamp" value="56" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java</url>
+          <line>53</line>
+          <properties />
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="58" />
+      <option name="time" value="59" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/Programs/Android/sdk/sources/android-28/android/database/Cursor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="59" column="8" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Programs/Android/sdk/sources/android-27/android/content/ContentProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3553">
-          <caret line="264" selection-start-line="264" selection-end-line="264" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Programs/Android/sdk/sources/android-27/android/content/ContextWrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="782">
-          <caret line="98" selection-start-line="98" selection-end-line="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/simple_daily_reminder_entry.xml">
-      <provider editor-type-id="text-editor">
-        <state />
-      </provider>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/sched_maint_exercise_item.xml">
       <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/sched_maint_exercise_item.xml">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="578">
           <caret line="60" column="8" selection-start-line="60" selection-start-column="8" selection-end-line="60" selection-end-column="8" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/schedule_maintenance.xml">
-      <provider editor-type-id="text-editor">
+      <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
-      <provider selected="true" editor-type-id="android-designer2">
+      <provider editor-type-id="text-editor">
         <state />
       </provider>
     </entry>
@@ -2872,80 +3059,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" />
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/simple_exercise_list_entry.xml">
+      <provider selected="true" editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="561">
           <caret line="33" column="30" selection-start-line="33" selection-start-column="30" selection-end-line="33" selection-end-column="30" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="24" column="26" selection-start-line="24" selection-start-column="26" selection-end-line="24" selection-end-column="107" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="4" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="53" />
         </state>
       </provider>
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterCurrentDayExercise.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="124" column="83" selection-start-line="124" selection-start-column="83" selection-end-line="124" selection-end-column="83" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="100" column="82" selection-start-line="100" selection-start-column="82" selection-end-line="100" selection-end-column="82" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#DayScheduleStartDragHandler#0;class#DayScheduleDragManager#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="97" column="68" selection-start-line="97" selection-start-column="68" selection-end-line="97" selection-end-column="68" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/menu/menu_main.xml">
-      <provider editor-type-id="text-editor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1088">
-          <caret line="80" column="5" selection-start-line="80" selection-start-column="5" selection-end-line="80" selection-end-column="5" />
-        </state>
+      <provider editor-type-id="text-editor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/com/bateman/rich/exercisetrack/R.java">
@@ -2955,24 +3093,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/AppDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1292">
-          <caret line="90" column="41" selection-start-line="90" selection-start-column="41" selection-end-line="90" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/current_day_exercise_blockentry.xml">
+      <provider selected="true" editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="1241">
           <caret line="73" column="7" selection-start-line="73" selection-start-column="7" selection-end-line="73" selection-end-column="45" />
         </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
       </provider>
     </entry>
     <entry file="jar://D:/Programs/Android/.gradle/caches/transforms-1/files-1.1/appcompat-v7-28.0.0.aar/ba0e5cdea80e8d8ce1496bf5e5b1064e/jars/classes.jar!/android/support/v7/app/AppCompatDelegateImpl.class">
@@ -2982,156 +3110,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="44" selection-start-line="44" selection-end-line="45" selection-end-column="114" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="14" column="28" selection-start-line="14" selection-start-column="28" selection-end-line="14" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="29" column="24" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="650">
-          <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/exercise_list.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="318">
           <caret line="49" selection-start-line="49" selection-end-line="50" selection-end-column="28" />
         </state>
       </provider>
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="55" selection-start-line="55" selection-end-line="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabaseHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="24" column="55" selection-start-line="24" selection-start-column="55" selection-end-line="24" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDBSetting.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="51" selection-start-line="49" selection-end-line="51" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_exercise_report_entry.xml">
-      <provider editor-type-id="text-editor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="319" column="139" selection-start-line="319" selection-start-column="139" selection-end-line="319" selection-end-column="139" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="497" column="115" selection-start-line="497" selection-start-column="115" selection-end-line="497" selection-end-column="115" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="398">
-          <caret line="66" column="55" selection-start-line="66" selection-start-column="55" selection-end-line="66" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="557">
-          <caret line="127" column="5" selection-start-line="127" selection-start-column="5" selection-end-line="127" selection-end-column="5" />
-        </state>
+      <provider editor-type-id="text-editor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_exercise_report.xml">
-      <provider editor-type-id="text-editor">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="91" column="46" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1027#1028#0" expanded="true" />
-            <element signature="e#1069#1070#0" expanded="true" />
-            <element signature="e#1225#1226#0" expanded="true" />
-            <element signature="e#1264#1265#0" expanded="true" />
-            <element signature="class#ViewHolderData#0;class#RVAdapterExerciseReport#0" />
-            <element signature="class#ViewHolder#0;class#RVAdapterExerciseReport#0" />
-            <element signature="e#3090#3091#0" expanded="true" />
-            <element signature="e#3147#3148#0" expanded="true" />
-          </folding>
-        </state>
+      <provider editor-type-id="text-editor">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/current_day_exercise.xml">
+      <provider selected="true" editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="680">
           <caret line="40" column="71" selection-start-line="40" selection-start-column="71" selection-end-line="40" selection-end-column="71" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/common_about_web_url.xml" />
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-v21/common_about_web_url.xml" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/common_about_app.xml" />
     <entry file="file://D:/Programs/Android/sdk/sources/android-28/android/content/DialogInterface.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -3166,13 +3182,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -3183,23 +3192,218 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/AppDatabaseHelper.java" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ContentProviderHelper.java" />
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" selection-start-line="25" selection-end-line="25" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RecyclerViewItemClickListener.java" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/AppDialog.java" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DatabaseContractBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="44" lean-forward="true" selection-start-line="4" selection-start-column="44" selection-end-line="4" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/DayScheduleEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="116" column="4" selection-start-line="116" selection-start-column="4" selection-end-line="116" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3711">
+          <caret line="262" lean-forward="true" selection-start-line="262" selection-end-line="262" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppDBSetting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="72" lean-forward="true" selection-start-line="72" selection-end-line="72" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2794#2833#0" expanded="true" />
+            <element signature="e#3394#3433#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1144">
+          <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/LogDailyExerciseEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="188" selection-start-line="188" selection-end-line="188" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/TestData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="12" column="3" selection-start-line="12" selection-start-column="3" selection-end-line="12" selection-end-column="3" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ActivityExerciseReport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="125" column="43" selection-start-line="125" selection-start-column="43" selection-end-line="125" selection-end-column="43" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4619#4747#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleDragManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1461">
+          <caret line="56" column="64" selection-start-line="56" selection-start-column="64" selection-end-line="56" selection-end-column="64" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterCurrentDayExercise.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" column="40" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#834#835#0" expanded="true" />
+            <element signature="e#867#868#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterDaySchedule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="210" column="15" selection-start-line="210" selection-start-column="15" selection-end-line="210" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/DayScheduleListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="107" column="49" selection-start-line="107" selection-start-column="49" selection-end-line="107" selection-end-column="49" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="242" selection-start-line="242" selection-end-line="242" />
+          <folding>
+            <element signature="e#4312#4369#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/RVAdapterExerciseReport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="398">
+          <caret line="165" column="65" selection-start-line="165" selection-start-column="65" selection-end-line="165" selection-end-column="65" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1058#1059#0" expanded="true" />
+            <element signature="e#1100#1101#0" expanded="true" />
+            <element signature="e#1149#1150#0" expanded="true" />
+            <element signature="e#1204#1205#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9957">
-          <caret line="42" column="8" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="8" />
+        <state relative-caret-position="-85">
+          <caret line="13" column="44" selection-start-line="13" selection-start-column="44" selection-end-line="13" selection-end-column="44" />
           <folding>
-            <element signature="e#4591#5209#0" expanded="true" />
-            <element signature="e#5208#5209#0" expanded="true" />
-            <element signature="e#5255#5639#0" expanded="true" />
-            <element signature="e#5638#5639#0" expanded="true" />
-            <element signature="e#5680#6085#0" expanded="true" />
-            <element signature="e#6084#6085#0" expanded="true" />
-            <element signature="e#7692#8354#0" expanded="true" />
-            <element signature="e#7793#8328#0" expanded="true" />
-            <element signature="e#8327#8328#0" expanded="true" />
-            <element signature="e#8353#8354#0" expanded="true" />
-            <element signature="e#11244#11261#0" expanded="true" />
+            <element signature="e#5445#5475#0" expanded="true" />
+            <element signature="e#6105#6142#0" expanded="true" />
+            <element signature="e#6270#6294#0" expanded="true" />
+            <element signature="e#6319#6338#0" expanded="true" />
+            <element signature="e#7126#7152#0" expanded="true" />
+            <element signature="e#7431#8093#0" expanded="true" />
+            <element signature="e#7532#8067#0" expanded="true" />
+            <element signature="e#8066#8067#0" expanded="true" />
+            <element signature="e#8092#8093#0" expanded="true" />
+            <element signature="e#24207#24239#0" expanded="true" />
+            <element signature="e#24664#24698#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/FileWriterBad.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="7" column="3" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/gui/ExerciseListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="37" column="4" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/EmailSender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bateman/rich/exercisetrack/datamodel/ExerciseAppProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="445" selection-start-line="445" selection-end-line="445" />
         </state>
       </provider>
     </entry>

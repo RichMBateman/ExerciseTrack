@@ -1,7 +1,5 @@
 package com.bateman.rich.exercisetrack.gui;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -37,18 +35,17 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
 
     //    private final ArrayList<String> m_itemList = new ArrayList<>();
 
-    public RVAdapterDaySchedule(Context c, Cursor cursor, DayScheduleListActivity activitiy) {
+    RVAdapterDaySchedule(Context c, Cursor cursor, DayScheduleListActivity activitiy) {
         Log.d(TAG, "RVAdapterDaySchedule: start");
         m_context = c;
         m_cursor = cursor;
         m_activity=activitiy;
     }
 
-    public void setRvAdapterExerciseEntry(RVAdapterExerciseEntry rvAdapterExerciseEntry) {m_rvAdapterExerciseEntry=rvAdapterExerciseEntry;}
+    void setRvAdapterExerciseEntry(RVAdapterExerciseEntry rvAdapterExerciseEntry) {m_rvAdapterExerciseEntry=rvAdapterExerciseEntry;}
 
     /**
      * A handy method that is called when the recycler viwe is attached to the adapter.
-     * @param recyclerView
      */
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -61,22 +58,21 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         m_currentDayScheduleId = ExerciseAppDBSetting.getCurrentDayScheduleId(m_context);
     }
 
-    public RecyclerView getRecyclerView() {return m_recyclerView;}
+    RecyclerView getRecyclerView() {return m_recyclerView;}
 
 
-    public void setDayScheduleDragManager(DayScheduleDragManager dayScheduleDragManager, RecyclerView rv) {
+    void setDayScheduleDragManager(DayScheduleDragManager dayScheduleDragManager) {
         m_dayScheduleDragManager = dayScheduleDragManager;
-        // I no longer want the entire recycler view listening to events.
-        //m_dayScheduleDragManager.registerRecyclerViewForAcceptingDrags(rv);
     }
 
-    public RVAdapterDaySchedule.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RVAdapterDaySchedule.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: new view requested");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sched_maint_exercise_item, parent, false);
         return new RVAdapterDaySchedule.ViewHolder(view);
     }
 
-    public boolean isItemAboveAnExercise(int currentDaySchedulePosition) {
+    boolean isItemAboveAnExercise(int currentDaySchedulePosition) {
         boolean meetsCondition = false;
         int adapterPositionCurrentItem = currentDaySchedulePosition - 1;
         if(m_cursor.moveToPosition(adapterPositionCurrentItem)) {
@@ -87,10 +83,9 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         return meetsCondition;
     }
 
-    public boolean isItemDaySeparator(int currentDaySchedulePosition) {
+    boolean isItemDaySeparator(int currentDaySchedulePosition) {
         boolean meetsCondition = false;
-        int adapterPositionCurrentItem = currentDaySchedulePosition;
-        if(m_cursor.moveToPosition(adapterPositionCurrentItem)) {
+        if(m_cursor.moveToPosition(currentDaySchedulePosition)) {
             DayScheduleEntry entry = new DayScheduleEntry(m_cursor);
             if(entry.getExerciseEntryId() == DAY_SEPARATOR_ID)
                 meetsCondition=true;
@@ -99,11 +94,9 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     }
 
     /**
-     *
-     * @param viewHolder
      * @param position Ranges from 0 to N - 1.
      */
-    public void onBindViewHolder(RVAdapterDaySchedule.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull RVAdapterDaySchedule.ViewHolder viewHolder, final int position) {
         Log.d(TAG, "onBindViewHolder: start for position: " + position);
 
         viewHolder.textViewDropHereTop.setVisibility(View.GONE);
@@ -111,9 +104,9 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
 
         int daySchedulePosition = position + 1; // daySchedulePosition is 1-based.  ViewHolder position is 0-based.
         // If you drop something ABOVE this, this item's position will be increased by one; the new item will then take its current position
-        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereTop, viewHolder, daySchedulePosition);
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereTop, daySchedulePosition);
         // If you drop something BELOW this, it's position will be one more than this.
-        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereBot, viewHolder, daySchedulePosition + 1);
+        m_dayScheduleDragManager.registerForDropMePlaceholderBehavior(viewHolder.textViewDropHereBot, daySchedulePosition + 1);
 
         if(m_cursor == null || m_cursor.getCount() == 0) {
             Log.d(TAG, "onBindViewHolder: No day schedule entries to load.");
@@ -194,43 +187,6 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         }
     }
 
-//    public void updateViewHolderVisibilitiesBasedOnDataChanges() {
-//        for(int viewHolderIndex = 0; viewHolderIndex <= m_recyclerView.getChildCount(); viewHolderIndex++) {
-//            ViewHolder viewHolder = (RVAdapterDaySchedule.ViewHolder) m_recyclerView.findViewHolderForAdapterPosition(viewHolderIndex);
-//            if(viewHolder != null) {
-//                if(viewHolderIndex == 0) {
-//                    if(m_cursor == null || m_cursor.getCount() == 0) {
-//                        viewHolder.textViewExerciseName.setVisibility(View.GONE);
-//                        viewHolder.btnMoveUp.setVisibility(View.GONE);
-//                        viewHolder.btnMoveDown.setVisibility(View.GONE);
-//                        viewHolder.btnDelete.setVisibility(View.GONE);
-//                    } else {
-//                        viewHolder.textViewExerciseName.setVisibility(View.VISIBLE);
-//                        viewHolder.btnDelete.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//
-//                if(viewHolderIndex == 0) {
-//                    viewHolder.btnMoveUp.setVisibility(View.GONE); // hide top most move up button
-//                    if(viewHolderIndex < getItemCount() - 1) {
-//                        viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
-//                    } else {
-//                        viewHolder.btnMoveDown.setVisibility(View.GONE);
-//                    }
-//                } else if(viewHolderIndex == getItemCount() - 1) {
-//                    viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
-//                    viewHolder.btnMoveDown.setVisibility(View.GONE);
-//                } else {
-//                    viewHolder.btnMoveUp.setVisibility(View.VISIBLE);
-//                    viewHolder.btnMoveDown.setVisibility(View.VISIBLE);
-//                }
-//
-//            } else {
-//                Log.d(TAG, "handleStartDrag: null viewHolder found for position: " + viewHolderIndex);
-//            }
-//        }
-//    }
-
     @Override
     public int getItemCount() {
         Log.d(TAG, "getItemCount: starts");
@@ -278,7 +234,7 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private static final String TAG = "ViewHolder";
+//        private static final String TAG = "ViewHolder";
 
         private TextView textViewExerciseName;
         private TextView textViewDropHereTop;
@@ -287,7 +243,7 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
         private ImageButton btnMoveUp;
         private ImageButton btnDelete;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             this.textViewExerciseName = itemView.findViewById(R.id.sm_textview_exercise_item);
@@ -305,38 +261,38 @@ public class RVAdapterDaySchedule extends RecyclerView.Adapter<RVAdapterDaySched
             if(this.btnMoveUp == null) throw new IllegalStateException("Unable to find btnMoveUp on Day Schedule view holder.");
         }
 
-        public TextView getTextViewExerciseName() {
+        TextView getTextViewExerciseName() {
             return textViewExerciseName;
         }
 
-        public TextView getTextViewDropHereTop() {
+        TextView getTextViewDropHereTop() {
             return textViewDropHereTop;
         }
 
-        public TextView getTextViewDropHereBot() {
+        TextView getTextViewDropHereBot() {
             return textViewDropHereBot;
         }
 
-        public ImageButton getBtnMoveDown() {
-            return btnMoveDown;
-        }
-
-        public ImageButton getBtnMoveUp() {
-            return btnMoveUp;
-        }
-
-        public ImageButton getBtnDelete() {
-            return btnDelete;
-        }
+//        public ImageButton getBtnMoveDown() {
+//            return btnMoveDown;
+//        }
+//
+//        public ImageButton getBtnMoveUp() {
+//            return btnMoveUp;
+//        }
+//
+//        public ImageButton getBtnDelete() {
+//            return btnDelete;
+//        }
     }
 
 
     // 2019.01.26: I had this idea that the data in the database would need to be modified so that it could be presented to the user.
     // My thought was "day separators" would be derived based on how the data was stored, but I found this made things unnecessarily
     // complicated.  Below is how i did it... but it succcks.
-    /**
-     * Given a cursor of Day Schedules, this builds a list of exercise names or day separators.
-     */
+//    /**
+//     * Given a cursor of Day Schedules, this builds a list of exercise names or day separators.
+//     */
 //    private void deriveDayScheduleList() {
 //        Log.d(TAG, "deriveDayScheduleList: start");
 //        m_itemList.clear();

@@ -9,10 +9,8 @@ public class EmailSender {
     /**
      * Send an e-mail.
      * https://developer.android.com/guide/components/intents-common#ComposeEmail
-     * @param subject
-     * @param attachment
      */
-    public static void launchEmailIntentWithAttachment(Context context, String subject, Uri attachment) {
+    static void launchEmailIntentWithAttachment(Context context, String subject, Uri attachment) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("text/plain"); // mime type for plain text.
             // I think the "type" here controls what kind of apps popup for sending.

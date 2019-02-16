@@ -1,6 +1,5 @@
 package com.bateman.rich.exercisetrack.gui;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,11 +19,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.bateman.rich.exercisetrack.R;
-import com.bateman.rich.exercisetrack.datamodel.ContentProviderHelper;
 import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
+import com.bateman.rich.rmblibrary.gui.RecyclerViewItemClickListener;
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
 
 public class ExerciseListActivity extends AppCompatActivity
                                   implements RecyclerViewItemClickListener.OnRecyclerClickListener,
@@ -37,7 +35,6 @@ public class ExerciseListActivity extends AppCompatActivity
 
     private RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
-    private Button m_btnAddExercise;
     private EditText m_editTextExercise;
     private RecyclerView m_recyclerViewExercises;
     private CheckBox m_checkBoxIsReminder;
@@ -62,8 +59,8 @@ public class ExerciseListActivity extends AppCompatActivity
     }
 
     private void setupUI() {
-        m_btnAddExercise = findViewById(R.id.el_btn_add_exercise);
-        m_btnAddExercise.setOnClickListener(new View.OnClickListener() {
+        Button btnAddExercise = findViewById(R.id.el_btn_add_exercise);
+        btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String exerciseText = m_editTextExercise.getText().toString().trim();

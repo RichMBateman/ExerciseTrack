@@ -1,19 +1,15 @@
 package com.bateman.rich.exercisetrack.gui;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.LoaderManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.LinearLayout;
 
 import com.bateman.rich.exercisetrack.R;
 import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
@@ -25,70 +21,41 @@ import com.bateman.rich.exercisetrack.datamodel.DayScheduleEntry;
  * if you drag from the right recycle view, you can only move them up or down.
  * (You will need to press a delete button to delete them)
  */
-public class DayScheduleDragManager {
+class DayScheduleDragManager {
     private static final String TAG = "DayScheduleDragManager";
 
     private final Context m_context;
-    private final RecyclerView m_recyclerViewLeft;
-    private final RecyclerView m_recyclerViewRight;
     private final RVAdapterDaySchedule m_rvAdapterDaySchedule;
-    private final RVAdapterExerciseEntry m_rvAdapterExerciseEntry;
 
     /**
      * Create a new DayScheduleDragManager, which will handle the dragging and dropping of items between
      * two RecyclerViews.
-     * @param c
      */
-    public DayScheduleDragManager(Context c, RVAdapterExerciseEntry rvAdapterExerciseEntry, RVAdapterDaySchedule rvAdapterDaySchedule, RecyclerView leftRV, RecyclerView rightRV) {
+    DayScheduleDragManager(Context c, RVAdapterDaySchedule rvAdapterDaySchedule) {
         m_context = c;
-        m_rvAdapterExerciseEntry = rvAdapterExerciseEntry;
         m_rvAdapterDaySchedule = rvAdapterDaySchedule;
-        m_recyclerViewLeft = leftRV;
-        m_recyclerViewRight = rightRV;
     }
-
-    // This function is not quite what I wanted.  I don't want the ENtIRE recycler view to respond to drag events.  Just individual parts.
-//    public void registerRecyclerViewForAcceptingDrags(RecyclerView rv) {
-//        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context);
-//        rv.setOnDragListener(l);
-//    }
 
     /**
      * Registers a view (probably just textview holding an exercise name or "--day separator--"
      * so that it will have "Left" recycler view behavior.  Meaning you can drag it from the left
      * recycle view anywhere on the right view, and it won't disappear when dragging, or on drop.
      * Includes the exercise id of this view.
-     * @param view
      */
-    public void registerViewForLeftBehavior(View view, long exerciseId) {
+    void registerViewForLeftBehavior(View view, long exerciseId) {
         DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(false, exerciseId);
         view.setOnLongClickListener(l);
         view.setOnTouchListener(l);
     }
 
     /**
-     * No longer allowing elements on the right recycler view to be dragged.
-     */
-    /**
-     * Registers a view for "Right" recycler view behvaior.  You can drag it anywhere on the right recycler view,
-     * it will disappear from origin while dragging, and when dropped, the old item will be deleted.
-     * @param view
-     */
-//    public void registerViewForRightBehavior(View view) {
-//        DayScheduleStartDragHandler l = new DayScheduleStartDragHandler(true, 0);
-//        view.setOnLongClickListener(l);
-//        view.setOnTouchListener(l);
-//    }
-
-    /**
      * Registers a "Drop Me" placeholder textview for dragging events.
      * When something STARTS to drag, this view will become visible.
      * If someothing drags INTO this view, it will light up.
      * If you drop INTO this view, it will position the new exercise appropriately.
-     * @param placeholder
      */
-    public void registerForDropMePlaceholderBehavior(View placeholder, RVAdapterDaySchedule.ViewHolder viewHolder, int targetPosition) {
-        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context, viewHolder, targetPosition);
+    void registerForDropMePlaceholderBehavior(View placeholder, int targetPosition) {
+        DayScheduleReceiveDragHandler l = new DayScheduleReceiveDragHandler(m_context, targetPosition);
         placeholder.setOnDragListener(l);
     }
 
@@ -162,6 +129,7 @@ public class DayScheduleDragManager {
             return true;
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -196,22 +164,17 @@ public class DayScheduleDragManager {
         private final DayScheduleListActivity m_activity;
         private final Context m_context;
         private final Drawable m_enterShape;
-        private final Drawable m_normalShape;
-        private final RVAdapterDaySchedule.ViewHolder m_viewHolder;
         private final int m_targetPosition;
 
-        private DayScheduleReceiveDragHandler(Context c, RVAdapterDaySchedule.ViewHolder viewHolder, int targetPosition) {
+        private DayScheduleReceiveDragHandler(Context c, int targetPosition) {
             m_activity = (DayScheduleListActivity) c;
             m_context = c;
-            m_viewHolder=viewHolder;
             m_targetPosition=targetPosition;
             m_enterShape = m_context.getResources().getDrawable(R.drawable.shape_droptarget);
-            m_normalShape = m_context.getResources().getDrawable(R.drawable.shape_normal);
         }
         @Override
         public boolean onDrag(View v, DragEvent event) {
             int action = event.getAction();
-            boolean isTopPlaceHolder = (v.getId() == R.id.sm_maint_tv_drop_here_top);
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // do nothing

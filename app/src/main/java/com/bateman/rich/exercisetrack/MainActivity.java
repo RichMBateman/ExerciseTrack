@@ -1,5 +1,6 @@
 package com.bateman.rich.exercisetrack;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,11 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,12 +29,11 @@ import com.bateman.rich.exercisetrack.datamodel.ExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.LogDailyExerciseEntry;
 import com.bateman.rich.exercisetrack.datamodel.TestData;
 import com.bateman.rich.exercisetrack.gui.ActivityExerciseReport;
-import com.bateman.rich.exercisetrack.gui.AppDialog;
 import com.bateman.rich.exercisetrack.gui.DayScheduleListActivity;
 import com.bateman.rich.exercisetrack.gui.ExerciseListActivity;
-import com.bateman.rich.exercisetrack.gui.RVAdapterCurrentDayExercise;
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
 import com.bateman.rich.rmblibrary.gui.AboutAppDialog;
+import com.bateman.rich.rmblibrary.gui.AppDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,8 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
-    implements AppDialog.DialogEvents,
-        LoaderManager.LoaderCallbacks<Cursor> {
+    implements AppDialog.DialogEvents {
 
     private static final String TAG = "MainActivity";
     private static final int DIALOG_ID_CLEAR_EXERCISE_HISTORY=1001;
@@ -64,24 +59,17 @@ public class MainActivity extends AppCompatActivity
 
     private TextView m_textViewStartTimeLabel;
     private TextView m_textViewStartTimeDisplay;
-    private TextView m_textViewEnterNumRepsLabel;
-    private TextView m_textViewWeightLabel;
     private TextView m_textViewExerciseName;
     private TextView m_textViewWeightInput;
     private TextView m_textNewSetRepsInput;
     private Button m_btnCompleteSet;
     private SeekBar m_seekBarDifficulty;
-    private TextView m_textViewDifficultyOutput;
     private TextView m_textViewTotalRepsDoneValue;
-
-    private static final int LOADER_ID = 0;
-    private RVAdapterCurrentDayExercise m_rvAdapterCurrentDayExercise;
 
     private long m_currentDayScheduleId;
     private LogDailyExerciseEntry m_currentLogDailyExerciseEntry;
 
     private boolean m_resting;
-    private int m_secondsToRest;
     private Timer m_timerRest;
 
     @Override
@@ -120,6 +108,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         m_btnCompleteSet.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if(m_currentLogDailyExerciseEntry.getStartDateTime() == null) {
@@ -155,7 +144,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     m_resting=false;
                     cancelRestTimer();
-                    m_textViewSecondsToRest.setText("120");
+                    m_textViewSecondsToRest.setText(getString(R.string.seconds120));
                 }
 
             }
@@ -172,14 +161,14 @@ public class MainActivity extends AppCompatActivity
         m_textViewStartTimeDisplay.setVisibility(View.VISIBLE);
         String textTime = getHourString(gCal);
         m_textViewStartTimeDisplay.setText(textTime);
-        m_btnStartStop.setText("Complete Exercise");
+        m_btnStartStop.setText(getString(R.string.complete_exercise));
     }
 
     private void cancelRestTimer() {
         m_timerRest.cancel();
         m_resting=false;
-        m_btnRest.setText("Rest");
-        m_textViewSecondsToRest.setText("120");
+        m_btnRest.setText(getString(R.string.rest));
+        m_textViewSecondsToRest.setText(R.string.seconds120);
     }
 
     private void vibratePhone() {
@@ -198,14 +187,14 @@ public class MainActivity extends AppCompatActivity
 
     private void setupRestTimer() {
         m_timerRest = new Timer();
-        Context appContext = this;
         final Handler handler = new Handler();
-        m_btnRest.setText("Cancel");
+        m_btnRest.setText(getString(R.string.cancel));
 
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void run() {
                         int secondsToRest = Integer.parseInt(m_textViewSecondsToRest.getText().toString());
@@ -229,13 +218,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @SuppressLint("DefaultLocale")
     private String getHourString(GregorianCalendar gCal) {
         int hour = gCal.get(GregorianCalendar.HOUR);
         if(hour == 0) hour = 12; // 12 is represented as 0, not 12.  Great!
         int minute = gCal.get(GregorianCalendar.MINUTE);
         int amPm = gCal.get(GregorianCalendar.AM_PM);
-        String textTime = String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
-        return textTime;
+        return String.format("%2d:%2d%s", hour, minute, (amPm == GregorianCalendar.AM ? "AM":"PM")).replace(' ', '0');
     }
 
     @Override
@@ -305,53 +294,58 @@ public class MainActivity extends AppCompatActivity
 
     private void handleMenuEmailReport() {
         try {
-            String fileDataString = "";
+            StringBuilder fileDataString = new StringBuilder();
 
             Cursor cursor = getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
-            if (cursor != null & cursor.moveToFirst()) {
-                fileDataString += "<exercise entries>\r\n";
+            assert cursor != null;
+            if (cursor.moveToFirst()) {
+                fileDataString.append("<exercise entries>\r\n");
                 do {
                     ExerciseEntry entry = new ExerciseEntry(cursor);
-                    fileDataString += entry.toString();
+                    fileDataString.append(entry.toString());
                 } while (cursor.moveToNext());
-                cursor.close();
             }
+            cursor.close();
 
             cursor = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null, null);
-            if (cursor != null & cursor.moveToFirst()) {
-                fileDataString += "<day schedule entries>\r\n";
+            assert cursor != null;
+            if (cursor.moveToFirst()) {
+                fileDataString.append("<day schedule entries>\r\n");
                 do {
                     DayScheduleEntry entry = new DayScheduleEntry(cursor);
-                    fileDataString += entry.toString();
+                    fileDataString.append(entry.toString());
                 } while (cursor.moveToNext());
-                cursor.close();
             }
+            cursor.close();
 
             cursor = getContentResolver().query(LogDailyExerciseEntry.Contract.CONTENT_URI, null, null, null, null);
-            if (cursor != null & cursor.moveToFirst()) {
-                fileDataString += "<log entries>\r\n";
+            assert cursor != null;
+            if (cursor.moveToFirst()) {
+                fileDataString.append("<log entries>\r\n");
                 do {
                     LogDailyExerciseEntry entry = new LogDailyExerciseEntry(cursor);
-                    fileDataString += entry.toString();
+                    fileDataString.append(entry.toString());
                 } while (cursor.moveToNext());
-                cursor.close();
             }
+            cursor.close();
 
             //String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
             String baseDir = Environment.getExternalStorageDirectory().toString();
             // This "exerciseapp_data" will be visible to user on their phone.
             File myAppDir = new File(baseDir + "/exerciseapp_data");
             Log.d(TAG, "handleMenuEmailReport: does myAppDir " + myAppDir + " Exist?: " + myAppDir.exists());
-            if(!myAppDir.exists()) myAppDir.mkdirs();
+            if(!myAppDir.exists()) //noinspection ResultOfMethodCallIgnored
+                myAppDir.mkdirs();
             Log.d(TAG, "handleMenuEmailReport: does myAppDir " + myAppDir + " Exist?: " + myAppDir.exists());
 
             String filename = "ExerciseAppData.txt";
             File writtenFile = new File(myAppDir, filename);
-            if(writtenFile.exists()) writtenFile.delete();
+            if(writtenFile.exists()) //noinspection ResultOfMethodCallIgnored
+                writtenFile.delete();
 
             try {
                 FileOutputStream out = new FileOutputStream(writtenFile);
-                out.write(fileDataString.getBytes());
+                out.write(fileDataString.toString().getBytes());
                 out.flush();
                 out.close();
             } catch(Exception exc) {
@@ -460,22 +454,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
-    }
-
     private void setupGui() {
         m_textViewInstructions = findViewById(R.id.cd_tv_instructions_to_start);
         m_btnStartStop = findViewById(R.id.cd_btn_start_stop);
@@ -488,8 +466,6 @@ public class MainActivity extends AppCompatActivity
         m_textViewStartTimeLabel.setVisibility(View.INVISIBLE);
         m_textViewStartTimeDisplay.setVisibility(View.INVISIBLE);
 
-        m_textViewEnterNumRepsLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_enter_num_reps);
-        m_textViewWeightLabel = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_weightlabel);
         m_textViewExerciseName = m_currentExerciseLayout.findViewById(R.id.cdblock_txtview_exercise_name);
         m_textViewWeightInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_weight);
         m_textNewSetRepsInput = m_currentExerciseLayout.findViewById(R.id.cdblock_ted_newsetreps);
@@ -516,12 +492,15 @@ public class MainActivity extends AppCompatActivity
                 matchingDaySchedule = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null,
                         null, null, DayScheduleEntry.Contract.Columns.COL_NAME_POSITION);
             }
+            assert matchingDaySchedule != null;
             matchingDaySchedule.moveToFirst();
             m_currentDayScheduleId = matchingDaySchedule.getLong(matchingDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_ID));
             ExerciseAppDBSetting.setCurrentDayScheduleId(this, m_currentDayScheduleId);
             matchingDaySchedule.close();
 
             updateGuiWithCurrentExercise();
+
+            cursor.close();
 
         } else {
             m_textViewInstructions.setVisibility(View.VISIBLE);
@@ -532,6 +511,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void populateGuiFromLogDailyExerciseEntry() {
         ExerciseEntry exerciseEntry = m_currentLogDailyExerciseEntry.getExerciseEntry(this);
         m_textViewExerciseName.setText(exerciseEntry.getName());
@@ -575,7 +555,7 @@ public class MainActivity extends AppCompatActivity
         // Wrap up the current exercise.  Set the end date, and save it.
         m_currentLogDailyExerciseEntry.setEndDateTime(new Date());
         m_currentLogDailyExerciseEntry.save(m_context);
-        m_textViewStartTimeDisplay.setText("");
+        m_textViewStartTimeDisplay.setText(getString(R.string.empty_string));
 
         GregorianCalendar gCal = new GregorianCalendar();
         gCal.setTime(m_currentLogDailyExerciseEntry.getEndDateTime());
@@ -583,7 +563,7 @@ public class MainActivity extends AppCompatActivity
         // You can only show one snackbar at a time!  So this one gets hidden by one at end of function.
         //Snackbar.make(m_btnStartStop, "Exercise completed at: " + textTime, Snackbar.LENGTH_LONG).show();
 
-        m_btnStartStop.setText("Start Exercise");
+        m_btnStartStop.setText(getString(R.string.start_exercise));
 
         // Get the day schedule id for what we JUST wrapped up.
         long currentDayScheduleId = ExerciseAppDBSetting.getCurrentDayScheduleId(this);
@@ -595,32 +575,32 @@ public class MainActivity extends AppCompatActivity
         // AND TO ADVANCE THE CURSOR THERE
         Cursor cursorDaySchedules = getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null, null, null,
                 DayScheduleEntry.Contract.Columns.COL_NAME_POSITION); // must sort by position in order for algorithm to work.
-        if(cursorDaySchedules != null) {
-            cursorDaySchedules.moveToFirst();
-            do {
-                DayScheduleEntry dse = new DayScheduleEntry(cursorDaySchedules);
-                if(dse.getId() == currentDayScheduleId) {
-                    if(cursorDaySchedules.moveToNext()) {
-                        DayScheduleEntry nextEntry = new DayScheduleEntry(cursorDaySchedules);
-                        if (nextEntry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
-                            hasNextExerciseInRoutine = true;
-                            ExerciseAppDBSetting.setCurrentDayScheduleId(this, nextEntry.getId());
-                        } else {
-                            // We found a day separator.  The next exercise (if there is one, will be the next one, or the first in cursor)
-                            if(!cursorDaySchedules.moveToNext()) {
-                                cursorDaySchedules.moveToFirst();
-                            }
-                        }
+        assert cursorDaySchedules != null;
+
+        cursorDaySchedules.moveToFirst();
+        do {
+            DayScheduleEntry dse = new DayScheduleEntry(cursorDaySchedules);
+            if(dse.getId() == currentDayScheduleId) {
+                if(cursorDaySchedules.moveToNext()) {
+                    DayScheduleEntry nextEntry = new DayScheduleEntry(cursorDaySchedules);
+                    if (nextEntry.getExerciseEntryId() != RVAdapterDaySchedule.DAY_SEPARATOR_ID) {
+                        hasNextExerciseInRoutine = true;
+                        ExerciseAppDBSetting.setCurrentDayScheduleId(this, nextEntry.getId());
                     } else {
-                        // If we run out of records, then there is definitely no next exercise in this routine.
-                        // We need to move to the first record
-                        cursorDaySchedules.moveToFirst();
+                        // We found a day separator.  The next exercise (if there is one, will be the next one, or the first in cursor)
+                        if(!cursorDaySchedules.moveToNext()) {
+                            cursorDaySchedules.moveToFirst();
+                        }
                     }
-                    // We're done!  Exit loop.
-                    break;
+                } else {
+                    // If we run out of records, then there is definitely no next exercise in this routine.
+                    // We need to move to the first record
+                    cursorDaySchedules.moveToFirst();
                 }
-            } while(cursorDaySchedules.moveToNext());
-        }
+                // We're done!  Exit loop.
+                break;
+            }
+        } while(cursorDaySchedules.moveToNext());
 
         String message = "Exercise completed at: " + textTime + "\r\n";
         if(!hasNextExerciseInRoutine) {

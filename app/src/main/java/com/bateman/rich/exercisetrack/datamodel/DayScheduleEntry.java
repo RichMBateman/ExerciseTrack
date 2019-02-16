@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 /**
  * Represents a schedule for a day.
@@ -20,45 +22,41 @@ public class DayScheduleEntry {
     private long m_id;
     private int m_position;
     private boolean m_isDaySeparator;
-    // This class refers to an ExerciseEntry.  I don't know what's better... have the fields of exercise entry as members,
-    // or have an actual reference to the linked ExerciseEntry (which may be null for Day Separators)...
-    // Going to try exclusively using exercise entry name... see if that's enough.
     private long m_exerciseEntryId;
     private String m_exerciseEntryName;
-    private ExerciseEntry m_exerciseEntry;
 
     public static class Contract {
-        public static final String TABLE_NAME = "DaySchedules";
+        static final String TABLE_NAME = "DaySchedules";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private Contract() {} // prevent instantiation
 
         public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
-            public static final String COL_NAME_EXERCISE_ENTRY_ID = "ExerciseEntryId";
+            static final String COL_NAME_EXERCISE_ENTRY_ID = "ExerciseEntryId";
             public static final String COL_NAME_POSITION = "Position";
-            public static final String COL_NAME_IS_DAY_SEPARATOR = "IsDaySeparator";
+            static final String COL_NAME_IS_DAY_SEPARATOR = "IsDaySeparator";
 
             private Columns() { /* private constructor; no instantiation allowed */ }
         }
     }
 
     public static class ContractViewDaySchedules {
-        public static final String TABLE_NAME = "vwDaySchedules";
+        static final String TABLE_NAME = "vwDaySchedules";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private ContractViewDaySchedules() {} // prevent instantiation
 
         public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
-            public static final String COL_NAME_EXERCISE_ENTRY_ID = Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID;
-            public static final String COL_NAME_EXERCISE_ENTRY = ExerciseEntry.Contract.Columns.COL_NAME_NAME;
-            public static final String COL_NAME_POSITION = Contract.Columns.COL_NAME_POSITION;
-            public static final String COL_NAME_IS_DAY_SEPARATOR = Contract.Columns.COL_NAME_IS_DAY_SEPARATOR;
+            static final String COL_NAME_EXERCISE_ENTRY_ID = Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID;
+            static final String COL_NAME_EXERCISE_ENTRY = ExerciseEntry.Contract.Columns.COL_NAME_NAME;
+            static final String COL_NAME_POSITION = Contract.Columns.COL_NAME_POSITION;
+            static final String COL_NAME_IS_DAY_SEPARATOR = Contract.Columns.COL_NAME_IS_DAY_SEPARATOR;
 
             private Columns() { /* private constructor; no instantiation allowed */ }
         }
@@ -66,11 +64,6 @@ public class DayScheduleEntry {
 
     public DayScheduleEntry() {
 
-    }
-
-    public DayScheduleEntry(int position, int exerciseEntryId) {
-        m_position = position;
-        m_exerciseEntryId = exerciseEntryId;
     }
 
     public DayScheduleEntry(Cursor cursor) {
@@ -113,15 +106,15 @@ public class DayScheduleEntry {
         return m_exerciseEntryId;
     }
 
-    public void setExerciseEntryId(long exerciseEntryId) {
+    void setExerciseEntryId(long exerciseEntryId) {
         m_exerciseEntryId = exerciseEntryId;
     }
 
-    public boolean isDaySeparator() {
+    boolean isDaySeparator() {
         return m_isDaySeparator;
     }
 
-    public void setDaySeparator(boolean daySeparator) {
+    void setDaySeparator(boolean daySeparator) {
         m_isDaySeparator = daySeparator;
     }
 
@@ -132,18 +125,7 @@ public class DayScheduleEntry {
             return m_exerciseEntryName;
     }
 
-    public void setExerciseEntryName(String exerciseEntryName) {
-        m_exerciseEntryName = exerciseEntryName;
-    }
-
-    public ExerciseEntry getExerciseEntry() {
-        return m_exerciseEntry;
-    }
-
-    public void setExerciseEntry(ExerciseEntry exerciseEntry) {
-        m_exerciseEntry = exerciseEntry;
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return "id: " + m_id + ", Position: " + m_position + ", exercise entry id: " + m_exerciseEntryId + "\r\n";

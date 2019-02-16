@@ -2,10 +2,9 @@ package com.bateman.rich.exercisetrack.datamodel;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 
 import com.bateman.rich.exercisetrack.gui.RVAdapterDaySchedule;
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 import java.util.ArrayList;
 import java.util.Date;

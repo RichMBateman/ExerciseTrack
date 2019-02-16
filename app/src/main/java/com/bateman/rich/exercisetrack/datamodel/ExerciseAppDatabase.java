@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.bateman.rich.rmblibrary.persistence.AppDatabaseHelper;
+
 /**
  * A database class for exercise tracking.  Based off the ExerciseAppDatabase class
  * created by Tim Buchalka in the udemy course Android Java Masterclass - Become an App Developer.
@@ -43,7 +45,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     /**
      * Create the database.  This is called only when the database does not exist.  So if you upgrade the database,
      * any upgrade functions must be called here, too.
-     * @param db
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -155,7 +156,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
     /**
      * Creates a trigger for inserts to synchronize position across all rows.  Disables additional triggers from firing.
-     * @param db
      */
     private void createDayScheduleTriggerOnInsertDaySchedule(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnInsertDaySchedule "
@@ -180,7 +180,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
     /**
      * Creates a trigger for deletes to synchronize position across all rows.  Disables additional triggers from firing.
-     * @param db
      */
     private void createDayScheduleTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnDeleteDaySchedule "
@@ -204,7 +203,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
 
     /**
      * Creates a trigger for Updates (that can be optionally disabled).  Keeps "position" in sync for all records.
-     * @param db
      */
     private void createDayScheduleTriggerOnUpdateDaySchedulePosition(SQLiteDatabase db) {
         String sSqlStatement = "CREATE TRIGGER OnUpdateDaySchedulePosition "
@@ -244,30 +242,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * The log table keeps track of when the user does a block of exercise (from the day schedule table).
-     * We keep track of when they started and when they finished.
-     * The total number of minutes devoted to a day of exercise can be derived.
-     * @param db The SQLite database
-     */
-//    private void createLogTable(SQLiteDatabase db) {
-//        String sSqlStatement = "CREATE TABLE " + LogEntry.Contract.TABLE_NAME + " ("
-//                + LogEntry.Contract.Columns.COL_NAME_ID + " INTEGER PRIMARY KEY NOT NULL, "
-//                + LogEntry.Contract.Columns.COL_NAME_DAY_SCHEDULE_ID + " INTEGER NOT NULL, "
-//                + LogEntry.Contract.Columns.COL_NAME_START_DATETIME + " DATETIME NOT NULL, "
-//                + LogEntry.Contract.Columns.COL_NAME_END_DATETIME + " DATETIME);";
-//        Log.d(TAG, sSqlStatement);
-//        db.execSQL(sSqlStatement);
-//    }
-//
-//    private void createLogTriggerOnDeleteDaySchedule(SQLiteDatabase db) {
-//        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-//                "RemoveOnDeleteDaySchedule",
-//                DayScheduleEntry.Contract.TABLE_NAME,
-//                LogEntry.Contract.TABLE_NAME, DayScheduleEntry.Contract.Columns.COL_NAME_ID,
-//                LogEntry.Contract.Columns.COL_NAME_ID);
-//    }
-
-    /**
      * The log daily exercise table keeps track of the specific exercise done on a certain day,
      * the total reps done, the difficulty for the user, and the weight.
      * For simple daily reminders, we'll use the totalRepsDone column to store a 1 if the reminder
@@ -286,15 +260,6 @@ class ExerciseAppDatabase extends SQLiteOpenHelper {
         Log.d(TAG, sSqlStatement);
         db.execSQL(sSqlStatement);
     }
-//
-//    private void createLogDailyExerciseTriggerOnDeleteLog(SQLiteDatabase db) {
-//        AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,
-//                "RemoveOnDeleteLogEntry",
-//                LogEntry.Contract.TABLE_NAME,
-//                LogDailyExerciseEntry.Contract.TABLE_NAME,
-//                LogEntry.Contract.Columns.COL_NAME_ID,
-//                LogDailyExerciseEntry.Contract.Columns.COL_NAME_ID);
-//    }
 
     private void createLogDailyExerciseTriggerOnDeleteExercise(SQLiteDatabase db) {
         AppDatabaseHelper.createTriggerOnDeleteParentRecord(db,

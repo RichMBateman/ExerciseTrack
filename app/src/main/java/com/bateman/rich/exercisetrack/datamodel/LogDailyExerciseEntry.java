@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+
+import com.bateman.rich.rmblibrary.persistence.ContentProviderHelper;
 
 import java.util.Date;
 
@@ -20,16 +23,14 @@ public class LogDailyExerciseEntry {
 
     /**
      * Creates a new LogDailyExerciseEntry for the given VALID current day schedule id.  We assume it exists.
-     * @param context
-     * @param currentDayScheduleId
-     * @return
-     */
+    */
     public static LogDailyExerciseEntry fromDayScheduleId(Context context, long currentDayScheduleId) {
         LogDailyExerciseEntry entry = new LogDailyExerciseEntry();
 
         Cursor cursorDaySchedule = context.getContentResolver().query(DayScheduleEntry.Contract.CONTENT_URI, null,
                 DayScheduleEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(currentDayScheduleId)}, null);
 
+        assert cursorDaySchedule != null;
         cursorDaySchedule.moveToFirst();
         entry.m_exerciseId = cursorDaySchedule.getLong(cursorDaySchedule.getColumnIndex(DayScheduleEntry.Contract.Columns.COL_NAME_EXERCISE_ENTRY_ID));
         cursorDaySchedule.close();
@@ -37,6 +38,7 @@ public class LogDailyExerciseEntry {
         Cursor cursorExercise = context.getContentResolver().query(ExerciseEntry.Contract.CONTENT_URI, null,
                     ExerciseEntry.Contract.Columns.COL_NAME_ID +"=?", new String[]{Long.toString(entry.m_exerciseId)}, null);
 
+        assert cursorExercise != null;
         cursorExercise.moveToFirst();
         entry.m_exerciseEntry = new ExerciseEntry(cursorExercise);
         cursorExercise.close();
@@ -47,36 +49,36 @@ public class LogDailyExerciseEntry {
     }
 
     public static class Contract {
-        public static final String TABLE_NAME = "LogDailyExercises";
+        static final String TABLE_NAME = "LogDailyExercises";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private Contract() { } // prevent instantiation
 
         public static class Columns {
             public static final String COL_NAME_ID = BaseColumns._ID;
-            public static final String COL_NAME_EXERCISE_ID = "ExerciseId";
-            public static final String COL_NAME_START_DATETIME = "StartDateTime";
+            static final String COL_NAME_EXERCISE_ID = "ExerciseId";
+            static final String COL_NAME_START_DATETIME = "StartDateTime";
             public static final String COL_NAME_END_DATETIME = "EndDateTime";
-            public static final String COL_NAME_TOTAL_REPS_DONE = "TotalRepsDone";
-            public static final String COL_NAME_WEIGHT = "Weight";
-            public static final String COL_NAME_DIFFICULTY = "Difficulty";
+            static final String COL_NAME_TOTAL_REPS_DONE = "TotalRepsDone";
+            static final String COL_NAME_WEIGHT = "Weight";
+            static final String COL_NAME_DIFFICULTY = "Difficulty";
 
             private Columns() { /* private constructor; no instantiation allowed */ }
         }
     }
 
     public static class ContractViewReport {
-        public static final String TABLE_NAME = "ViewExerciseLogReport";
+        static final String TABLE_NAME = "ViewExerciseLogReport";
         public static final Uri CONTENT_URI = ContentProviderHelper.buildContentUri(ExerciseAppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
-        public static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
-        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+        static final String CONTENT_TYPE = ContentProviderHelper.buildContentTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
+//        public static final String CONTENT_ITEM_TYPE = ContentProviderHelper.buildContentItemTypeString(ExerciseAppProvider.CONTENT_AUTHORITY, TABLE_NAME);
 
         private ContractViewReport() { } // prevent instantiation
 
         public static class Columns {
-            public static final String COL_NAME_ID = BaseColumns._ID;
+//            public static final String COL_NAME_ID = BaseColumns._ID;
             public static final String COL_NAME_EXERCISE_NAME = "ExerciseName";
             public static final String COL_NAME_TOTAL_REPS_DONE = "TotalRepsDone";
             public static final String COL_NAME_WEIGHT = "Weight";
@@ -85,7 +87,7 @@ public class LogDailyExerciseEntry {
         }
     }
 
-    public LogDailyExerciseEntry() {
+    LogDailyExerciseEntry() {
         m_difficulty=5; // default difficulty.
     }
 
@@ -122,11 +124,11 @@ public class LogDailyExerciseEntry {
         m_id = id;
     }
 
-    public long getExerciseId() {
+    long getExerciseId() {
         return m_exerciseId;
     }
 
-    public void setExerciseId(long exerciseId) {
+    void setExerciseId(long exerciseId) {
         m_exerciseId = exerciseId;
     }
 
@@ -134,7 +136,7 @@ public class LogDailyExerciseEntry {
         return m_totalRepsDone;
     }
 
-    public void setTotalRepsDone(int totalRepsDone) {
+    void setTotalRepsDone(int totalRepsDone) {
         m_totalRepsDone = totalRepsDone;
     }
 
@@ -174,6 +176,7 @@ public class LogDailyExerciseEntry {
         m_endDateTime = endDateTime;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "id: " + m_id + ", exercise id: " + m_exerciseId +
@@ -183,7 +186,6 @@ public class LogDailyExerciseEntry {
 
     /**
      * Inserts or updates the appropriate database record for this log daily exercise entry.
-     * @param c
      */
     public void save(Context c) {
         ContentValues values = new ContentValues();
